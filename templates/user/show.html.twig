@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 text-center p-4">
+                <div class="mx-auto bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px; font-size: 2rem;">
+                    {{ user.nom|slice(0,1)|upper }}
+                </div>
+                <h3 class="fw-bold mb-1">{{ user.prenom }} {{ user.nom }}</h3>
+                <p class="text-muted mb-4">{{ user.email }}</p>
+                
+                <div class="row text-start g-3 mb-4">
+                    <div class="col-6 text-muted small text-uppercase fw-bold">User ID</div>
+                    <div class="col-6 text-end">#{{ user.id }}</div>
+                    <hr class="my-0 opacity-10">
+                    <div class="col-6 text-muted small text-uppercase fw-bold">Role</div>
+                    <div class="col-6 text-end"><span class="badge bg-light text-dark border">{{ user.role }}</span></div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary rounded-pill px-4">Back</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary rounded-pill px-4">Edit Profile</a>
+                    {{ include('user/_delete_form.html.twig', {'user': user}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

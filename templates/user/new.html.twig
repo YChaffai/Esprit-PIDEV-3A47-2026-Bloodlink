@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New User{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {# Flash messages handled here #}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} border-0 shadow-sm rounded-4 mb-4">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {{ include('user/_form.html.twig', {'button_label': 'Create Account', 'title': 'Register New User'}) }}
+        </div>
+    </div>
+{% endblock %}

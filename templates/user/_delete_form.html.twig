@@ -1,0 +1,15 @@
+<form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" 
+      onsubmit="return confirm('⚠️ Are you sure you want to delete this user? This cannot be undone.');" 
+      style="display:inline">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+    
+    {% if is_icon_only|default(false) %}
+        <button type="submit" class="btn btn-outline-light text-danger btn-sm px-3" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+            <i class="bi bi-trash3"></i>
+        </button>
+    {% else %}
+        <button type="submit" class="btn btn-danger px-4 rounded-pill shadow-sm">
+            <i class="bi bi-trash3 me-2"></i>Delete User
+        </button>
+    {% endif %}
+</form>

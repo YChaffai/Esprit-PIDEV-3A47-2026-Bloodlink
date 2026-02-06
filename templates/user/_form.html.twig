@@ -1,0 +1,91 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+<div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+    <div class="card-body p-4 p-md-5">
+        <h4 class="fw-bold text-primary mb-4">{{ title|default('User Information') }}</h4>
+        
+        <div class="row g-4">
+            {% set fields = [
+                {'name': 'prenom', 'label': 'First Name', 'placeholder': 'e.g. John', 'col': '6'},
+                {'name': 'nom', 'label': 'Last Name', 'placeholder': 'e.g. Doe', 'col': '6'},
+                {'name': 'email', 'label': 'Email Address', 'placeholder': 'john@example.com', 'col': '12'}
+            ] %}
+
+            {% for field in fields %}
+                <div class="col-md-{{ field.col }}">
+                    <label class="form-label fw-bold small text-uppercase text-secondary">{{ field.label }}</label>
+                    {{ form_widget(attribute(form, field.name), {
+                        'attr': {
+                            'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (attribute(form, field.name).vars.errors|length > 0 ? ' is-invalid' : ''),
+                            'placeholder': field.placeholder
+                        }
+                    }) }}
+                    {% if attribute(form, field.name).vars.errors|length > 0 %}
+                        <div class="mt-2 fade-in">
+                            {% for error in attribute(form, field.name).vars.errors %}
+                                <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
+                                    <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% if form.password is defined %}
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-uppercase text-secondary">Password</label>
+                {{ form_widget(form.password, {
+                    'attr': {
+                        'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.password.vars.errors|length > 0 ? ' is-invalid' : ''),
+                        'placeholder': '••••••••'
+                    }
+                }) }}
+                {% if form.password.vars.errors|length > 0 %}
+                    <div class="mt-2 fade-in">
+                        {% for error in form.password.vars.errors %}
+                            <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="{{ form.password is defined ? 'col-md-6' : 'col-12' }}">
+                <label class="form-label fw-bold small text-uppercase text-secondary">User Role</label>
+                {{ form_widget(form.role, {
+                    'attr': {
+                        'class': 'form-select form-select-lg bg-light border-0 rounded-3' ~ (form.role.vars.errors|length > 0 ? ' is-invalid' : '')
+                    }
+                }) }}
+                {% if form.role.vars.errors|length > 0 %}
+                    <div class="mt-2 fade-in">
+                        {% for error in form.role.vars.errors %}
+                            <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
+                                <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light border-0 p-4 d-flex justify-content-between align-items-center">
+        <a href="{{ path('app_user_index') }}" class="btn btn-link text-decoration-none text-muted">
+            <i class="bi bi-arrow-left me-1"></i>Back to list
+        </a>
+        <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
+            <i class="bi bi-check-lg me-2"></i>{{ button_label|default('Save') }}
+        </button>
+    </div>
+</div>
+{{ form_end(form) }}
+
+<style>
+    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1) !important; }
+    .form-control.is-invalid { border: 1.5px solid #dc3545 !important; background-color: #fff8f8 !important; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+</style>
