@@ -29,7 +29,7 @@ class UserType extends AbstractType
           'Admin' => 'admin',
           'Client' => 'client',
           'Doctor' => 'doctor',
-          'Banque' => 'banque',
+          'Banque Agent' => 'banque',
           'CNTS Agent' => 'cnts',
         ],
         'placeholder' => 'Choose a role',
