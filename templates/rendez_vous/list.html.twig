@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des rendez vous{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des rendez vous</h1>
+    <hr>
+<div class="card p-3 mb-4 shadow-sm bg-light">
+   {{ form_start(filterForm, {
+    'action': path('rendezvous_list', {'client_id': client_id}),
+    'method': 'GET',
+    'attr': {'id': 'rv-filter-form'}
+}) }}
+    <div class="row g-2">
+        <div class="col-md-2">{{ form_row(filterForm.campagne) }}</div>
+        <div class="col-md-3">{{ form_widget(filterForm.date) }}</div>
+        <div class="col-md-3">{{ form_widget(filterForm.status) }}</div>
+        <div class="col-md-3">{{ form_widget(filterForm.tri_date) }}</div>
+
+        <div class="col-md-2">
+            <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}" class="btn btn-secondary w-100">Reset</a>
+        </div>
+    </div>
+{{ form_end(filterForm, {'render_rest': false}) }}
+</div>
+    {% for r in rendezvous %}
+        <div class="mb-4">
+            <p><b>date rendez vous : </b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
+            <p><b>status : </b> {{ r.status }} </p>
+            <p><b>campagne : </b> {{ r.questionnaire.campagne.titre }} </p>
+
+            
+            {# <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>#}
+            <a  href="{{ path('rendezvous_update', { id : r.id })}}">Update</a>
+            <a  href="{{ path('rendezvous_delete', { id : r.id })}}">Delete</a> 
+
+         </div>
+        <hr>
+    {% else %}
+        <p>Aucun questionnaire trouvé.</p>
+    {% endfor %}
+
+   <script>
+    const rvForm = document.getElementById('rv-filter-form');
+    if (rvForm) {
+        // 1. Appliquer à TOUS les menus déroulants (Campagne et Statut)
+        rvForm.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', () => rvForm.submit());
+        });
+
+        // 2. Appliquer à la date (quand la sélection est complète)
+        const dateInput = rvForm.querySelector('.datepicker');
+        if (dateInput) {
+            dateInput.addEventListener('change', function() {
+                if (this.value) rvForm.submit();
+            });
+        }
+    }
+</script>
+</div>
+{% endblock %}

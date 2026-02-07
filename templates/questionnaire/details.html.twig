@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Questionnaire details{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1> Questionnaire details </h1>
+    <div>
+    <div>
+    <p><b>Nom : </b> {{ questionnaires.nom }}</p>
+        <p><b>Prénom : </b> {{ questionnaires.prenom }}</p>
+        <p><b>Âge : </b> {{ questionnaires.age }}</p>
+        <p><b>Sexe : </b> {{ questionnaires.sexe }}</p>
+        <p><b>Poids : </b> {{ questionnaires.poids }}</p>
+        <p><b>Group_sanguin : </b> {{ questionnaires.getGroupSanguin() }} </p>
+
+        <p><b>Autres informations : </b> {{ questionnaires.autres ? questionnaires.autres : 'Aucune' }}</p>
+        <p><b>Date de soumission : </b> {{ questionnaires.date|date('d/m/Y H:i')}}</p>
+        <p><b>Campagne : </b> {{ questionnaires.campagne.titre }}</p> 
+
+    <a href="{{ path('questionnaireback_list') }}" >Return to List</a>
+    </div>
+    
+</div>
+{% endblock %}

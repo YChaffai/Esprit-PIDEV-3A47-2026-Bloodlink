@@ -1,0 +1,77 @@
+{# templates/questionnaire/new.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Remplir le questionnaire{% endblock %}
+
+{% block body %}
+    <h1>Remplir le questionnaire</h1>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+    <table>
+        <tr>
+            <td>{{ form_label(form.nom, "Nom") }}</td>
+            <td>{{ form_widget(form.nom) }}</td>
+            <td>{{ form_errors(form.nom) }}</td>
+            
+
+        </tr>
+
+        <tr>
+            <td>{{ form_label(form.prenom, "Prénom") }}</td>
+            <td>{{ form_widget(form.prenom) }}</td>
+            <td>{{ form_errors(form.prenom) }}</td>
+
+           
+        </tr>
+
+        <tr>
+            <td>{{ form_label(form.age, "Âge") }}</td>
+            <td>{{ form_widget(form.age) }}</td>
+            <td>{{ form_errors(form.age) }}</td>
+           
+        </tr>
+        
+        <tr>
+            <td>{{ form_label(form.sexe, "Sexe") }}</td>
+            <td>{{ form_widget(form.sexe) }}</td>
+            <td>{{ form_errors(form.sexe) }}</td>
+           
+        </tr>
+
+        <tr>
+            <td>{{ form_label(form.poids, "Poids") }}</td>
+            <td>{{ form_widget(form.poids) }}</td>
+            <td>{{ form_errors(form.poids) }}</td>
+           
+        </tr>
+
+        <tr>
+            <td>{{ form_label(form.autres, "Autres") }}</td>
+            <td>{{ form_widget(form.autres) }}</td>
+            <td>{{ form_errors(form.autres) }}</td>
+           
+        </tr>
+        <tr>
+            <td>{{ form_label(form.client, 'Email du Client') }}</td>
+            <td>{{ form_widget(form.client) }}</td>
+            <td>{{ form_errors(form.client) }}</td>
+        </tr>
+
+        <tr>
+            <td>{{ form_label(form.campagne, 'Campagne') }}</td>
+            <td>{{ form_widget(form.campagne) }}</td>
+            <td>{{ form_errors(form.campagne) }}</td>
+        </tr>
+        {# <tr>
+        <td>{{ form_label(form.client, "Client") }}</td>
+        <td>{{ form_widget(form.client) }}</td>
+        <td>{{ form_errors(form.client) }}</td>
+    </tr> #}
+
+    </table>
+    {{ form_widget(form.submit) }}
+
+    {{ form_end(form) }}
+{% endblock %}

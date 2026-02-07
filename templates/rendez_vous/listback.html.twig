@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des rendez vous{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des rendez vous</h1>
+    <hr>
+<div class="card p-3 mb-4 shadow-sm bg-light">
+    {{ form_start(filterForm, {'attr': {'id': 'rv-filter-form'}}) }}
+        <div class="row g-2">
+            <div class="col-md-4">{{ form_widget(filterForm.nom) }}</div>
+            <div class="col-md-2">{{ form_row(filterForm.prenom) }}</div>
+            <div class="col-md-2">{{ form_row(filterForm.campagne) }}</div>
+            <div class="col-md-2">{{ form_row(filterForm.entite) }}</div>
+            <div class="col-md-3">{{ form_widget(filterForm.date) }}</div>
+            <div class="col-md-3">{{ form_widget(filterForm.status) }}</div>
+            <div class="col-md-3">{{ form_widget(filterForm.tri) }}</div>
+            <div class="col-md-2">
+                <a href="{{ path('rendezvousback_list') }}" class="btn btn-secondary w-100">Reset</a>
+            </div>
+        </div>
+    {{ form_end(filterForm) }}
+</div>
+    {% for r in rendezvous %}
+        <div class="mb-4">
+            <p><b>id rendez vous : </b> {{ r.id }} </p>
+            <p><b>nom : </b> {{ r.questionnaire.client.nom }} </p>
+            <p><b>prenom : </b> {{ r.questionnaire.client.prenom }} </p>
+                <p><b>date rendez vous : </b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
+
+            <p><b>Campagne : </b> {{ r.questionnaire.campagne.titre }} </p>
+            <p><b>entite de collecte : </b> {{ r.entite.nom }} </p>
+            <p><b>status : </b> {{ r.status }} </p>
+
+            
+            {# <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>#}
+            <a  href="{{ path('questionnaireback_details', { id : r.questionnaire.id })}}">questionnaire </p></a>
+            <a  href="{{ path('rendezvousback_update', { id : r.id })}}">Update</a>
+            <a  href="{{ path('rendezvousback_delete', { id : r.id })}}">Delete</a>
+
+
+
+         </div>
+        <hr>
+    {% else %}
+        <p>Aucun rendez vous trouvé.</p>
+    {% endfor %}
+
+   <script>
+    const rvForm = document.getElementById('rv-filter-form');
+    if (rvForm) {
+        // 1. On écoute TOUS les selects (Campagne, Entité, Status)
+        rvForm.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', () => {
+                rvForm.submit();
+            });
+        });
+
+        // 2. On écoute TOUS les champs texte (Nom, Prénom)
+        rvForm.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    rvForm.submit();
+                }
+            });
+            // Optionnel : soumettre aussi quand on quitte le champ
+            input.addEventListener('blur', () => {
+                if (input.value !== "") rvForm.submit();
+            });
+        });
+
+        // 3. Soumission pour la date
+        const dateInput = rvForm.querySelector('.datepicker');
+        if (dateInput) {
+            dateInput.addEventListener('blur', function() {
+                if (this.value) rvForm.submit();
+            });
+        }
+        rvForm.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', () => rvForm.submit());
+        });
+    }
+</script>
+</div>
+{% endblock %}

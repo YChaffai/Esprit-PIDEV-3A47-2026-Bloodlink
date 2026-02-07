@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+        {% endblock %}
+
+        {% block javascripts %}
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    flatpickr(".datepicker", {
+                        dateFormat: "Y-m-d H:i",  // Format de la date et de l'heure
+                        minDate: "today",         // Empêcher la sélection des dates passées
+                        enableTime: true,
+                        time_24hr: true,
+                        //minTime: "08:00",
+                        //maxTime: "17:00",
+                        disable: [
+                            function (date) {
+                                return (date.getDay() === 0 || date.getDay() === 6);  // Samedi et Dimanche
+                            },
+                            "2026-01-01",  // Jour de l'an
+                            "2026-12-25"   // Noël
+                        ],
+                        
+                    
+                       
+                    });
+                });
+            </script>
+        {% endblock %}
+
+    </head>
+    <body>
+        {% block body %}{% endblock %}
+    </body>
+</html>

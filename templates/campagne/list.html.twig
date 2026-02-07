@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des campagnes{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h1>Liste des campagnes</h1>
+    {% for camp in campagne %}
+        <div>
+        <p><b>Title : </b> {{ camp.titre }} </p>
+        <a  href="{{ path('questionnaire_new', { id : camp.id, client_id:3})}}">Participer</a>
+        </div>
+    {% endfor %}
+    
+</div>
+{% endblock %}
