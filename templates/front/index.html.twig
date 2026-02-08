@@ -1,80 +1,65 @@
-{% extends 'base.html.twig' %}
+{% extends 'front/base.html.twig' %}
 
-{% block title %}FrontOffice - Gestion Campagnes{% endblock %}
 
 {% block body %}
-<h1>Gestion des campagnes et des entités de collecte</h1>
+<h1>Gestion des Campagnes & Entités (Front)</h1>
 
-<h2>Créer une nouvelle campagne</h2>
-{{ form_start(compagneForm) }}
-    {{ form_widget(compagneForm) }}
-    <button class="btn btn-primary">Enregistrer la campagne</button>
+
+<h2>Créer une campagne</h2>
+{{ form_start(compagneForm, {'attr': {'novalidate': 'novalidate'}}) }}
+{{ form_widget(compagneForm) }}
+<button type="submit">Créer</button>
 {{ form_end(compagneForm) }}
 
-<h2>Liste des campagnes</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Titre</th>
-            <th>Description</th>
-            <th>Date début</th>
-            <th>Date fin</th>
-            <th>Entité associée</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for compagne in campagnes %}
-            <tr>
-                <td>{{ compagne.id }}</td>
-                <td>{{ compagne.titre }}</td>
-                <td>{{ compagne.description }}</td>
-                <td>{{ compagne.dateDebut|date('Y-m-d') }}</td>
-                <td>{{ compagne.dateFin|date('Y-m-d') }}</td>
-                <td>{{ compagne.entite ? compagne.entite.nom : 'Non attribuée' }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
-<h2>Inscription d'une entité de collecte</h2>
-{{ form_start(entiteForm) }}
-    {{ form_widget(entiteForm) }}
-    <label>Choisir une campagne :</label>
-    <select name="compagne_id" class="form-control">
-        {% for compagne in campagnes %}
-            <option value="{{ compagne.id }}">{{ compagne.titre }}</option>
-        {% endfor %}
-    </select>
-    <button class="btn btn-success mt-2">S'inscrire</button>
+<hr>
+<h2>Créer une entité</h2>
+{{ form_start(entiteForm, {'attr': {'novalidate': 'novalidate'}}) }}
+{{ form_widget(entiteForm) }}
+<button type="submit">S'inscrire</button>
 {{ form_end(entiteForm) }}
 
-<h2>Liste des entités de collecte</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Localisation</th>
-            <th>Téléphone</th>
-            <th>Campagne attribuée</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entite in entites %}
-            <tr>
-                <td>{{ entite.id }}</td>
-                <td>{{ entite.nom }}</td>
-                <td>{{ entite.localisation }}</td>
-                <td>{{ entite.telephone }}</td>
-                <td>
-                    {% for compagne in entite.campagnes %}
-                        {{ compagne.titre }}<br>
-                    {% endfor %}
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
+
+<hr>
+<h2>Liste des campagnes</h2>
+<table border="1">
+<tr><th>ID</th><th>Titre</th><th>Début</th><th>Fin</th><th>Actions</th></tr>
+{% for c in campagnes %}
+<tr>
+<td>{{ c.id }}</td>
+<td>{{ c.titre }}</td>
+<td>{{ c.dateDebut|date('Y-m-d') }}</td>
+<td>{{ c.dateFin|date('Y-m-d') }}</td>
+<td>
+<a href="{{ path('front_edit_compagne', {'id': c.id}) }}">Modifier</a>
+<form method="post" action="{{ path('front_delete_compagne', {'id': c.id}) }}" style="display:inline;">
+<input type="hidden" name="_token" value="{{ csrf_token('delete_compagne' ~ c.id) }}">
+<button>Supprimer</button>
+</form>
+</td>
+</tr>
+{% endfor %}
 </table>
 
+
+<hr>
+<h2>Liste des entités</h2>
+<table border="1">
+<tr><th>ID</th><th>Nom</th><th>Localisation</th><th>Téléphone</th><th>Actions</th></tr>
+{% for e in entites %}
+<tr>
+<td>{{ e.id }}</td>
+<td>{{ e.nom }}</td>
+<td>{{ e.localisation }}</td>
+<td>{{ e.telephone }}</td>
+<td>
+<a href="{{ path('front_edit_entite', {'id': e.id}) }}">Modifier</a>
+<form method="post" action="{{ path('front_delete_entite', {'id': e.id}) }}" style="display:inline;">
+<input type="hidden" name="_token" value="{{ csrf_token('delete_entite' ~ e.id) }}">
+<button>Supprimer</button>
+</form>
+</td>
+</tr>
+{% endfor %}
+</table>
 {% endblock %}
