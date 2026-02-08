@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Gestion des demandes</h1>
+
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Banque</th>
+                <th>Type</th>
+                <th>Quantité</th>
+                <th>Urgence</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for demande in demandes %}
+            <tr>
+                <td>{{ demande.id }}</td>
+                <td>{{ demande.idBanque }}</td>
+                <td>{{ demande.typeSang }}</td>
+                <td>{{ demande.quantite }}</td>
+                <td>{{ demande.urgence }}</td>
+                <td>
+                    {% if demande.status == 'EN_ATTENTE' %}
+                        <span class="badge bg-warning">En attente</span>
+                    {% elseif demande.status == 'VALIDEE' %}
+                        <span class="badge bg-success">Validée</span>
+                    {% else %}
+                        <span class="badge bg-danger">Refusée</span>
+                    {% endif %}
+                </td>
+                <td>
+    {% if demande.status == 'EN_ATTENTE' %}
+        <a href="{{ path('back_transfert_valider', {'id': demande.id}) }}"
+           class="btn btn-sm btn-success">
+            Valider & Créer Transfert
+        </a>
+
+        <a href="{{ path('back_transfert_refuser', {'id': demande.id}) }}"
+           class="btn btn-sm btn-danger">
+            Refuser
+        </a>
+    {% endif %}
+</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

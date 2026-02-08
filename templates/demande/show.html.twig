@@ -1,0 +1,56 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Détails de la Demande{% endblock %}
+
+{% block body %}
+<div class="glass-card p-4 mt-5">
+
+    <h1 class="text-white mb-4">Détails de la demande #{{ demande.id }}</h1>
+
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert border-0 mb-3 
+                        {{ label == 'success' ? 'bg-success bg-opacity-25 text-white' : 'bg-danger bg-opacity-25 text-white' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <ul class="list-group list-group-flush mb-3">
+        <li class="list-group-item bg-dark text-white"><strong>Banque :</strong> {{ demande.idBanque }}</li>
+        <li class="list-group-item bg-dark text-white"><strong>Type de sang :</strong> {{ demande.typeSang }}</li>
+        <li class="list-group-item bg-dark text-white"><strong>Quantité :</strong> {{ demande.quantite }}</li>
+        <li class="list-group-item bg-dark text-white"><strong>Urgence :</strong> {{ demande.urgence }}</li>
+        <li class="list-group-item bg-dark text-white"><strong>Status :</strong>
+            {% if demande.status == 'EN_ATTENTE' %}
+                <span class="badge bg-warning text-dark">En attente</span>
+            {% elseif demande.status == 'VALIDEE' %}
+                <span class="badge bg-success">Validée</span>
+            {% elseif demande.status == 'REFUSEE' %}
+                <span class="badge bg-danger">Refusée</span>
+            {% else %}
+                <span class="badge bg-secondary">{{ demande.status }}</span>
+            {% endif %}
+        </li>
+        <li class="list-group-item bg-dark text-white"><strong>Créée le :</strong> {{ demande.createdAt ? demande.createdAt|date('Y-m-d H:i') : '' }}</li>
+        <li class="list-group-item bg-dark text-white"><strong>Dernière mise à jour :</strong> {{ demande.updatedAt ? demande.updatedAt|date('Y-m-d H:i') : '' }}</li>
+    </ul>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ path('app_demande_index') }}" class="btn btn-secondary">Retour à la liste</a>
+
+        {% if demande.status == 'EN_ATTENTE' %}
+            <a href="{{ path('app_demande_edit', {'id': demande.id}) }}" class="btn btn-danger">Modifier</a>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_demande_delete', {'id': demande.id}) }}"
+              style="display:inline-block;"
+              onsubmit="return confirm('Voulez-vous vraiment supprimer cette demande ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ demande.id) }}">
+            <button class="btn btn-outline-light">Supprimer</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Transferts{% endblock %}
+
+{% block body %}
+<div class="main-container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h1 class="text-white mb-3">Liste des Transferts</h1>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ path('app_demande_index') }}" class="btn btn-danger">🔙 Retour aux Demandes</a>
+        </div>
+    </div>
+
+    <div class="table-responsive glass-card p-3">
+        <table class="table table-dark table-striped align-middle mb-0">
+            <thead style="background:#b30000;color:white;">
+                <tr>
+                    <th>ID</th>
+                    <th>Demande</th>
+                    <th>Banque Destinataire</th>
+                    <th>Quantité</th>
+                    <th>Status</th>
+                    <th>Date Envoi</th>
+                    <th>Date Réception</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for transfert in transferts %}
+                <tr>
+                    <td>{{ transfert.id }}</td>
+                    <td>{{ transfert.demande.id }}</td>
+                    <td>{{ transfert.toOrg }}</td>
+                    <td>{{ transfert.quantite }}</td>
+                    <td>
+                        {% if transfert.status == 'EN_COURS' %}
+                            <span class="badge bg-warning text-dark">En cours</span>
+                        {% elseif transfert.status == 'RECU' %}
+                            <span class="badge bg-success">Reçu</span>
+                        {% elseif transfert.status == 'ANNULE' %}
+                            <span class="badge bg-danger">Annulé</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ transfert.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ transfert.dateEnvoie ? transfert.dateEnvoie|date('d/m/Y') : '-' }}</td>
+                    <td>{{ transfert.dateReception ? transfert.dateReception|date('d/m/Y') : '-' }}</td>
+                    <td>
+                        <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}" class="btn btn-sm btn-outline-light">Voir</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Aucun transfert trouvé.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Transfert{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4" style="color:#b30000;">Modifier Transfert</h1>
+
+    {{ form_start(form) }}
+    <div class="row">
+
+        {% for field in ['demande', 'fromOrg', 'fromOrgId', 'toOrg', 'toOrgId', 'quantite', 'status', 'dateEnvoie', 'dateReception', 'idStock'] %}
+        <div class="col-md-6 mb-3">
+            {{ form_label(attribute(form, field)) }}
+            {% if field == 'status' %}
+                {{ form_widget(attribute(form, field), {'attr': {'class': 'form-select'}}) }}
+            {% else %}
+                {{ form_widget(attribute(form, field), {'attr': {'class': 'form-control'}}) }}
+            {% endif %}
+            {{ form_errors(attribute(form, field)) }}
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <button class="btn btn-primary mt-3">Enregistrer</button>
+    <a href="{{ path('back_transfert_index') }}" class="btn btn-secondary mt-3">Retour</a>
+
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

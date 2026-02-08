@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transfert{% endblock %}
+
+{% block body %}
+    <h1>Transfert</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ transfert.id }}</td>
+            </tr>
+            <tr>
+                <th>FromOrgId</th>
+                <td>{{ transfert.fromOrgId }}</td>
+            </tr>
+            <tr>
+                <th>FromOrg</th>
+                <td>{{ transfert.fromOrg }}</td>
+            </tr>
+            <tr>
+                <th>ToOrgId</th>
+                <td>{{ transfert.toOrgId }}</td>
+            </tr>
+            <tr>
+                <th>ToOrg</th>
+                <td>{{ transfert.toOrg }}</td>
+            </tr>
+            <tr>
+                <th>DateEnvoie</th>
+                <td>{{ transfert.dateEnvoie ? transfert.dateEnvoie|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DateReception</th>
+                <td>{{ transfert.dateReception ? transfert.dateReception|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Quantite</th>
+                <td>{{ transfert.quantite }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ transfert.status }}</td>
+            </tr>
+            <tr>
+                <th>IdStock</th>
+                <td>{{ transfert.idStock }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ transfert.createdAt ? transfert.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ transfert.updatedAt ? transfert.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('back_transfert_index') }}">back to list</a>
+
+    <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}">edit</a>
+
+    {{ include('transfert/_delete_form.html.twig') }}
+{% endblock %}

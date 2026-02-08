@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transferts Backoffice{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4" style="color:#b30000;">Gestion des Transferts</h1>
+
+    {% if transferts is empty %}
+        <p class="alert alert-info">Aucun transfert trouvé.</p>
+    {% else %}
+        <table class="table table-bordered table-striped">
+            <thead style="background-color:#b30000; color:white;">
+                <tr>
+                    <th>ID</th>
+                    <th>Demande ID</th>
+                    <th>Banque Destinataire</th>
+                    <th>Quantité</th>
+                    <th>Date Envoi</th>
+                    <th>Date Réception</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transfert in transferts %}
+                    <tr>
+                        <td>{{ transfert.id }}</td>
+                        <td>{{ transfert.demande.id }}</td>
+                        <td>{{ transfert.toOrg }}</td>
+                        <td>{{ transfert.quantite }}</td>
+                        <td>{{ transfert.dateEnvoie ? transfert.dateEnvoie|date('Y-m-d') : '' }}</td>
+                        <td>{{ transfert.dateReception ? transfert.dateReception|date('Y-m-d') : '' }}</td>
+                        <td>
+                            {% if transfert.status == 'EN_COURS' %}
+                                <span class="badge bg-warning">En cours</span>
+                            {% elseif transfert.status == 'RECU' %}
+                                <span class="badge bg-success">Reçu</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ transfert.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}" 
+                               class="btn btn-sm btn-secondary" style="border-radius:6px;">
+                               Voir
+                            </a>
+                            <a href="{{ path('back_transfert_edit', {'id': transfert.id}) }}"
+       class="btn btn-sm btn-warning">
+        Modifier
+    </a>
+
+    <form method="post"
+          action="{{ path('back_transfert_delete', {'id': transfert.id}) }}"
+          style="display:inline-block"
+          onsubmit="return confirm('Supprimer ce transfert ?');">
+
+        <input type="hidden" name="_token"
+               value="{{ csrf_token('delete' ~ transfert.id) }}">
+
+        <button class="btn btn-sm btn-danger">
+            Supprimer
+        </button>
+    </form>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}

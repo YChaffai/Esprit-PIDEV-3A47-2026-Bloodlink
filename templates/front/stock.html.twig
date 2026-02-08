@@ -1,0 +1,49 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Stock de ma Banque{% endblock %}
+
+{% block body %}
+<div class="main-container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Stock Disponible</h2>
+        <a href="{{ path('app_demande_index') }}" class="btn btn-danger">
+            ← Retour
+        </a>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle text-white">
+        <thead>
+            <tr>
+                <th>Type de Sang</th>
+                <th>Quantité Disponible</th>
+                <th>Dernière Mise à Jour</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr class="align-middle">
+                <td>{{ stock.typeSang }}</td>
+                <td>
+                    {% if stock.quantite <= 5 %}
+                        <span class="badge bg-danger">{{ stock.quantite }}</span>
+                    {% else %}
+                        {{ stock.quantite }}
+                    {% endif %}
+                </td>
+                <td>{{ stock.updatedAt ? stock.updatedAt|date('d/m/Y H:i') : '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted py-4">Aucun stock disponible</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+</div>
+{% endblock %}
