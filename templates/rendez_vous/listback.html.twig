@@ -22,7 +22,7 @@
                 <a href="{{ path('rendezvousback_list') }}" class="btn btn-secondary w-100">Reset</a>
             </div>
         </div>
-    {{ form_end(filterForm) }}
+    {{ form_end(filterForm, {'render_rest': false}) }}
 </div>
     {% for r in rendezvous %}
         <div class="mb-4">

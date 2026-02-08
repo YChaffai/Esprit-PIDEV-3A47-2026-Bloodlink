@@ -25,7 +25,7 @@
                 <a href="{{ path('questionnaireback_list') }}" class="btn btn-outline-danger btn-sm">Reset</a>
             </div>
         </div>
-    {{ form_end(filterForm) }}
+    {{ form_end(filterForm, {'render_rest': false}) }}
 </div>
 
     {% for quest in questionnaires %}

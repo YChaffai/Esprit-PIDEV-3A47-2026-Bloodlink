@@ -73,10 +73,10 @@ class RendezVousFilterType extends AbstractType
             
           ->add('tri', ChoiceType::class, [
         'choices' => [
-            'ID : Croissant' => 'id_ASC',
-            'ID : Décroissant' => 'id_DESC',
+            'ID rendez vous : Croissant' => 'id_ASC',
+            'ID rendez vous : Décroissant' => 'id_DESC',
             'Date & Heure : Plus proche' => 'date_ASC',
-        'Date & Heure : Plus lointaine' => 'date_DESC',
+            'Date & Heure : Plus lointaine' => 'date_DESC',
         ],
         'required' => false,
         'placeholder' => 'Ordre par défaut',

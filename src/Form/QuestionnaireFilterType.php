@@ -61,8 +61,8 @@ class QuestionnaireFilterType extends AbstractType
             
              ->add('tri', ChoiceType::class, [
         'choices' => [
-            'ID : Croissant' => 'id_ASC',
-            'ID : Décroissant' => 'id_DESC',
+            'ID questionnaire : Croissant' => 'id_ASC',
+            'ID questionnaires : Décroissant' => 'id_DESC',
             'Date & Heure : Plus proche' => 'date_ASC',
         'Date & Heure : Plus lointaine' => 'date_DESC',
         ],
