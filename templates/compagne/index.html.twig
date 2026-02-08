@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compagne index{% endblock %}
+
+{% block body %}
+    <h1>Compagne index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date_debut</th>
+                <th>Date_fin</th>
+                <th>Created_at</th>
+                <th>Updated_at</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for compagne in compagnes %}
+            <tr>
+                <td>{{ compagne.id }}</td>
+                <td>{{ compagne.titre }}</td>
+                <td>{{ compagne.description }}</td>
+                <td>{{ compagne.dateDebut ? compagne.dateDebut|date('Y-m-d') : '' }}</td>
+                <td>{{ compagne.dateFin ? compagne.dateFin|date('Y-m-d') : '' }}</td>
+                <td>{{ compagne.createdAt ? compagne.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ compagne.updatedAt ? compagne.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_compagne_show', {'id': compagne.id}) }}">show</a>
+                    <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_compagne_new') }}">Create new</a>
+{% endblock %}

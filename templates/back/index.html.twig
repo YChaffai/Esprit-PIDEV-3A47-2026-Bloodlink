@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}BackOffice - Campagnes & Entités{% endblock %}
+
+{% block body %}
+<h1>BackOffice - Gestion Campagnes & Entités</h1>
+
+<h2>Campagnes</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>Description</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Entité</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for compagne in campagnes %}
+        <tr>
+            <td>{{ compagne.id }}</td>
+            <td>{{ compagne.titre }}</td>
+            <td>{{ compagne.description }}</td>
+            <td>{{ compagne.dateDebut|date('Y-m-d') }}</td>
+            <td>{{ compagne.dateFin|date('Y-m-d') }}</td>
+            <td>{{ compagne.entite ? compagne.entite.nom : 'Non attribuée' }}</td>
+            <td>
+                <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}">Modifier</a>
+                <form method="post" action="{{ path('app_compagne_delete', {'id': compagne.id}) }}" style="display:inline-block">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ compagne.id) }}">
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Entités de collecte</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Localisation</th>
+            <th>Téléphone</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entite in entites %}
+        <tr>
+            <td>{{ entite.id }}</td>
+            <td>{{ entite.nom }}</td>
+            <td>{{ entite.localisation }}</td>
+            <td>{{ entite.telephone }}</td>
+            <td>
+                <a href="{{ path('app_entitecollecte_edit', {'id': entite.id}) }}">Modifier</a>
+                <form method="post" action="{{ path('app_entitecollecte_delete', {'id': entite.id}) }}" style="display:inline-block">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entite.id) }}">
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

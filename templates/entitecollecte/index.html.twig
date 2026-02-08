@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Entitecollecte index{% endblock %}
+
+{% block body %}
+    <h1>Entitecollecte index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Localisation</th>
+                <th>Telephone</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entitecollecte in entitecollectes %}
+            <tr>
+                <td>{{ entitecollecte.id }}</td>
+                <td>{{ entitecollecte.nom }}</td>
+                <td>{{ entitecollecte.localisation }}</td>
+                <td>{{ entitecollecte.telephone }}</td>
+                <td>
+                    <a href="{{ path('app_entitecollecte_show', {'id': entitecollecte.id}) }}">show</a>
+                    <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_entitecollecte_new') }}">Create new</a>
+{% endblock %}

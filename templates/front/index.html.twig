@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}FrontOffice - Gestion Campagnes{% endblock %}
+
+{% block body %}
+<h1>Gestion des campagnes et des entités de collecte</h1>
+
+<h2>Créer une nouvelle campagne</h2>
+{{ form_start(compagneForm) }}
+    {{ form_widget(compagneForm) }}
+    <button class="btn btn-primary">Enregistrer la campagne</button>
+{{ form_end(compagneForm) }}
+
+<h2>Liste des campagnes</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>Description</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Entité associée</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for compagne in campagnes %}
+            <tr>
+                <td>{{ compagne.id }}</td>
+                <td>{{ compagne.titre }}</td>
+                <td>{{ compagne.description }}</td>
+                <td>{{ compagne.dateDebut|date('Y-m-d') }}</td>
+                <td>{{ compagne.dateFin|date('Y-m-d') }}</td>
+                <td>{{ compagne.entite ? compagne.entite.nom : 'Non attribuée' }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Inscription d'une entité de collecte</h2>
+{{ form_start(entiteForm) }}
+    {{ form_widget(entiteForm) }}
+    <label>Choisir une campagne :</label>
+    <select name="compagne_id" class="form-control">
+        {% for compagne in campagnes %}
+            <option value="{{ compagne.id }}">{{ compagne.titre }}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-success mt-2">S'inscrire</button>
+{{ form_end(entiteForm) }}
+
+<h2>Liste des entités de collecte</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Localisation</th>
+            <th>Téléphone</th>
+            <th>Campagne attribuée</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entite in entites %}
+            <tr>
+                <td>{{ entite.id }}</td>
+                <td>{{ entite.nom }}</td>
+                <td>{{ entite.localisation }}</td>
+                <td>{{ entite.telephone }}</td>
+                <td>
+                    {% for compagne in entite.campagnes %}
+                        {{ compagne.titre }}<br>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

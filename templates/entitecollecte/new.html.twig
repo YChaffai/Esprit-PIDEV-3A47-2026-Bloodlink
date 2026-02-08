@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Entitecollecte{% endblock %}
+
+{% block body %}
+    <h1>Create new Entitecollecte</h1>
+
+    {{ include('entitecollecte/_form.html.twig') }}
+
+    <a href="{{ path('app_entitecollecte_index') }}">back to list</a>
+{% endblock %}
