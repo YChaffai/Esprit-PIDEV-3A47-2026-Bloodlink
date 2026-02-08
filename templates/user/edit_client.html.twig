@@ -1,79 +1,98 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Edit Client Info{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="card-body p-4 p-md-5">
-                    <h4 class="fw-bold text-primary mb-4"><i class="bi bi-person-gear me-2"></i>Edit Client Information</h4>
-                    
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">Blood Type</label>
-                            {{ form_widget(form.typeSang, {
-                                'attr': {
-                                    'class': 'form-select form-select-lg bg-light border-0 rounded-3' ~ (form.typeSang.vars.errors|length > 0 ? ' is-invalid' : '')
-                                }
-                            }) }}
-                            {% if form.typeSang.vars.errors|length > 0 %}
-                                <div class="mt-2 fade-in">
-                                    {% for error in form.typeSang.vars.errors %}
-                                        <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-9 col-xl-8">
 
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">Last Donation Date</label>
-                            {{ form_widget(form.dernierDon, {
-                                'attr': {
-                                    'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.dernierDon.vars.errors|length > 0 ? ' is-invalid' : '')
-                                }
-                            }) }}
-                            {% if form.dernierDon.vars.errors|length > 0 %}
-                                <div class="mt-2 fade-in">
-                                    {% for error in form.dernierDon.vars.errors %}
-                                        <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+      <div class="glass-card p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+          <h2 class="m-0" style="font-weight:900;">
+            <i class="fa-solid fa-user-gear me-2" style="color:var(--primary);"></i>
+            Edit Client Information
+          </h2>
 
-                <div class="card-footer bg-light border-0 p-4 d-flex justify-content-between align-items-center">
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-link text-decoration-none text-muted">
-                        <i class="bi bi-arrow-left me-1"></i>Back to Profile
-                    </a>
-                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
-                        Save Changes
-                    </button>
-                </div>
-            </div>
-            {{ form_end(form) }}
+          <a href="{{ path('app_user_show', { id: user.id }) }}"
+             class="btn btn-outline-light rounded-pill">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to Profile
+          </a>
         </div>
-    </div>
-</div>
 
-<style>
-    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1) !important; }
-    .form-control.is-invalid, .form-select.is-invalid { 
-        border: 1.5px solid #dc3545 !important; 
-        background-color: #fff8f8 !important; 
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+                Blood Type
+              </label>
+
+              {{ form_widget(form.typeSang, {
+                attr: {
+                  class: 'form-select form-select-lg select-dark' ~ (form.typeSang.vars.errors|length ? ' is-invalid' : '')
+                }
+              }) }}
+
+              {% for error in form.typeSang.vars.errors %}
+                <div class="mt-2 error-pill small">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+                Last Donation Date
+              </label>
+
+              {{ form_widget(form.dernierDon, {
+                attr: {
+                  class: 'form-control form-control-lg input-dark' ~ (form.dernierDon.vars.errors|length ? ' is-invalid' : '')
+                }
+              }) }}
+
+              {% for error in form.dernierDon.vars.errors %}
+                <div class="mt-2 error-pill small">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-outline-light btn-lg rounded-pill px-5">
+              <i class="fa-solid fa-check me-2"></i>Save Changes
+            </button>
+          </div>
+
+        {{ form_end(form) }}
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .input-dark, .select-dark{
+      background: rgba(255,255,255,.06) !important;
+      border: 1px solid rgba(255,255,255,.10) !important;
+      color: #fff !important;
+      border-radius: 12px;
     }
-    .fade-in { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { 
-        from { opacity: 0; transform: translateY(-5px); } 
-        to { opacity: 1; transform: translateY(0); } 
+    .input-dark::placeholder { color: rgba(255,255,255,.45) !important; }
+    .input-dark:focus, .select-dark:focus{
+      box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
+      border-color: rgba(230,57,57,.5) !important;
     }
-</style>
+
+    .form-control.is-invalid, .form-select.is-invalid{
+      border: 1.5px solid rgba(220,53,69,.85) !important;
+    }
+    .error-pill{
+      background: rgba(220,53,69,.14);
+      border: 1px solid rgba(220,53,69,.25);
+      color: #ffb3b3;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+  </style>
 {% endblock %}

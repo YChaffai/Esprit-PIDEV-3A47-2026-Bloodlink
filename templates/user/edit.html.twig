@@ -1,23 +1,32 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Edit User{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        {# Only display success flash messages #}
-        {% for label, messages in app.flashes %}
-            {% if label == 'success' %}
-                {% for message in messages %}
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-9 col-xl-8">
 
-        <h1>Edit User</h1>
-        
-        {{ include('user/_form.html.twig', {'form': form, 'button_label': 'Update'}) }}
+      <div class="glass-card p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+          <h2 class="m-0" style="font-weight:900;">
+            <i class="fa-solid fa-user-pen me-2" style="color:var(--primary);"></i>
+            Edit User
+          </h2>
+
+          <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill">
+            <i class="fa-solid fa-arrow-left me-2"></i>Back to list
+          </a>
+        </div>
+
+        {# ✅ base_front already shows flashes, so no need to loop here #}
+
+        {{ include('user/_form.html.twig', {
+          form: form,
+          button_label: 'Update',
+          title: 'Update User Information'
+        }) }}
+      </div>
+
     </div>
+  </div>
 {% endblock %}

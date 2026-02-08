@@ -1,122 +1,147 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Complete Blood Bank Profile{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            
-            {# Stepper #}
-            <div class="d-flex justify-content-between align-items-center mb-5 position-relative">
-                <div class="position-absolute top-50 start-0 w-100 translate-middle-y" style="height: 2px; background-color: #e9ecef; z-index: 0;"></div>
-                
-                <div class="d-flex flex-column align-items-center position-relative z-1">
-                    <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
-                        <i class="bi bi-check-lg"></i>
-                    </div>
-                    <span class="small fw-bold text-success mt-2">Account Created</span>
-                </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-9 col-xl-8">
 
-                <div class="d-flex flex-column align-items-center position-relative z-1">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-lg border border-4 border-white" style="width: 50px; height: 50px;">
-                        <i class="bi bi-hospital-fill"></i>
-                    </div>
-                    <span class="small fw-bold text-primary mt-2">Bank Details</span>
-                </div>
+      {# Stepper (dark) #}
+      <div class="position-relative mb-5">
+        <div class="position-absolute top-50 start-0 w-100 translate-middle-y"
+             style="height:1px; background: var(--border);"></div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-center">
+            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:42px;height:42px;background: rgba(25,135,84,.18); border:1px solid rgba(25,135,84,.35);">
+              <i class="fa-solid fa-check" style="color:#bff5d5;"></i>
             </div>
+            <span class="small fw-bold mt-2" style="color:#bff5d5;">Account Created</span>
+          </div>
 
-            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="card-header bg-primary text-white p-4 border-0">
-                    <h4 class="mb-0 fw-bold"><i class="bi bi-building-add me-2"></i>Setup Blood Bank</h4>
-                    <p class="mb-0 text-white-50 small">Enter the organization details below.</p>
-                </div>
-                
-                <div class="card-body p-4 p-md-5">
-                    <div class="row g-4">
-                        <div class="col-12">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">Bank / Hospital Name</label>
-                            {{ form_widget(form.nom, {
-                                'attr': {
-                                    'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.nom.vars.errors|length > 0 ? ' is-invalid' : ''),
-                                    'placeholder': 'e.g. City General Blood Bank'
-                                }
-                            }) }}
-                            {% if form.nom.vars.errors|length > 0 %}
-                                <div class="mt-2 fade-in">
-                                    {% for error in form.nom.vars.errors %}
-                                        <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">Address</label>
-                            {{ form_widget(form.adresse, {
-                                'attr': {
-                                    'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.adresse.vars.errors|length > 0 ? ' is-invalid' : ''),
-                                    'placeholder': '123 Health St.'
-                                }
-                            }) }}
-                            {% if form.adresse.vars.errors|length > 0 %}
-                                <div class="mt-2 fade-in">
-                                    {% for error in form.adresse.vars.errors %}
-                                        <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-uppercase text-secondary">Contact Phone</label>
-                            {{ form_widget(form.telephone, {
-                                'attr': {
-                                    'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.telephone.vars.errors|length > 0 ? ' is-invalid' : ''),
-                                    'placeholder': '12345678'
-                                }
-                            }) }}
-                            {% if form.telephone.vars.errors|length > 0 %}
-                                <div class="mt-2 fade-in">
-                                    {% for error in form.telephone.vars.errors %}
-                                        <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text small ms-1">Must be exactly 8 digits.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-footer bg-light border-0 p-4 d-flex justify-content-between align-items-center">
-                    <a href="{{ path('app_user_index') }}" class="btn btn-link text-decoration-none text-muted">Skip for now</a>
-                    <button type="submit" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
-                        Finalize Setup <i class="bi bi-check-lg ms-2"></i>
-                    </button>
-                </div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:52px;height:52px;background: rgba(230,57,57,.18); border:1px solid rgba(230,57,57,.45); box-shadow:0 15px 35px rgba(230,57,57,.15);">
+              <i class="fa-solid fa-hospital" style="color:#ffd1d1;"></i>
             </div>
-            {{ form_end(form) }}
+            <span class="small fw-bold mt-2" style="color:#ffd1d1;">Bank Details</span>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
-<style>
-    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1) !important; }
-    .form-control.is-invalid, .form-select.is-invalid { 
-        border: 1.5px solid #dc3545 !important; 
-        background-color: #fff8f8 !important; 
+      <div class="glass-card p-4 p-md-5">
+        <div class="mb-4">
+          <h2 class="m-0" style="font-weight:900;">
+            <i class="fa-solid fa-building-circle-check me-2" style="color:var(--primary);"></i>
+            Setup Blood Bank
+          </h2>
+          <p class="mb-0 mt-2" style="color:var(--muted);">
+            Enter the organization details below.
+          </p>
+        </div>
+
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+          <div class="row g-4">
+            <div class="col-12">
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+                Bank / Hospital Name
+              </label>
+
+              {{ form_widget(form.nom, {
+                attr: {
+                  class: 'form-control form-control-lg input-dark' ~ (form.nom.vars.errors|length ? ' is-invalid' : ''),
+                  placeholder: 'e.g. City General Blood Bank'
+                }
+              }) }}
+
+              {% for error in form.nom.vars.errors %}
+                <div class="mt-2 error-pill small">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+                Address
+              </label>
+
+              {{ form_widget(form.adresse, {
+                attr: {
+                  class: 'form-control form-control-lg input-dark' ~ (form.adresse.vars.errors|length ? ' is-invalid' : ''),
+                  placeholder: '123 Health St.'
+                }
+              }) }}
+
+              {% for error in form.adresse.vars.errors %}
+                <div class="mt-2 error-pill small">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+                Contact Phone
+              </label>
+
+              {{ form_widget(form.telephone, {
+                attr: {
+                  class: 'form-control form-control-lg input-dark' ~ (form.telephone.vars.errors|length ? ' is-invalid' : ''),
+                  placeholder: '12345678'
+                }
+              }) }}
+
+              {% for error in form.telephone.vars.errors %}
+                <div class="mt-2 error-pill small">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+
+              <div class="small mt-2" style="color:var(--muted);">Must be exactly 8 digits.</div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+            <a href="{{ path('app_user_index') }}" class="btn btn-link p-0" style="color:var(--muted);">
+              Skip for now
+            </a>
+
+            <button type="submit" class="btn btn-outline-light btn-lg rounded-pill px-5">
+              Finalize Setup <i class="fa-solid fa-check ms-2"></i>
+            </button>
+          </div>
+
+        {{ form_end(form) }}
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .input-dark{
+      background: rgba(255,255,255,.06) !important;
+      border: 1px solid rgba(255,255,255,.10) !important;
+      color: #fff !important;
+      border-radius: 12px;
     }
-    .fade-in { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { 
-        from { opacity: 0; transform: translateY(-5px); } 
-        to { opacity: 1; transform: translateY(0); } 
+    .input-dark::placeholder { color: rgba(255,255,255,.45) !important; }
+    .input-dark:focus{
+      box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
+      border-color: rgba(230,57,57,.5) !important;
     }
-</style>
+
+    .form-control.is-invalid{
+      border: 1.5px solid rgba(220,53,69,.85) !important;
+    }
+    .error-pill{
+      background: rgba(220,53,69,.14);
+      border: 1px solid rgba(220,53,69,.25);
+      color: #ffb3b3;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+  </style>
 {% endblock %}

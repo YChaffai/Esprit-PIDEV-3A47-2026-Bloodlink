@@ -1,85 +1,104 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Set New Password{% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-5">
-            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <div class="mb-3">
-                            <i class="bi bi-key text-primary" style="font-size: 3rem;"></i>
-                        </div>
-                        <h3 class="fw-bold text-primary">Set New Password</h3>
-                        <p class="text-muted small">Please enter your new password below.</p>
-                    </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-6 col-xl-5">
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold small text-uppercase text-secondary">New Password</label>
-                        {{ form_widget(form.password.first, {
-                            'attr': {
-                                'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.password.first.vars.errors|length > 0 ? ' is-invalid' : '')
-                            }
-                        }) }}
-                        {% if form.password.first.vars.errors|length > 0 %}
-                            <div class="mt-2 fade-in">
-                                {% for error in form.password.first.vars.errors %}
-                                    <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                        <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        <small class="form-text text-muted">At least 6 characters with letters and numbers</small>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold small text-uppercase text-secondary">Confirm Password</label>
-                        {{ form_widget(form.password.second, {
-                            'attr': {
-                                'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.password.second.vars.errors|length > 0 ? ' is-invalid' : '')
-                            }
-                        }) }}
-                        {% if form.password.second.vars.errors|length > 0 %}
-                            <div class="mt-2 fade-in">
-                                {% for error in form.password.second.vars.errors %}
-                                    <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
-                                        <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-3">
-                        <i class="bi bi-check-circle me-2"></i>Reset Password
-                    </button>
-
-                    <div class="text-center">
-                        <a href="{{ path('app_login') }}" class="text-decoration-none text-muted small">
-                            <i class="bi bi-arrow-left me-1"></i>Back to Login
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {{ form_end(form) }}
+      <div class="glass-card p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="mb-3">
+            <i class="fa-solid fa-key" style="font-size:3rem; color:var(--primary);"></i>
+          </div>
+          <h2 class="m-0" style="font-weight:900;">Set New Password</h2>
+          <p class="mt-2 mb-0" style="color:var(--muted);">
+            Please enter your new password below.
+          </p>
         </div>
-    </div>
-</div>
 
-<style>
-    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1) !important; }
-    .form-control.is-invalid { 
-        border: 1.5px solid #dc3545 !important; 
-        background-color: #fff8f8 !important; 
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+              New Password
+            </label>
+
+            {{ form_widget(form.password.first, {
+              attr: {
+                class: 'form-control form-control-lg input-dark' ~ (form.password.first.vars.errors|length ? ' is-invalid' : ''),
+                placeholder: '••••••••'
+              }
+            }) }}
+
+            {% for error in form.password.first.vars.errors %}
+              <div class="mt-2 error-pill small">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+              </div>
+            {% endfor %}
+
+            <div class="small mt-2" style="color:var(--muted);">
+              At least 6 characters with letters and numbers
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+              Confirm Password
+            </label>
+
+            {{ form_widget(form.password.second, {
+              attr: {
+                class: 'form-control form-control-lg input-dark' ~ (form.password.second.vars.errors|length ? ' is-invalid' : ''),
+                placeholder: '••••••••'
+              }
+            }) }}
+
+            {% for error in form.password.second.vars.errors %}
+              <div class="mt-2 error-pill small">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+              </div>
+            {% endfor %}
+          </div>
+
+          <button type="submit" class="btn btn-outline-light btn-lg w-100 rounded-pill mb-3">
+            <i class="fa-solid fa-circle-check me-2"></i>Reset Password
+          </button>
+
+          <div class="text-center">
+            <a href="{{ path('app_login') }}" class="text-decoration-none" style="color:var(--muted);">
+              <i class="fa-solid fa-arrow-left me-2"></i>Back to Login
+            </a>
+          </div>
+
+        {{ form_end(form) }}
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .input-dark{
+      background: rgba(255,255,255,.06) !important;
+      border: 1px solid rgba(255,255,255,.10) !important;
+      color: #fff !important;
+      border-radius: 12px;
+      padding: 12px 15px;
     }
-    .fade-in { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { 
-        from { opacity: 0; transform: translateY(-5px); } 
-        to { opacity: 1; transform: translateY(0); } 
+    .input-dark::placeholder{ color: rgba(255,255,255,.45) !important; }
+    .input-dark:focus{
+      box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
+      border-color: rgba(230,57,57,.5) !important;
     }
-</style>
+    .form-control.is-invalid{
+      border: 1.5px solid rgba(220,53,69,.85) !important;
+    }
+    .error-pill{
+      background: rgba(220,53,69,.14);
+      border: 1px solid rgba(220,53,69,.25);
+      color: #ffb3b3;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+  </style>
 {% endblock %}
