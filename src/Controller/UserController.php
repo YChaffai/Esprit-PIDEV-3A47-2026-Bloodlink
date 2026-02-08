@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/user')]
 final class UserController extends AbstractController
@@ -32,52 +33,37 @@ final class UserController extends AbstractController
   public function new(
     Request $request,
     EntityManagerInterface $entityManager,
-    UserPasswordHasherInterface $passwordHasher
+    UserPasswordHasherInterface $passwordHasher,
+    ValidatorInterface $validator
   ): Response {
     $user = new User();
     $form = $this->createForm(UserType::class, $user);
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
-
-      if (empty($user->getNom())) {
-        $form->get('nom')->addError(new FormError('last name cannot be empty'));
-        $hasErrors = true;
-      }
-
-      if (empty($user->getPrenom())) {
-        $form->get('prenom')->addError(new FormError('first name cannot be empty'));
-        $hasErrors = true;
-      }
-
-      $email = $user->getEmail();
-      if (empty($email)) {
-        $form->get('email')->addError(new FormError('email cannot be empty'));
-        $hasErrors = true;
-      } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $form->get('email')->addError(new FormError('email must be exemple@exemple.xyz'));
-        $hasErrors = true;
-      }
-
-      if (empty($user->getRole())) {
-        $form->get('role')->addError(new FormError('role must be selected'));
-        $hasErrors = true;
-      }
-
       $plainPassword = $form->get('password')->getData();
+      $passwordValid = true;
+
       if (empty($plainPassword)) {
         $form->get('password')->addError(new FormError('password cannot be empty'));
-        $hasErrors = true;
+        $passwordValid = false;
       } elseif (strlen($plainPassword) < 6) {
         $form->get('password')->addError(new FormError('password must be at least 6 characters long'));
-        $hasErrors = true;
+        $passwordValid = false;
       } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $plainPassword)) {
-        $form->get('password')->addError(new FormError('Password must contain at least one letter and one number'));
-        $hasErrors = true;
+        $form->get('password')->addError(new FormError('password must contain at least one letter and one number'));
+        $passwordValid = false;
       }
 
-      if (!$hasErrors) {
+      $errors = $validator->validate($user);
+
+      if (count($errors) > 0) {
+        foreach ($errors as $error) {
+          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
+        }
+      }
+
+      if ($passwordValid && $form->isValid()) {
         $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
 
         $entityManager->persist($user);
@@ -104,7 +90,8 @@ final class UserController extends AbstractController
   public function completeClient(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager
+    EntityManagerInterface $entityManager,
+    ValidatorInterface $validator
   ): Response {
     if ($user->getClient()) {
       $this->addFlash('info', 'Client information already exists.');
@@ -118,22 +105,15 @@ final class UserController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
+      $errors = $validator->validate($client);
 
-      if (empty($client->getTypeSang())) {
-        $form->get('typeSang')->addError(new FormError('blood type must be selected'));
-        $hasErrors = true;
+      if (count($errors) > 0) {
+        foreach ($errors as $error) {
+          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
+        }
       }
 
-      if (empty($client->getDernierDon())) {
-        $form->get('dernierDon')->addError(new FormError('last donation date cannot be empty'));
-        $hasErrors = true;
-      } elseif ($client->getDernierDon() > new \DateTime()) {
-        $form->get('dernierDon')->addError(new FormError('last donation date cannot be in the future'));
-        $hasErrors = true;
-      }
-
-      if (!$hasErrors) {
+      if ($form->isValid()) {
         $entityManager->persist($client);
         $entityManager->flush();
 
@@ -152,7 +132,8 @@ final class UserController extends AbstractController
   public function completeBanque(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager
+    EntityManagerInterface $entityManager,
+    ValidatorInterface $validator
   ): Response {
     if ($user->getBanque()) {
       $this->addFlash('info', 'Banque information already exists.');
@@ -166,28 +147,15 @@ final class UserController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
+      $errors = $validator->validate($banque);
 
-      if (empty($banque->getNom())) {
-        $form->get('nom')->addError(new FormError('bank name cannot be empty'));
-        $hasErrors = true;
+      if (count($errors) > 0) {
+        foreach ($errors as $error) {
+          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
+        }
       }
 
-      if (empty($banque->getAdresse())) {
-        $form->get('adresse')->addError(new FormError('address cannot be empty'));
-        $hasErrors = true;
-      }
-
-      $telephone = $banque->getTelephone();
-      if (empty($telephone)) {
-        $form->get('telephone')->addError(new FormError('phone number cannot be empty'));
-        $hasErrors = true;
-      } elseif (!preg_match('/^\d{8}$/', $telephone)) {
-        $form->get('telephone')->addError(new FormError('phone number must be exactly 8 digits'));
-        $hasErrors = true;
-      }
-
-      if (!$hasErrors) {
+      if ($form->isValid()) {
         $entityManager->persist($banque);
         $entityManager->flush();
 
@@ -206,7 +174,8 @@ final class UserController extends AbstractController
   public function editClient(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager
+    EntityManagerInterface $entityManager,
+    ValidatorInterface $validator
   ): Response {
     $client = $user->getClient();
 
@@ -219,22 +188,15 @@ final class UserController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
+      $errors = $validator->validate($client);
 
-      if (empty($client->getTypeSang())) {
-        $form->get('typeSang')->addError(new FormError('blood type must be selected'));
-        $hasErrors = true;
+      if (count($errors) > 0) {
+        foreach ($errors as $error) {
+          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
+        }
       }
 
-      if (empty($client->getDernierDon())) {
-        $form->get('dernierDon')->addError(new FormError('last donation date cannot be empty'));
-        $hasErrors = true;
-      } elseif ($client->getDernierDon() > new \DateTime()) {
-        $form->get('dernierDon')->addError(new FormError('last donation date cannot be in the future'));
-        $hasErrors = true;
-      }
-
-      if (!$hasErrors) {
+      if ($form->isValid()) {
         $entityManager->flush();
 
         $this->addFlash('success', 'Client information updated successfully!');
@@ -253,7 +215,8 @@ final class UserController extends AbstractController
   public function editBanque(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager
+    EntityManagerInterface $entityManager,
+    ValidatorInterface $validator
   ): Response {
     $banque = $user->getBanque();
 
@@ -266,28 +229,15 @@ final class UserController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
+      $errors = $validator->validate($banque);
 
-      if (empty($banque->getNom())) {
-        $form->get('nom')->addError(new FormError('bank name cannot be empty'));
-        $hasErrors = true;
+      if (count($errors) > 0) {
+        foreach ($errors as $error) {
+          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
+        }
       }
 
-      if (empty($banque->getAdresse())) {
-        $form->get('adresse')->addError(new FormError('address cannot be empty'));
-        $hasErrors = true;
-      }
-
-      $telephone = $banque->getTelephone();
-      if (empty($telephone)) {
-        $form->get('telephone')->addError(new FormError('phone number cannot be empty'));
-        $hasErrors = true;
-      } elseif (!preg_match('/^\d{8}$/', $telephone)) {
-        $form->get('telephone')->addError(new FormError('phone number must be exactly 8 digits'));
-        $hasErrors = true;
-      }
-
-      if (!$hasErrors) {
+      if ($form->isValid()) {
         $entityManager->flush();
 
         $this->addFlash('success', 'Banque information updated successfully!');
@@ -315,50 +265,35 @@ final class UserController extends AbstractController
     Request $request,
     User $user,
     EntityManagerInterface $entityManager,
-    UserPasswordHasherInterface $passwordHasher
+    UserPasswordHasherInterface $passwordHasher,
+    ValidatorInterface $validator
   ): Response {
     $form = $this->createForm(UserType::class, $user);
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
-
-      if (empty($user->getNom())) {
-        $form->get('nom')->addError(new FormError('last name cannot be empty'));
-        $hasErrors = true;
-      }
-
-      if (empty($user->getPrenom())) {
-        $form->get('prenom')->addError(new FormError('first name cannot be empty'));
-        $hasErrors = true;
-      }
-
-      $email = $user->getEmail();
-      if (empty($email)) {
-        $form->get('email')->addError(new FormError('email cannot be empty'));
-        $hasErrors = true;
-      } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $form->get('email')->addError(new FormError('email must be exemple@exemple.xyz'));
-        $hasErrors = true;
-      }
-
-      if (empty($user->getRole())) {
-        $form->get('role')->addError(new FormError('role must be selected'));
-        $hasErrors = true;
-      }
-
       $plainPassword = $form->get('password')->getData();
+      $passwordValid = true;
+
       if (!empty($plainPassword)) {
         if (strlen($plainPassword) < 6) {
           $form->get('password')->addError(new FormError('password must be at least 6 characters long'));
-          $hasErrors = true;
+          $passwordValid = false;
         } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $plainPassword)) {
-          $form->get('password')->addError(new FormError('Password must contain at least one letter and one number'));
-          $hasErrors = true;
+          $form->get('password')->addError(new FormError('password must contain at least one letter and one number'));
+          $passwordValid = false;
         }
       }
 
-      if (!$hasErrors) {
+      $errors = $validator->validate($user);
+
+      if (count($errors) > 0) {
+        foreach ($errors as $error) {
+          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
+        }
+      }
+
+      if ($passwordValid && $form->isValid()) {
         if (!empty($plainPassword)) {
           $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
         }

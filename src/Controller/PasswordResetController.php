@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\PasswordResetToken;
-use App\Entity\User;
 use App\Form\PasswordResetRequestType;
 use App\Form\PasswordResetType;
 use App\Repository\PasswordResetTokenRepository;
