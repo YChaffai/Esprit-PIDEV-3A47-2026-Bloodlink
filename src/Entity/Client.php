@@ -51,7 +51,7 @@ class Client
     return $this->dernierDon;
   }
 
-  public function setDernierDon(\DateTime $dernierDon): static
+  public function setDernierDon(?\DateTime $dernierDon): static
   {
     $this->dernierDon = $dernierDon;
 

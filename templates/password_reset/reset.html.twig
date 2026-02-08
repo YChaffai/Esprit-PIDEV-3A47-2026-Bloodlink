@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Set New Password{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="bi bi-key text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h3 class="fw-bold text-primary">Set New Password</h3>
+                        <p class="text-muted small">Please enter your new password below.</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-secondary">New Password</label>
+                        {{ form_widget(form.password.first, {
+                            'attr': {
+                                'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.password.first.vars.errors|length > 0 ? ' is-invalid' : '')
+                            }
+                        }) }}
+                        {% if form.password.first.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.password.first.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
+                                        <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">At least 6 characters with letters and numbers</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-secondary">Confirm Password</label>
+                        {{ form_widget(form.password.second, {
+                            'attr': {
+                                'class': 'form-control form-control-lg bg-light border-0 rounded-3' ~ (form.password.second.vars.errors|length > 0 ? ' is-invalid' : '')
+                            }
+                        }) }}
+                        {% if form.password.second.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.password.second.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger-subtle text-danger px-3 py-2 rounded-3 small">
+                                        <i class="bi bi-exclamation-circle-fill me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-3">
+                        <i class="bi bi-check-circle me-2"></i>Reset Password
+                    </button>
+
+                    <div class="text-center">
+                        <a href="{{ path('app_login') }}" class="text-decoration-none text-muted small">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1) !important; }
+    .form-control.is-invalid { 
+        border: 1.5px solid #dc3545 !important; 
+        background-color: #fff8f8 !important; 
+    }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(-5px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+</style>
+{% endblock %}

@@ -1,4 +1,6 @@
 parameters:
+    env(RECAPTCHA_SITE_KEY): ''
+    env(RECAPTCHA_SECRET_KEY): ''
 
 services:
     _defaults:
@@ -11,3 +13,8 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    App\Controller\PasswordResetController:
+        arguments:
+            $recaptchaSiteKey: '%env(RECAPTCHA_SITE_KEY)%'
+            $recaptchaSecretKey: '%env(RECAPTCHA_SECRET_KEY)%'
