@@ -47,7 +47,7 @@ class QuestionnaireType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Envoyer'
+                'label' => 'Suivant'
             ]);
         ;
     }

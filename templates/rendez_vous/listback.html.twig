@@ -37,8 +37,15 @@
 
             
             {# <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>#}
-            <a  href="{{ path('questionnaireback_details', { id : r.questionnaire.id })}}">questionnaire </p></a>
-            <a  href="{{ path('rendezvousback_update', { id : r.id })}}">Update</a>
+            {# On affiche le bouton seulement si le statut n'est pas 'annulé' #}
+            {% if r.status != 'annulé' %}
+                <a href="{{ path('questionnaireback_details', { id : r.questionnaire.id }) }}" class="btn btn-info btn-sm">
+                    Questionnaire
+                </a>
+                <a  href="{{ path('rendezvousback_update', { id : r.id })}}">Update</a>
+            {% endif %}            
+           
+
             <a  href="{{ path('rendezvousback_delete', { id : r.id })}}">Delete</a>
 
 

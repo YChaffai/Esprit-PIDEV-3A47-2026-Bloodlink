@@ -14,6 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use App\Repository\CampagneRepository;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -24,6 +26,8 @@ class CreateQuestionnaireBackType extends AbstractType
         $builder
         //    ->add('nom')
         //     ->add('prenom')
+        ->add('nom', HiddenType::class, ['data' => 'temp']) // Évite l'erreur NotBlank
+    ->add('prenom', HiddenType::class, ['data' => 'temp'])
             ->add('age')
             ->add('sexe', ChoiceType::class, [
                 'choices' => [
@@ -81,7 +85,7 @@ class CreateQuestionnaireBackType extends AbstractType
                 'placeholder' => 'Choisissez une campagne'
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Envoyer'
+                'label' => 'Suivant'
             ])
         //     ->add('campagne', EntityType::class, [
         //         'class' => Campagne::class,

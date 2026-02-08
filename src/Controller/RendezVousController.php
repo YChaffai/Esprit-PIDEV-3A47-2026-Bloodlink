@@ -8,9 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\QuestionnaireRepository;
+use App\Repository\CampagneRepository;
 use App\Repository\ClientRepository;
 use App\Entity\RendezVous;
+use App\Entity\Questionnaire;
 use App\Form\UpdateRendezVousType;
 use App\Repository\RendezVousRepository;
 
@@ -25,24 +26,28 @@ final class RendezVousController extends AbstractController
     }
 
      //-------------------------------------------frontoffice--------------------------------------------------------------//
-    #[Route('/rendez_vous/new/{questionnaire_id}', name: 'rendezvous_new')]
-public function new(int $questionnaire_id, Request $request, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepository): Response
+    #[Route('/rendez_vous/new', name: 'rendezvous_new')]
+public function new(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo): Response
 {
-    $questionnaire = $questionnaireRepository->find($questionnaire_id);
+     $questionnaire = $request->getSession()->get('pending_questionnaire');
     
-    if (!$questionnaire) {
-        throw $this->createNotFoundException('Questionnaire non trouvé');
-    }
+    // if (!$questionnaire) {
+    //     throw $this->createNotFoundException('Questionnaire non trouvé');
+    // }
 
     $client = $questionnaire->getClient();
     
     // --- ÉTAPE CRUCIALE : Dénormalisation ---
     // On enregistre les infos du client DIRECTEMENT dans le questionnaire 
     // pour faciliter les futurs filtres dans le backoffice.
-    $questionnaire->setNom($client->getNom());
-    $questionnaire->setPrenom($client->getPrenom());
+    // $questionnaire->setNom($client->getNom());
+    // $questionnaire->setPrenom($client->getPrenom());
     // ----------------------------------------
+    $campagneManaged = $campagneRepo->find($questionnaire->getCampagne()->getId());
+    $clientManaged = $clientRepo->find($questionnaire->getClient()->getId());
 
+    $questionnaire->setCampagne($campagneManaged);
+    $questionnaire->setClient($clientManaged);
     $rendezVous = new RendezVous();
     $rendezVous->setQuestionnaire($questionnaire);
     $rendezVous->setStatus("en attente");
@@ -51,10 +56,11 @@ public function new(int $questionnaire_id, Request $request, EntityManagerInterf
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        $em->persist($rendezVous);
-        // On n'oublie pas de persister le questionnaire car ses données (nom/prenom) ont changé
         $em->persist($questionnaire); 
         $em->flush();
+        $em->persist($rendezVous);
+         $em->flush();
+        
 
         return $this->redirectToRoute('rendezvous_list', ['client_id' => $client->getId()]);
     }
@@ -148,14 +154,62 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
     public function delete($id, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository){
         $rendezvous = $rendezVousRepository->find($id);
         $clientId = $rendezvous->getQuestionnaire()->getClient()->getId();
+        $questionnaire = $rendezvous->getQuestionnaire();
+        // $em->remove($questionnaire);
+        // $em->flush();
         $rendezvous->setStatus('annulé');
         $em->flush();
+        
         return $this->redirectToRoute('rendezvous_list',  ['client_id' => $clientId]);
 
     }
 
     //-------------------------------------------backoffice--------------------------------------------------------------//
-// src/Controller/RendezVousController.php
+ #[Route('backoffice/rendez_vous/new', name: 'rendezvousback_new')]
+public function newback(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo): Response
+{
+     $questionnaire = $request->getSession()->get('pending_questionnaireback');
+    
+    // if (!$questionnaire) {
+    //     throw $this->createNotFoundException('Questionnaire non trouvé');
+    // }
+
+    $client = $questionnaire->getClient();
+    
+    // --- ÉTAPE CRUCIALE : Dénormalisation ---
+    // On enregistre les infos du client DIRECTEMENT dans le questionnaire 
+    // pour faciliter les futurs filtres dans le backoffice.
+    // $questionnaire->setNom($client->getNom());
+    // $questionnaire->setPrenom($client->getPrenom());
+    // ----------------------------------------
+    $campagneManaged = $campagneRepo->find($questionnaire->getCampagne()->getId());
+    $clientManaged = $clientRepo->find($questionnaire->getClient()->getId());
+
+    $questionnaire->setCampagne($campagneManaged);
+    $questionnaire->setClient($clientManaged);
+    $rendezVous = new RendezVous();
+    $rendezVous->setQuestionnaire($questionnaire);
+    $rendezVous->setStatus("en attente");
+
+    $form = $this->createForm(RendezVousType::class, $rendezVous);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $em->persist($questionnaire); 
+        $em->persist($rendezVous);
+         $em->flush();
+        
+$request->getSession()->remove('pending_questionnaireback');
+        return $this->redirectToRoute('rendezvousback_list');
+    }
+
+    $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
+
+    return $this->render('rendez_vous/newback.html.twig', [
+        'form' => $form->createView(),
+    ], new Response(null, $status));
+}
+
 
 #[Route('/backoffice/rendezvous', name: 'rendezvousback_list')]
 public function listback(Request $request, RendezVousRepository $rendezVousRepository): Response

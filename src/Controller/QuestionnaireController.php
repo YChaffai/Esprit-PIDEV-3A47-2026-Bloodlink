@@ -54,9 +54,9 @@ final class QuestionnaireController extends AbstractController
             $questionnaire->setClient($client);
             $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
             $em->persist($questionnaire);
-            $em->flush();
-
-            return $this->redirectToRoute('rendezvous_new', ['questionnaire_id' => $questionnaire->getId()]);
+            // $em->flush();
+            $request->getSession()->set('pending_questionnaire', $questionnaire);
+            return $this->redirectToRoute('rendezvous_new');
         }
         $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
@@ -248,7 +248,7 @@ final class QuestionnaireController extends AbstractController
         ]);
     }
 
-  #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
+ #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
     public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
     {
         $questionnaire = new Questionnaire();
@@ -265,13 +265,16 @@ final class QuestionnaireController extends AbstractController
                 // Associer la campagne et le client au questionnaire
                 $questionnaire->setClient($client);
                 $questionnaire->setCampagne($campagne);
-                $questionnaire->setDate(new \DateTime('now', new \DateTimeZone('Africa/Tunis')));
+                $questionnaire->setNom($client->getNom());
+            $questionnaire->setPrenom($client->getPrenom());
+                $questionnaire->setDate(new DateTime('now', new \DateTimeZone('Africa/Tunis')));
                 $questionnaire->setGroupSanguin($client->getTypeSang());
 
                 // Persister et enregistrer le questionnaire
                 $em->persist($questionnaire);
-                $em->flush();
-
+                // $em->flush();
+// 3. On utilise la clé attendue par le controller de destination
+            $request->getSession()->set('pending_questionnaireback', $questionnaire);
                 // Rediriger vers la page du rendez-vous (en passant l'ID du questionnaire)
                 return $this->redirectToRoute('rendezvous_new', ['questionnaire_id' => $questionnaire->getId()]);
             } else {
@@ -287,6 +290,120 @@ final class QuestionnaireController extends AbstractController
     }
 
 
+
+
+//-----------------------------------------------------------------
+
+
+
+
+//   #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
+//     public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
+//     {
+//         $questionnaire = new Questionnaire();
+        
+//         $form = $this->createForm(CreateQuestionnaireBackType::class, $questionnaire);
+//         $form->handleRequest($request);
+
+//         if ($form->isSubmitted() && $form->isValid()) {
+//             $campagne = $form->get('campagne')->getData()->getId();
+            
+//             $clientEmail = $form->get('client')->getData(); // L'email du client saisi
+//             $client = $clientRepository->findOneBy(['email' => $clientEmail]); // Trouver le client par email
+
+//             if ($client) {
+//                 // Associer la campagne et le client au questionnaire
+//                 $questionnaire->setClient($client);
+//                 $questionnaire->setNom($client->getNom());
+//                 $questionnaire->setPrenom($client->getPrenom());
+                
+//                 $questionnaire->setCampagne($campagne);
+//                 $questionnaire->setDate(new \DateTime('now', new \DateTimeZone('Africa/Tunis')));
+//                 $questionnaire->setGroupSanguin($client->getTypeSang());
+
+//                 // Persister et enregistrer le questionnaire
+//                 $em->persist($questionnaire);
+//                 // $em->flush();
+//                 $request->getSession()->set('pending_questionnaireback', $questionnaire);
+
+//                 // Rediriger vers la page du rendez-vous (en passant l'ID du questionnaire)
+//                  return $this->redirectToRoute('rendezvousback_new');
+//             } else {
+//                 // Si le client n'est pas trouvé, ajouter un message d'erreur
+//                 $this->addFlash('error', 'Client non trouvé avec cet email.');
+//             }
+//         }
+//         $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
+
+//         return $this->render('questionnaire/newback.html.twig', [
+//             'form' => $form->createView(),
+//         ], new Response(null, $status));
+//     }
+
+// #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
+// public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
+// {
+//     $questionnaire = new Questionnaire();
+//     $form = $this->createForm(CreateQuestionnaireBackType::class, $questionnaire);
+//     $form->handleRequest($request);
+//     // --- DIAGNOSTIC DES ERREURS 422 ---
+//     if ($form->isSubmitted() && !$form->isValid()) {
+//         // Affiche toutes les erreurs de tous les champs, même cachés
+//         dump($form->getErrors(true, false)); 
+        
+//         // Affiche les données qui ont été soumises pour voir s'il manque quelque chose
+//         dump($form->getData());
+        
+//         // Optionnel : arrête tout pour lire confortablement
+//         // dd($form->getErrors(true, false)); 
+//     }
+
+//     // 1. On check si le formulaire est soumis mais invalide (cause du 422)
+//     if ($form->isSubmitted() && !$form->isValid()) {
+//         dump("FORMULAIRE INVALIDE");
+//         dump($form->getErrors(true, false)); // Affiche les erreurs de validation précises
+//     }
+
+//     if ($form->isSubmitted() && $form->isValid()) {
+//         dump("FORMULAIRE VALIDE");
+
+//         $campagne = $form->get('Campagne')->getData();
+//         $clientEmail = $form->get('client')->getData();
+//         $client = $clientRepository->findOneBy(['email' => $clientEmail]);
+
+//         // 2. On check le contenu des objets récupérés
+//         dump(['Campagne' => $campagne, 'Client' => $client, 'Email saisi' => $clientEmail]);
+
+//         if ($client) {
+//             $questionnaire->setClient($client);
+//             $questionnaire->setNom($client->getNom());
+//             $questionnaire->setPrenom($client->getPrenom());
+//             $questionnaire->setCampagne($campagne);
+//             $questionnaire->setDate(new \DateTime('now', new \DateTimeZone('Africa/Tunis')));
+//             $questionnaire->setGroupSanguin($client->getTypeSang());
+
+//             // 3. On check l'objet Questionnaire final avant la session
+//             dump("Objet Questionnaire prêt :", $questionnaire);
+
+//             $em->persist($questionnaire);
+//             $request->getSession()->set('pending_questionnaireback', $questionnaire);
+
+//             // Si tu veux arrêter l'exécution ici pour lire les dumps :
+//             // dd("Arrêt avant redirection", $questionnaire);
+
+//             return $this->redirectToRoute('rendezvousback_new');
+//         } else {
+//             dump("ERREUR : Client introuvable en base de données");
+//             $this->addFlash('error', 'Client non trouvé avec cet email.');
+//         }
+//     }
+
+//     $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
+
+//     return $this->render('questionnaire/newback.html.twig', [
+//         'form' => $form->createView(),
+//     ], new Response(null, $status));
+// }
 
 //     public function index(Request $request, QuestionnaireRepository $repo): Response
 // {
