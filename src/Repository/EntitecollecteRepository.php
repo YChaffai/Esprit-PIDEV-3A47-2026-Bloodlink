@@ -16,6 +16,7 @@ class EntitecollecteRepository extends ServiceEntityRepository
         parent::__construct($registry, Entitecollecte::class);
     }
 
+
     //    /**
     //     * @return Entitecollecte[] Returns an array of Entitecollecte objects
     //     */

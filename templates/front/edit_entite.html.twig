@@ -1,8 +1,40 @@
-{% extends 'front/base.html.twig' %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l’entité | BloodLink{% endblock %}
+
 {% block body %}
-<h1>Modifier Entité</h1>
-{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-{{ form_widget(form) }}
-<button>Enregistrer</button>
-{{ form_end(form) }}
+<div class="container-fluid py-5 d-flex justify-content-center">
+    <div class="glass-card p-5 col-12 col-md-10 col-lg-8">
+
+        <h1 class="mb-4 fw-bold text-uppercase">
+            <i class="fa-solid fa-pen-to-square me-2 text-danger"></i>
+            Modifier l’entité
+        </h1>
+
+        {{ form_start(form, {
+            attr: {
+                novalidate: 'novalidate',
+                class: 'needs-validation'
+            }
+        }) }}
+
+            <div class="row g-4">
+                {{ form_widget(form) }}
+            </div>
+
+            <div class="d-flex justify-content-end mt-4 gap-3">
+                <a href="{{ path('front_home') }}"
+                   class="btn btn-outline-light rounded-pill px-4">
+                    Annuler
+                </a>
+
+                <button class="btn btn-danger rounded-pill px-5 fw-semibold">
+                    Enregistrer
+                </button>
+            </div>
+
+        {{ form_end(form) }}
+
+    </div>
+</div>
 {% endblock %}
