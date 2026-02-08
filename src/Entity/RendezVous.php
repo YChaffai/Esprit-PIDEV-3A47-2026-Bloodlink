@@ -47,6 +47,18 @@ public function validateUniqueDatePerCampagne(ExecutionContextInterface $context
     $campagne = $questionnaire?->getCampagne();
     $currentEntite = $this->getEntite();
 
+    // --- AJOUT DU CONTRÔLE DATE FIN ---
+    if ($campagne && $campagne->getDateFin()) {
+        // On compare les dates au format Y-m-d pour ignorer l'heure du rendez-vous
+        if ($this->date_don->format('Y-m-d') > $campagne->getDateFin()->format('Y-m-d')) {
+            $context->buildViolation("La date ne peut pas dépasser la fin de la campagne (prévue le {{ limite }}).")
+                ->setParameter('{{ limite }}', $campagne->getDateFin()->format('d/m/Y'))
+                ->atPath('date_don')
+                ->addViolation();
+            return;
+        }
+    }
+
     if (!$campagne || !$currentEntite) {
         return;
     }

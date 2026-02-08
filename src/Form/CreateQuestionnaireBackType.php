@@ -15,14 +15,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use App\Repository\CampagneRepository;
-
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 class CreateQuestionnaireBackType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-           ->add('nom')
-            ->add('prenom')
+        //    ->add('nom')
+        //     ->add('prenom')
             ->add('age')
             ->add('sexe', ChoiceType::class, [
                 'choices' => [
@@ -39,10 +40,36 @@ class CreateQuestionnaireBackType extends AbstractType
                 ],
             ])
            
-            ->add('client', EmailType::class, [
-                'label' => 'Email du client',
-                'mapped' => false
-            ])
+    //         ->add('client', EmailType::class, [
+    //             'label' => 'Email du client',
+    //             'attr' => [
+    //             'placeholder' => 'exemple@domaine.com',
+    //             'class' => 'form-control'
+    //         ],
+    // 'required' => true,
+    //             'mapped' => false
+    //         ])
+
+
+
+->add('client', EmailType::class, [
+    'label' => 'Email du client',
+    'mapped' => false, // Gardé à false car la propriété 'email' n'existe pas dans Questionnaire
+    'required' => true,
+    'constraints' => [
+        new NotBlank([
+            'message' => 'L’email est obligatoire',
+        ]),
+        new Email([
+            'message' => 'Veuillez saisir une adresse email valide',
+        ]),
+    ],
+    'attr' => [
+        'placeholder' => 'exemple@domaine.com',
+        'class' => 'form-control'
+    ],
+])
+
             ->add('campagne', EntityType::class, [
                 'class' => Campagne::class,
                 'choice_label' => 'titre',

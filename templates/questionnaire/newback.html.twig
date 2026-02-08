@@ -10,7 +10,7 @@
     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
     <table>
-        <tr>
+        {# <tr>
             <td>{{ form_label(form.nom, "Nom") }}</td>
             <td>{{ form_widget(form.nom) }}</td>
             <td>{{ form_errors(form.nom) }}</td>
@@ -24,7 +24,7 @@
             <td>{{ form_errors(form.prenom) }}</td>
 
            
-        </tr>
+        </tr> #}
 
         <tr>
             <td>{{ form_label(form.age, "Âge") }}</td>
@@ -73,5 +73,5 @@
     </table>
     {{ form_widget(form.submit) }}
 
-    {{ form_end(form) }}
+    {{ form_end(form, {'render_rest': false}) }}
 {% endblock %}

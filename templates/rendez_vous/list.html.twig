@@ -13,9 +13,11 @@
     'attr': {'id': 'rv-filter-form'}
 }) }}
     <div class="row g-2">
-        <div class="col-md-2">{{ form_row(filterForm.campagne) }}</div>
-        <div class="col-md-3">{{ form_widget(filterForm.date) }}</div>
-        <div class="col-md-3">{{ form_widget(filterForm.status) }}</div>
+        <div class="col-md-2">{{ form_widget(filterForm.campagne) }}</div>
+        {# <div class="col-md-3">{{ form_widget(filterForm.date) }}</div> #}
+        <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
+        <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
+        <div class="col-md-3">{{ form_widget(filterForm.statusClient) }}</div>
         <div class="col-md-3">{{ form_widget(filterForm.tri_date) }}</div>
 
         <div class="col-md-2">
@@ -29,6 +31,8 @@
             <p><b>date rendez vous : </b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
             <p><b>status : </b> {{ r.status }} </p>
             <p><b>campagne : </b> {{ r.questionnaire.campagne.titre }} </p>
+            <p><b>entite de collecte : </b> {{ r.entite.nom }} </p>
+
 
             
             {# <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>#}
@@ -44,18 +48,15 @@
    <script>
     const rvForm = document.getElementById('rv-filter-form');
     if (rvForm) {
-        // 1. Appliquer à TOUS les menus déroulants (Campagne et Statut)
-        rvForm.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', () => rvForm.submit());
-        });
-
-        // 2. Appliquer à la date (quand la sélection est complète)
-        const dateInput = rvForm.querySelector('.datepicker');
-        if (dateInput) {
-            dateInput.addEventListener('change', function() {
-                if (this.value) rvForm.submit();
+        // On cible tous les éléments interactifs : input (date, time, text) et select
+        rvForm.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                // On ne soumet que si l'élément a une valeur (évite les recherches vides)
+                if (element.value !== "") {
+                    rvForm.submit();
+                }
             });
-        }
+        });
     }
 </script>
 </div>

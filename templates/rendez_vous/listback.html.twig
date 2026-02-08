@@ -13,7 +13,9 @@
             <div class="col-md-2">{{ form_row(filterForm.prenom) }}</div>
             <div class="col-md-2">{{ form_row(filterForm.campagne) }}</div>
             <div class="col-md-2">{{ form_row(filterForm.entite) }}</div>
-            <div class="col-md-3">{{ form_widget(filterForm.date) }}</div>
+            {# <div class="col-md-3">{{ form_widget(filterForm.date) }}</div> #}
+            <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
             <div class="col-md-3">{{ form_widget(filterForm.status) }}</div>
             <div class="col-md-3">{{ form_widget(filterForm.tri) }}</div>
             <div class="col-md-2">
@@ -48,7 +50,7 @@
     {% endfor %}
 
    <script>
-    const rvForm = document.getElementById('rv-filter-form');
+    {# const rvForm = document.getElementById('rv-filter-form');
     if (rvForm) {
         // 1. On écoute TOUS les selects (Campagne, Entité, Status)
         rvForm.querySelectorAll('select').forEach(select => {
@@ -80,6 +82,27 @@
         }
         rvForm.querySelectorAll('select').forEach(select => {
             select.addEventListener('change', () => rvForm.submit());
+        });
+    } #}
+
+    const rvForm = document.getElementById('rv-filter-form');
+    if (rvForm) {
+        // On écoute le changement sur TOUS les éléments du formulaire
+        // (Date, Time, Select, Text)
+        rvForm.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                rvForm.submit();
+            });
+
+            // Pour soumettre avec la touche "Entrée" sur les champs texte
+            if (element.type === 'text') {
+                element.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        rvForm.submit();
+                    }
+                });
+            }
         });
     }
 </script>

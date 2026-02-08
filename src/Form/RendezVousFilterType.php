@@ -10,7 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Entity\Campagne;
 use App\Entity\EntiteCollecte;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 class RendezVousFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -33,18 +34,38 @@ class RendezVousFilterType extends AbstractType
             'required' => false,
             'placeholder' => 'Toutes les entités',
         ])
-           ->add('date', DateTimeType::class, [
-                'widget' => 'single_text',
-                'required' => false,
-                'placeholder'=> 'choisir date et heure',
-                'label' => 'Date et heure',
-                'attr' => ['class' => 'datepicker'],
-            ])
+        //    ->add('date', DateTimeType::class, [
+        //         'widget' => 'single_text',
+        //         'required' => false,
+                
+        //         'label' => 'Date et heure',
+        //         'attr' => ['class' => 'datepicker','placeholder'=> 'choisir date et heure'],
+        //     ])
+        ->add('filter_date', DateType::class, [
+        'widget' => 'single_text',
+        'required' => false,
+        'label' => 'Date du don',
+        'attr' => ['class' => 'form-control']
+    ])
+    ->add('filter_time', TimeType::class, [
+        'widget' => 'single_text',
+        'required' => false,
+        'label' => 'Heure du don',
+        'attr' => ['class' => 'form-control']
+    ])
             ->add('status', ChoiceType::class, [
                 'choices' => [
                     'En attente' => 'en attente',
                     'Confirmé' => 'confirmé',
                     'Annulé' => 'annulé',
+                ],
+                'required' => false,
+                'placeholder' => 'Tous les statuts',
+            ])
+            ->add('statusClient', ChoiceType::class, [
+                'choices' => [
+                    'En attente' => 'en attente',
+                    'Confirmé' => 'confirmé',
                 ],
                 'required' => false,
                 'placeholder' => 'Tous les statuts',

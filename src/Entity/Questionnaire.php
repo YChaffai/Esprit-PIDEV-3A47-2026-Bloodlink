@@ -7,8 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-
 #[ORM\Entity(repositoryClass: QuestionnaireRepository::class)]
+
 class Questionnaire
 {
     #[ORM\Id]
@@ -30,6 +30,8 @@ class Questionnaire
     #[Assert\NotBlank(message: "L'age ne peut pas être vide")]   
     #[Assert\Positive(message: "L'age ne peut pas être négatif")]   
     #[Assert\GreaterThanOrEqual(18, message: "L'âge doit être supérieur ou égal à 18 ans sinon vous n'etes pas eligible pour faire un don")] 
+    #[Assert\LessThanOrEqual(value: 70, message: "L'age ne doit pas depasser 70 sinon vous n'etes pas eligible pour faire un don")]
+
     private ?int $age = null;
 
     #[ORM\Column(length: 255)]
@@ -40,10 +42,15 @@ class Questionnaire
     #[Assert\NotBlank(message: "Le poids ne peut pas être vide")]   
     #[Assert\Positive(message: "Le poids ne peut pas être négatif")] 
     #[Assert\GreaterThanOrEqual(50, message: "Le poids doit être supérieur ou égal à 50 kg sinon vous n'etes pas eligible pour faire un don")]
-  
-    private ?int $poids = null;
+    #[Assert\LessThanOrEqual(100, message: "Le poids ne doit pas depasser 100 kg sinon vous n'etes pas eligible pour faire un don")]
+    #[Assert\Regex(
+        pattern: "/^[0-9]+(\.[0-9]+)?$/",
+        message: "Le poids ne doit contenir que des chiffres (ex: 75.5)"    )]
+    private ?float $poids = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: "vous avez depasser la limite de nombre de mots")]
+
     private ?string $autres = null;
 
     #[ORM\Column]
@@ -135,12 +142,12 @@ public function validateClient(ExecutionContextInterface $context, $payload): vo
         return $this;
     }
 
-    public function getPoids(): ?int
+    public function getPoids(): ?float
     {
         return $this->poids;
     }
 
-    public function setPoids(int $poids): static
+    public function setPoids(float $poids): static
     {
         $this->poids = $poids;
 
@@ -218,5 +225,8 @@ public function validateClient(ExecutionContextInterface $context, $payload): vo
 
         return $this;
     }
+
+
+    
 
 }

@@ -22,14 +22,28 @@ final class QuestionnaireController extends AbstractController
 {
     //-------------------------------------------frontoffice--------------------------------------------------------------//
      #[Route('/questionnaire/new/{id}/{client_id}',  name: 'questionnaire_new')]
-    public function new(int $id, int $client_id, Request $request, CampagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em)
+    public function new(int $id, int $client_id, Request $request, CampagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
     {
         $campagne = $campagneRepo->find($id);
         $client = $clientRepository->find($client_id);
+        $existing = $questionnaireRepo->findOneBy([
+        'campagne' => $campagne,
+        'client' => $client
+    ]);
+
+    if ($existing) {
+        // Ajoute un message flash pour informer l'utilisateur
+        $this->addFlash('danger', 'Désolé, vous avez déjà rempli un questionnaire pour cette campagne.');
+        
+        // Redirige vers la liste des campagnes ou une autre page de ton choix
+        return $this->redirectToRoute('campagne_list'); 
+    }
         
         $questionnaire = new Questionnaire();
         $questionnaire->setCampagne($campagne);
-        $questionnaire->setClient($client);
+        $questionnaire->setNom($client -> getNom());
+        $questionnaire->setPrenom($client -> getPrenom());
+       
         $questionnaire->setGroupSanguin($client->getTypeSang());
         $form = $this->createForm(QuestionnaireType::class, $questionnaire);
 
@@ -37,7 +51,7 @@ final class QuestionnaireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid() ) {
             //$questionnaire->setClient($this->getUser());  // Associe le questionnaire à l'utilisateur connecté
-           
+            $questionnaire->setClient($client);
             $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
             $em->persist($questionnaire);
             $em->flush();
@@ -51,6 +65,7 @@ final class QuestionnaireController extends AbstractController
             'form' => $form->createView(),
             'campagne' => $campagne,
             'client_id' => $client,
+            
         ], new Response(null, $status));
     }
 
@@ -71,10 +86,26 @@ final class QuestionnaireController extends AbstractController
         // 3. On applique les filtres si le formulaire est soumis (GET)
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
+            // Filtrer par DATE uniquement
+    
              if (!empty($data['campagne'])) {
                 $queryBuilder->andWhere('q.campagne = :campagne')
                              ->setParameter('campagne', $data['campagne']);
             }
+
+              // Filtre sur la DATE
+   // Filtre sur la DATE (ex: 2026-02-08)
+    if ($data['filter_date']) {
+        $queryBuilder->andWhere('q.date LIKE :d')
+                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+    }
+
+    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
+    if ($data['filter_time']) {
+        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
+        $queryBuilder->andWhere('q.date LIKE :t')
+                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+    }
         }
 
         //  $questionnaires = $questionnaireRepository->findBy(['client' =>$client_id]);
@@ -169,21 +200,33 @@ final class QuestionnaireController extends AbstractController
                 $queryBuilder->andWhere('q.group_sanguin = :gs')
                              ->setParameter('gs', $data['groupSanguin']);
             }
-            if ($data['date_don']) {
-                // On récupère l'objet DateTime choisi
-                $selectedDateTime = $data['date_don'];
-
-                // On crée une borne de début (00:00:00)
-                $startOfDay = (clone $selectedDateTime)->setTime(0, 0, 0);
-                
-                // On crée une borne de fin (23:59:59)
-                $endOfDay = (clone $selectedDateTime)->setTime(23, 59, 59);
-
-                $queryBuilder->andWhere('q.date BETWEEN :start AND :end')
-                            ->setParameter('start', $startOfDay)
-                            ->setParameter('end', $endOfDay);
-                            
+                // Filtre sur la DATE
+            // Filtre Date
+            if ($data['filter_date']) {
+                $queryBuilder->andWhere('q.date LIKE :d')
+                            ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
             }
+
+            // Filtre Heure (Format 24h en base de données)
+            if ($data['filter_time']) {
+                $queryBuilder->andWhere('q.date LIKE :t')
+                            ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+            }
+            // if ($data['date_don']) {
+            //     // On récupère l'objet DateTime choisi
+            //     $selectedDateTime = $data['date_don'];
+
+            //     // On crée une borne de début (00:00:00)
+            //     $startOfDay = (clone $selectedDateTime)->setTime(0, 0, 0);
+                
+            //     // On crée une borne de fin (23:59:59)
+            //     $endOfDay = (clone $selectedDateTime)->setTime(23, 59, 59);
+
+            //     $queryBuilder->andWhere('q.date BETWEEN :start AND :end')
+            //                 ->setParameter('start', $startOfDay)
+            //                 ->setParameter('end', $endOfDay);
+                            
+            // }
             // LOGIQUE DE TRI UNIQUE
        if (!empty($data['tri'])) {
         $parts = explode('_', $data['tri']);
@@ -236,10 +279,11 @@ final class QuestionnaireController extends AbstractController
                 $this->addFlash('error', 'Client non trouvé avec cet email.');
             }
         }
+        $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
         return $this->render('questionnaire/new.html.twig', [
             'form' => $form->createView(),
-        ]);
+        ], new Response(null, $status));
     }
 
 

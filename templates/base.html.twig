@@ -17,6 +17,13 @@
                         minDate: "today",         // Empêcher la sélection des dates passées
                         enableTime: true,
                         time_24hr: true,
+                        allowInput: false,
+                        onOpen: function(selectedDates, dateStr, instance) {
+                            // Désactive la saisie clavier dans les champs heure et minute du popup
+                            instance.hourElement.setAttribute("readonly", "readonly");
+                            instance.minuteElement.setAttribute("readonly", "readonly");
+                            
+                        },
                         //minTime: "08:00",
                         //maxTime: "17:00",
                         disable: [
@@ -36,6 +43,20 @@
 
     </head>
     <body>
-        {% block body %}{% endblock %}
+    <div class="container mt-3">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert" style="padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; {{ label == 'danger' ? 'color: #721c24; background-color: #f8d7da; border-color: #f5c6cb;' : 'color: #155724; background-color: #d4edda; border-color: #c3e6cb;' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% block body %}
+        
+
+    
+        
+        {% endblock %}
     </body>
 </html>

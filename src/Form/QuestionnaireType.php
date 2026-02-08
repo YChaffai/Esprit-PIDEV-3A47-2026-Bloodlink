@@ -9,8 +9,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class QuestionnaireType extends AbstractType
 {
@@ -22,8 +23,8 @@ class QuestionnaireType extends AbstractType
             //     'choice_label' => 'prenom', 
             //     'placeholder' => 'Choisissez un client',
             // ])
-            ->add('nom')
-            ->add('prenom')
+            // ->add('nom')
+            // ->add('prenom')
             ->add('age')
             ->add('sexe', ChoiceType::class, [
                 'choices' => [
@@ -32,8 +33,14 @@ class QuestionnaireType extends AbstractType
                 ],
                 'placeholder' => 'Choisissez un sexe', 
             ])            
-            ->add('poids')
-            ->add('autres', TextType::class, [
+            ->add('poids', NumberType::class, [
+                'invalid_message' => "Le poids ne doit contenir que des chiffres (ex: 75.5)",
+                'html5' => true,
+                'attr' => [
+                    'step' => '0.1',
+                ],
+            ])
+            ->add('autres', TextareaType::class, [
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'Veuillez spécifier d\'autres informations',

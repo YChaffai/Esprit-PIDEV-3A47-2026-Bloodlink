@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CampagneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CampagneRepository::class)]
@@ -30,9 +31,10 @@ class Campagne
     #[ORM\ManyToMany(targetEntity: EntiteCollecte::class, inversedBy: 'campagnes')]
     private Collection $entities;
 
-    #[ORM\Column]
-    private ?\DateTime $date_fin = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date_fin = null;
 
+   
     public function __construct()
     {
         $this->questionnaires = new ArrayCollection();
@@ -110,12 +112,12 @@ class Campagne
         return $this;
     }
 
-    public function getDateFin(): ?\DateTime
+    public function getDateFin(): ?\DateTimeInterface
     {
         return $this->date_fin;
     }
 
-    public function setDateFin(\DateTime $date_fin): static
+    public function setDateFin(\DateTimeInterface $date_fin): static
     {
         $this->date_fin = $date_fin;
 

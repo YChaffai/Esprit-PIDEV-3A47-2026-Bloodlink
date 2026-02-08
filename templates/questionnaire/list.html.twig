@@ -9,7 +9,10 @@
 {# Filtres #}
 <div class="card p-3 mb-4 shadow-sm">
     {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form'}}) }}
-        <div class="row g-2 align-items-center">         
+        <div class="row g-2 align-items-center">       
+         {# <div class="col-md-3">{{ form_widget(filterForm.date) }}</div> #}
+        <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
+        <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>  
             <div class="col-md-3">{{ form_widget(filterForm.campagne) }}</div>
             <div class="col-md-3">{{ form_widget(filterForm.tri_date) }}</div>
 
@@ -29,7 +32,7 @@
             <a  href="{{ path('questionnaire_delete', { id : quest.id })}}">Delete</a>
             <a  href="{{ path('questionnaireback_details', { id : quest.id })}}">Details</a>
 
-            {% if quest.rendezVous is null %}
+            {# {% if quest.rendezVous is null %}
                 <a href="{{ path('rendezvous_new', { 'questionnaire_id': quest.id, 'client_id': quest.client.id }) }}" >
                 Prendre rendez-vous
                 </a>
@@ -37,7 +40,7 @@
                 <a href="{{ path('rendezvous_update', { 'id': quest.rendezVous.id }) }}">
                 update mon rendez-vous
                 </a>
-            {% endif %}
+            {% endif %} #}
          </div>
         <hr>
     {% else %}

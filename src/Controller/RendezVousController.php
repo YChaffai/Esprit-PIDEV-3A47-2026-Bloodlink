@@ -74,7 +74,9 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
     $queryBuilder = $rvRepository->createQueryBuilder('rv')
         ->join('rv.questionnaire', 'q')
         ->where('q.client = :client_id')
+        ->andWhere('rv.status != :status_annule')
         ->setParameter('client_id', $client_id)
+        ->setParameter('status_annule', 'annulé')
         ->orderBy('rv.date_don', 'DESC');
 
     if ($form->isSubmitted() && $form->isValid()) {
@@ -87,17 +89,29 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
         if ($data['status']) {
             $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
         }
+      // Filtre sur la DATE
+   // Filtre sur la DATE (ex: 2026-02-08)
+    if ($data['filter_date']) {
+        $queryBuilder->andWhere('rv.date_don LIKE :d')
+                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+    }
 
-        if ($data['date']) {
-            $dt = $data['date'];
-            // Logique identique au Back : filtrage à la minute près
-            $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
-            $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
+    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
+    if ($data['filter_time']) {
+        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
+        $queryBuilder->andWhere('rv.date_don LIKE :t')
+                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+    }
+        // if ($data['date']) {
+        //     $dt = $data['date'];
+        //     // Logique identique au Back : filtrage à la minute près
+        //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
+        //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
             
-            $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
-                         ->setParameter('s', $start)
-                         ->setParameter('e', $end);
-        }
+        //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
+        //                  ->setParameter('s', $start)
+        //                  ->setParameter('e', $end);
+        // }
          // LOGIQUE DE TRI UNIQUE
         if (!empty($data['tri_date'])) {
         $parts = explode('_', $data['tri_date']);
@@ -119,13 +133,15 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
 
         $form= $this->createForm(UpdateRendezVousType::class, $rendezvous);
         $form->handleRequest($request);
-        if($form->isSubmitted()){
+        if($form->isSubmitted()&& $form->isValid()){
             $em->flush();
             return $this->redirectToRoute('rendezvous_list',  ['client_id' => $clientId]);
         }
+            $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
+
         return $this->render('rendez_vous/update.html.twig', [
             "form" => $form
-        ]);
+        ], new Response(null, $status));
     }
     
     #[Route('/rendez_vous/delete/{id}', name:'rendezvous_delete')]
@@ -176,18 +192,30 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
         if (!empty($data['status'])) {
             $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
         }
+         // Filtre sur la DATE
+   // Filtre sur la DATE (ex: 2026-02-08)
+    if ($data['filter_date']) {
+        $queryBuilder->andWhere('rv.date_don LIKE :d')
+                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+    }
 
-        // Filtre Date & Heure exacte (Minute par minute)
-        if (!empty($data['date'])) {
-            $dt = $data['date'];
-            // On crée une plage de 59 secondes pour ignorer les secondes stockées en BDD
-            $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
-            $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
+    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
+    if ($data['filter_time']) {
+        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
+        $queryBuilder->andWhere('rv.date_don LIKE :t')
+                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+    }
+        // // Filtre Date & Heure exacte (Minute par minute)
+        // if (!empty($data['date'])) {
+        //     $dt = $data['date'];
+        //     // On crée une plage de 59 secondes pour ignorer les secondes stockées en BDD
+        //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
+        //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
             
-            $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
-                         ->setParameter('s', $start)
-                         ->setParameter('e', $end);
-        }
+        //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
+        //                  ->setParameter('s', $start)
+        //                  ->setParameter('e', $end);
+        // }
        // LOGIQUE DE TRI UNIQUE
        if (!empty($data['tri'])) {
         $parts = explode('_', $data['tri']);

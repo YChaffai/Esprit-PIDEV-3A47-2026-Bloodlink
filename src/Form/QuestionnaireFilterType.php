@@ -7,8 +7,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use App\Entity\Campagne;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 class QuestionnaireFilterType extends AbstractType
@@ -22,13 +22,26 @@ class QuestionnaireFilterType extends AbstractType
                 'attr' => ['placeholder' => 'Rechercher par nom...']
             ])
             ->add('prenom', TextType::class, ['required' => false, 'label' => false, 'attr' => ['placeholder' => 'Prénom...']])
-            ->add('date_don', DateTimeType::class, [
-                'widget' => 'single_text',
-                'required' => false,
-                'placeholder'=> 'choisir date et heure',
-                'label' => 'Date et heure',
-                'attr' => ['class' => 'datepicker'],
-            ])
+//             ->add('date_don', DateTimeType::class, [
+//                 'widget' => 'single_text',
+//                 'required' => false,
+//                 'label' => 'Date et heure',
+//                 'attr' => ['class' => 'datepicker','placeholder'=> 'choisir date et heure',
+// ],
+//             ])
+
+->add('filter_date', DateType::class, [
+        'widget' => 'single_text',
+        'required' => false,
+        'label' => 'Date du don',
+        'attr' => ['class' => 'form-control']
+    ])
+    ->add('filter_time', TimeType::class, [
+        'widget' => 'single_text',
+        'required' => false,
+        'label' => 'Heure du don',
+        'attr' => ['class' => 'form-control']
+    ])
             ->add('campagne', EntityType::class, [
                 'class' => Campagne::class,
                 'choice_label' => 'titre',
