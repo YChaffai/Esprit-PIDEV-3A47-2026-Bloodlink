@@ -6,9 +6,12 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[UniqueEntity(fields: ['email'], message: 'This email is already registered')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
   #[ORM\Id]
@@ -17,24 +20,46 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   private ?int $id = null;
 
   #[ORM\Column(length: 255)]
+  #[Assert\NotBlank(message: 'last name cannot be empty')]
+  #[Assert\Length(
+    min: 2,
+    max: 255,
+    minMessage: 'last name must be at least {{ limit }} characters',
+    maxMessage: 'last name cannot be longer than {{ limit }} characters'
+  )]
   private ?string $nom = null;
 
   #[ORM\Column(length: 255)]
+  #[Assert\NotBlank(message: 'first name cannot be empty')]
+  #[Assert\Length(
+    min: 2,
+    max: 255,
+    minMessage: 'first name must be at least {{ limit }} characters',
+    maxMessage: 'first name cannot be longer than {{ limit }} characters'
+  )]
   private ?string $prenom = null;
 
   #[ORM\Column(length: 255)]
+  #[Assert\NotBlank(message: 'email cannot be empty')]
+  #[Assert\Email(message: 'email must be a valid email address')]
+  #[Assert\Length(max: 255)]
   private ?string $email = null;
 
   #[ORM\Column(length: 255)]
   private ?string $password = null;
 
   #[ORM\Column(length: 255)]
+  #[Assert\NotBlank(message: 'role must be selected')]
+  #[Assert\Choice(
+    choices: ['admin', 'client', 'doctor', 'banque', 'cnts'],
+    message: 'Please select a valid role'
+  )]
   private ?string $role = null;
 
-  #[ORM\OneToOne(mappedBy: "user", targetEntity: Client::class, cascade: ["persist"])]
+  #[ORM\OneToOne(mappedBy: "user", targetEntity: Client::class, cascade: ["persist", "remove"])]
   private ?Client $client = null;
 
-  #[ORM\OneToOne(mappedBy: "user", targetEntity: Banque::class, cascade: ["persist"])]
+  #[ORM\OneToOne(mappedBy: "user", targetEntity: Banque::class, cascade: ["persist", "remove"])]
   private ?Banque $banque = null;
 
   public function getClient(): ?Client
@@ -60,7 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   {
     $this->banque = $banque;
     if ($banque && $banque->getUser() !== $this) {
-      $banque->setUser($this);
+      $this->banque = $banque;
     }
     return $this;
   }
@@ -146,7 +171,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
       $roles[] = 'ROLE_CNTS';
     }
 
-    // default role
     $roles[] = 'ROLE_USER';
 
     return array_unique($roles);
