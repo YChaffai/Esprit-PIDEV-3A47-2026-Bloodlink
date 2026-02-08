@@ -16,18 +16,18 @@ class Client
   private ?User $user = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'blood type must be selected')]
+  #[Assert\NotBlank(message: 'Le groupe sanguin doit être sélectionné')]
   #[Assert\Choice(
     choices: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-    message: 'Please select a valid blood type'
+    message: 'Veuillez sélectionner un groupe sanguin valide'
   )]
   private ?string $typeSang = null;
 
   #[ORM\Column(type: Types::DATE_MUTABLE)]
-  #[Assert\NotBlank(message: 'last donation date cannot be empty')]
+  #[Assert\NotBlank(message: 'La date du dernier don ne peut pas être vide')]
   #[Assert\LessThanOrEqual(
     value: 'today',
-    message: 'last donation date cannot be in the future'
+    message: 'La date du dernier don ne peut pas être dans le futur'
   )]
   private ?\DateTime $dernierDon = null;
 

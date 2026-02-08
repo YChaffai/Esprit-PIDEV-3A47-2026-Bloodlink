@@ -21,18 +21,18 @@ class UserType extends AbstractType
         'required' => false,
         'mapped' => false,
         'attr' => [
-          'placeholder' => 'Leave blank to keep current password'
+          'placeholder' => 'Laisser vide pour conserver le mot de passe actuel'
         ]
       ])
       ->add('role', ChoiceType::class, [
         'choices' => [
           'Admin' => 'admin',
           'Client' => 'client',
-          'Doctor' => 'doctor',
-          'Banque Agent' => 'banque',
-          'CNTS Agent' => 'cnts',
+          'Docteur' => 'doctor',
+          'Agent Banque' => 'banque',
+          'Agent CNTS ' => 'cnts',
         ],
-        'placeholder' => 'Choose a role',
+        'placeholder' => 'Choisir un role',
         'required' => true,
       ])
     ;

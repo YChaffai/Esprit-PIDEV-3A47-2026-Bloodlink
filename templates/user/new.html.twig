@@ -1,26 +1,27 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}Create New User{% endblock %}
+{% block title %}Créer un utilisateur{% endblock %}
 
 {% block body %}
   <div class="row justify-content-center mt-4">
     <div class="col-lg-9 col-xl-8">
 
-      {# Flash messages are already handled in base_front.html.twig,
-         so you can REMOVE this block to avoid duplicates.
-         If you want to keep it here, delete the flashes from base_front. #}
-      {# {% for label, messages in app.flashes %}
-        {% for message in messages %}
-          <div class="alert alert-{{ label }} border-0 shadow-sm rounded-4 mb-4">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endfor %} #}
+      <div class="glass-card p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+          <h2 class="m-0" style="font-weight:900;">
+            <i class="fa-solid fa-user-plus me-2" style="color:var(--primary);"></i>
+            Ajouter un utilisateur
+          </h2>
 
-      <div class="glass-card p-3 p-md-4">
+          <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill">
+            <i class="fa-solid fa-arrow-left me-2"></i>Retour à la liste
+          </a>
+        </div>
+
+        {# Inclusion du formulaire avec les labels en français #}
         {{ include('user/_form.html.twig', {
-          button_label: 'Create Account',
-          title: 'Register New User'
+          button_label: 'Créer le compte',
+          title: 'Informations du nouvel utilisateur'
         }) }}
       </div>
 

@@ -14,17 +14,17 @@ class BanqueType extends AbstractType
   {
     $builder
       ->add('nom', TextType::class, [
-        'label' => 'Blood Bank Name',
-        'attr' => ['placeholder' => 'Enter blood bank name'],
+        'label' => "Nom de l'établissement",
+        'attr' => ['placeholder' => "Entrez le nom de l'établissement"],
         'required' => false,
       ])
       ->add('adresse', TextType::class, [
-        'label' => 'Address',
-        'attr' => ['placeholder' => 'Enter full address'],
+        'label' => 'Adresse',
+        'attr' => ['placeholder' => "Entrez l'adresse complète"],
         'required' => false,
       ])
       ->add('telephone', TextType::class, [
-        'label' => 'Phone Number',
+        'label' => 'Téléphone',
         'attr' => [
           'placeholder' => '12345678',
           'maxlength' => '8',

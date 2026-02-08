@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity(fields: ['email'], message: 'This email is already registered')]
+#[UniqueEntity(fields: ['email'], message: 'Cet email est déjà utilisé')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
   #[ORM\Id]
@@ -20,39 +20,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   private ?int $id = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'last name cannot be empty')]
+  #[Assert\NotBlank(message: 'Le nom ne peut pas être vide')]
   #[Assert\Length(
     min: 2,
     max: 255,
-    minMessage: 'last name must be at least {{ limit }} characters',
-    maxMessage: 'last name cannot be longer than {{ limit }} characters'
+    minMessage: 'Le nom doit comporter au moins {{ limit }} caractères',
+    maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
   )]
   private ?string $nom = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'first name cannot be empty')]
+  #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide')]
   #[Assert\Length(
     min: 2,
     max: 255,
-    minMessage: 'first name must be at least {{ limit }} characters',
-    maxMessage: 'first name cannot be longer than {{ limit }} characters'
+    minMessage: 'Le prénom doit comporter au moins {{ limit }} caractères',
+    maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
   )]
   private ?string $prenom = null;
 
-  #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'email cannot be empty')]
-  #[Assert\Email(message: 'email must be a valid email address')]
-  #[Assert\Length(max: 255)]
+  #[ORM\Column(length: 255, unique: true)]
+  #[Assert\NotBlank(message: "L'adresse email ne peut pas être vide")]
+  #[Assert\Email(message: "L'adresse email '{{ value }}' n'est pas valide")]
   private ?string $email = null;
 
   #[ORM\Column(length: 255)]
   private ?string $password = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'role must be selected')]
+  #[Assert\NotBlank(message: 'Le rôle doit être spécifié')]
   #[Assert\Choice(
     choices: ['admin', 'client', 'doctor', 'banque', 'cnts'],
-    message: 'Please select a valid role'
+    message: 'Veuillez sélectionner un rôle valide'
   )]
   private ?string $role = null;
 

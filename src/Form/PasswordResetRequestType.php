@@ -13,9 +13,9 @@ class PasswordResetRequestType extends AbstractType
   {
     $builder
       ->add('email', EmailType::class, [
-        'label' => 'Email Address',
+        'label' => 'Adresse E-mail',
         'attr' => [
-          'placeholder' => 'Enter your email address',
+          'placeholder' => 'Entrez votre adresse e-mail',
           'class' => 'form-control form-control-lg bg-light border-0 rounded-3'
         ],
         'required' => false,

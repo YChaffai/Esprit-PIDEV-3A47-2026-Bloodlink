@@ -14,10 +14,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/password-reset')]
 class PasswordResetController extends AbstractController
@@ -39,76 +41,82 @@ class PasswordResetController extends AbstractController
     UserRepository $userRepository,
     EntityManagerInterface $entityManager,
     MailerInterface $mailer,
-    PasswordResetTokenRepository $tokenRepository
+    PasswordResetTokenRepository $tokenRepository,
+    ValidatorInterface $validator
   ): Response {
     $form = $this->createForm(PasswordResetRequestType::class);
     $form->handleRequest($request);
 
     if ($form->isSubmitted()) {
-      $hasErrors = false;
-
       $email = $form->get('email')->getData();
-      if (empty($email)) {
-        $form->get('email')->addError(new FormError('email cannot be empty'));
-        $hasErrors = true;
-      } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $form->get('email')->addError(new FormError('please enter a valid email address'));
-        $hasErrors = true;
-      }
 
-      $recaptchaResponse = $request->request->get('g-recaptcha-response');
-      if (empty($recaptchaResponse)) {
-        $this->addFlash('error', 'Please complete the reCAPTCHA verification');
-        $hasErrors = true;
-      } else {
-        $recaptcha = new ReCaptcha($this->recaptchaSecretKey);
-        $resp = $recaptcha->verify($recaptchaResponse, $request->getClientIp());
+      $emailErrors = $validator->validatePropertyValue(
+        'App\Entity\User',
+        'email',
+        $email
+      );
 
-        if (!$resp->isSuccess()) {
-          $this->addFlash('error', 'reCAPTCHA verification failed. Please try again.');
-          $hasErrors = true;
+      if (count($emailErrors) > 0) {
+        foreach ($emailErrors as $error) {
+          $form->get('email')->addError(new FormError($error->getMessage()));
         }
-      }
+      } else {
+        $hasReCaptchaError = false;
+        if (!empty($this->recaptchaSecretKey) && $this->recaptchaSecretKey !== 'your_secret_key') {
+          $recaptchaResponse = $request->request->get('g-recaptcha-response');
+          if (empty($recaptchaResponse)) {
+            $this->addFlash('error', 'Veuillez valider le reCAPTCHA.');
+            $hasReCaptchaError = true;
+          } else {
+            $recaptcha = new ReCaptcha($this->recaptchaSecretKey);
+            $resp = $recaptcha->verify($recaptchaResponse, $request->getClientIp());
 
-      if (!$hasErrors) {
-        $user = $userRepository->findOneBy(['email' => $email]);
-
-        $this->addFlash('success', 'If an account exists with this email, you will receive a password reset link shortly.');
-
-        if ($user) {
-          $tokenRepository->deleteUserTokens($user);
-
-          $token = bin2hex(random_bytes(32));
-          $resetToken = new PasswordResetToken();
-          $resetToken->setUser($user);
-          $resetToken->setToken($token);
-
-          $entityManager->persist($resetToken);
-          $entityManager->flush();
-
-          $resetUrl = $this->generateUrl('app_password_reset_confirm', [
-            'token' => $token
-          ], UrlGeneratorInterface::ABSOLUTE_URL);
-
-          $emailMessage = (new TemplatedEmail())
-            ->from('khalilboujemaa2@gmail.com')
-            ->to($user->getEmail())
-            ->subject('Password Reset Request - BloodLink')
-            ->htmlTemplate('password_reset/email.html.twig')
-            ->context([
-              'user' => $user,
-              'resetUrl' => $resetUrl,
-              'expiresAt' => $resetToken->getExpiresAt(),
-            ]);
-
-          try {
-            $mailer->send($emailMessage);
-          } catch (\Exception $e) {
-            error_log('Email send error: ' . $e->getMessage());
+            if (!$resp->isSuccess()) {
+              $this->addFlash('error', 'Échec du reCAPTCHA. Veuillez réessayer.');
+              $hasReCaptchaError = true;
+            }
           }
         }
 
-        return $this->redirectToRoute('app_login');
+        if (!$hasReCaptchaError && $form->isValid()) {
+          $user = $userRepository->findOneBy(['email' => $email]);
+
+          if ($user) {
+            $tokenRepository->deleteUserTokens($user);
+
+            $token = bin2hex(random_bytes(32));
+            $resetToken = new PasswordResetToken();
+            $resetToken->setUser($user);
+            $resetToken->setToken($token);
+
+            $entityManager->persist($resetToken);
+            $entityManager->flush();
+
+            $resetUrl = $this->generateUrl('app_password_reset_confirm', [
+              'token' => $token
+            ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $emailMessage = (new TemplatedEmail())
+              ->from(new Address('noreply@bloodlink.com', 'BloodLink'))
+              ->to(new Address($user->getEmail(), $user->getPrenom() . ' ' . $user->getNom()))
+              ->subject('Password Reset Request - BloodLink')
+              ->htmlTemplate('password_reset/email.html.twig')
+              ->context([
+                'user' => $user,
+                'resetUrl' => $resetUrl,
+                'expiresAt' => $resetToken->getExpiresAt(),
+              ]);
+
+            try {
+              $mailer->send($emailMessage);
+            } catch (\Exception $e) {
+              error_log('Email send error: ' . $e->getMessage());
+            }
+          }
+
+          $this->addFlash('success', 'Si ce compte existe, un lien vous sera envoyé sous peu.');
+          return $this->redirectToRoute('app_login');
+        }
       }
     }
 
@@ -129,7 +137,7 @@ class PasswordResetController extends AbstractController
     $resetToken = $tokenRepository->findValidToken($token);
 
     if (!$resetToken || $resetToken->isExpired() || $resetToken->isUsed()) {
-      $this->addFlash('error', 'This password reset link is invalid or has expired.');
+      $this->addFlash('error', 'Lien de réinitialisation invalide ou expiré.');
       return $this->redirectToRoute('app_password_reset_request');
     }
 
@@ -140,18 +148,19 @@ class PasswordResetController extends AbstractController
       $hasErrors = false;
 
       $password = $form->get('password')->getData();
+
       if (empty($password)) {
-        $form->get('password')->first->addError(new FormError('password cannot be empty'));
+        $form->get('password')->addError(new FormError('Le mot de passe est requis'));
         $hasErrors = true;
       } elseif (strlen($password) < 6) {
-        $form->get('password')->first->addError(new FormError('password must be at least 6 characters long'));
+        $form->get('password')->addError(new FormError('6 caractères minimum requis'));
         $hasErrors = true;
       } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $password)) {
-        $form->get('password')->first->addError(new FormError('password must contain at least one letter and one number'));
+        $form->get('password')->addError(new FormError('Doit contenir une lettre et un chiffre'));
         $hasErrors = true;
       }
 
-      if (!$hasErrors) {
+      if (!$hasErrors && $form->isValid()) {
         $user = $resetToken->getUser();
         $user->setPassword($passwordHasher->hashPassword($user, $password));
 
@@ -159,7 +168,7 @@ class PasswordResetController extends AbstractController
 
         $entityManager->flush();
 
-        $this->addFlash('success', 'Your password has been successfully reset. You can now log in with your new password.');
+        $this->addFlash('success', 'Mot de passe réinitialisé. Vous pouvez maintenant vous connecter.');
         return $this->redirectToRoute('app_login');
       }
     }

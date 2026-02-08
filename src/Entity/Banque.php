@@ -15,30 +15,30 @@ class Banque
   private ?User $user = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'bank name cannot be empty')]
+  #[Assert\NotBlank(message: 'Le nom de la banque ne peut pas être vide')]
   #[Assert\Length(
     min: 3,
     max: 255,
-    minMessage: 'bank name must be at least {{ limit }} characters',
-    maxMessage: 'bank name cannot be longer than {{ limit }} characters'
+    minMessage: 'Le nom de la banque doit comporter au moins {{ limit }} caractères',
+    maxMessage: 'Le nom de la banque ne peut pas dépasser {{ limit }} caractères'
   )]
   private ?string $nom = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'address cannot be empty')]
+  #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
   #[Assert\Length(
     min: 5,
     max: 255,
-    minMessage: 'address must be at least {{ limit }} characters',
-    maxMessage: 'address cannot be longer than {{ limit }} characters'
+    minMessage: "L'adresse doit comporter au moins {{ limit }} caractères",
+    maxMessage: "L'adresse ne peut pas dépasser {{ limit }} caractères"
   )]
   private ?string $adresse = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'phone number cannot be empty')]
+  #[Assert\NotBlank(message: 'Le numéro de téléphone ne peut pas être vide')]
   #[Assert\Regex(
     pattern: '/^\d{8}$/',
-    message: 'phone number must be exactly 8 digits'
+    message: 'Le numéro de téléphone doit comporter exactement 8 chiffres'
   )]
   private ?string $telephone = null;
 

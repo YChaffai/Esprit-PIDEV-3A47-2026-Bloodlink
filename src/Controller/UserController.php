@@ -45,13 +45,13 @@ final class UserController extends AbstractController
       $passwordValid = true;
 
       if (empty($plainPassword)) {
-        $form->get('password')->addError(new FormError('password cannot be empty'));
+        $form->get('password')->addError(new FormError('Le mot de passe est obligatoire'));
         $passwordValid = false;
       } elseif (strlen($plainPassword) < 6) {
-        $form->get('password')->addError(new FormError('password must be at least 6 characters long'));
+        $form->get('password')->addError(new FormError('6 caractères minimum'));
         $passwordValid = false;
       } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $plainPassword)) {
-        $form->get('password')->addError(new FormError('password must contain at least one letter and one number'));
+        $form->get('password')->addError(new FormError('Au moins une lettre et un chiffre requis'));
         $passwordValid = false;
       }
 

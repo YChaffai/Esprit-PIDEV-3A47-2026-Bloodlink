@@ -8,9 +8,9 @@
 
     <div class="row g-4">
       {% set fields = [
-        {'name': 'prenom', 'label': 'First Name', 'placeholder': 'e.g. John', 'col': '6'},
-        {'name': 'nom', 'label': 'Last Name', 'placeholder': 'e.g. Doe', 'col': '6'},
-        {'name': 'email', 'label': 'Email Address', 'placeholder': 'john@example.com', 'col': '12'}
+        {'name': 'prenom', 'label': 'Prenom', 'placeholder': 'e.g. John', 'col': '6'},
+        {'name': 'nom', 'label': 'Nom', 'placeholder': 'e.g. Doe', 'col': '6'},
+        {'name': 'email', 'label': ' Email', 'placeholder': 'john@example.com', 'col': '12'}
       ] %}
 
       {% for field in fields %}
@@ -41,7 +41,7 @@
       {% if form.password is defined %}
         <div class="col-md-6">
           <label class="form-label fw-bold small text-uppercase" style="color: var(--muted);">
-            Password
+            Mot De Passe
           </label>
 
           {{ form_widget(form.password, {
@@ -65,7 +65,7 @@
 
       <div class="{{ form.password is defined ? 'col-md-6' : 'col-12' }}">
         <label class="form-label fw-bold small text-uppercase" style="color: var(--muted);">
-          User Role
+          Role
         </label>
 
         {{ form_widget(form.role, {
@@ -98,10 +98,9 @@
 {{ form_end(form) }}
 
 <style>
-  /* Inputs that match your dark theme */
   .input-dark, .select-dark {
-    background: rgba(255,255,255,.06) !important;
-    border: 1px solid rgba(255,255,255,.10) !important;
-    color: #fff !important;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.10);
+    color: #fff;
   }
   .input-dark::placeholder { color: rgba(255,255,255,.45) !i

@@ -15,7 +15,7 @@ class ClientType extends AbstractType
   {
     $builder
       ->add('typeSang', ChoiceType::class, [
-        'label' => 'Blood Type',
+        'label' => 'Groupe Sanguin',
         'choices' => [
           'A+' => 'A+',
           'A-' => 'A-',
@@ -26,11 +26,11 @@ class ClientType extends AbstractType
           'O+' => 'O+',
           'O-' => 'O-',
         ],
-        'placeholder' => 'Select blood type',
+        'placeholder' => 'Sélectionnez votre groupe sanguin',
         'required' => false,
       ])
       ->add('dernierDon', DateType::class, [
-        'label' => 'Last Donation Date',
+        'label' => 'Date du dernier don',
         'widget' => 'single_text',
         'required' => false,
       ])

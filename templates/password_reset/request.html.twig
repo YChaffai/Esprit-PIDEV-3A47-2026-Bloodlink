@@ -1,6 +1,6 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}Reset Password{% endblock %}
+{% block title %}Réinitialiser le mot de passe{% endblock %}
 
 {% block body %}
   <div class="row justify-content-center mt-4">
@@ -11,9 +11,9 @@
           <div class="mb-3">
             <i class="fa-solid fa-shield-halved" style="font-size:3rem; color:var(--primary);"></i>
           </div>
-          <h2 class="m-0" style="font-weight:900;">Reset Password</h2>
+          <h2 class="m-0" style="font-weight:900;">Mot de passe oublié</h2>
           <p class="mt-2 mb-0" style="color:var(--muted);">
-            Enter your email and we’ll send you a reset link.
+            Saisissez votre e-mail et nous vous enverrons un lien de réinitialisation.
           </p>
         </div>
 
@@ -21,13 +21,13 @@
 
           <div class="mb-4">
             <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
-              Email Address
+              Adresse E-mail
             </label>
 
             {{ form_widget(form.email, {
               attr: {
                 class: 'form-control form-control-lg input-dark' ~ (form.email.vars.errors|length ? ' is-invalid' : ''),
-                placeholder: 'name@example.com'
+                placeholder: 'nom@exemple.com'
               }
             }) }}
 
@@ -44,12 +44,12 @@
           </div>
 
           <button type="submit" class="btn btn-outline-light btn-lg w-100 rounded-pill mb-3">
-            <i class="fa-solid fa-envelope me-2"></i>Send Reset Link
+            <i class="fa-solid fa-envelope me-2"></i>Envoyer le lien
           </button>
 
           <div class="text-center">
             <a href="{{ path('app_login') }}" class="text-decoration-none" style="color:var(--muted);">
-              <i class="fa-solid fa-arrow-left me-2"></i>Back to Login
+              <i class="fa-solid fa-arrow-left me-2"></i>Retour à la connexion
             </a>
           </div>
 
@@ -74,15 +74,12 @@
       box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
       border-color: rgba(230,57,57,.5) !important;
     }
-    .form-control.is-invalid{
-      border: 1.5px solid rgba(220,53,69,.85) !important;
-    }
-    .error-pill{
-      background: rgba(220,53,69,.14);
-      border: 1px solid rgba(220,53,69,.25);
-      color: #ffb3b3;
-      padding: 10px 12px;
-      border-radius: 12px;
+    .error-pill {
+      background: rgba(230,57,57,0.15);
+      color: #ff8e8e;
+      padding: 8px 15px;
+      border-radius: 50px;
+      border: 1px solid rgba(230,57,57,0.3);
     }
   </style>
 {% endblock %}

@@ -1,9 +1,8 @@
-{# templates/password_reset/email.html.twig #}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Password Reset – BloodLink</title>
+    <title>Réinitialisation de mot de passe – BloodLink</title>
     <style>
         body {
             margin: 0;
@@ -44,17 +43,13 @@
             margin: 32px 0;
         }
         .btn {
-            display: inline-block;
-            padding: 14px 34px;
-            background: #e63939;
+            background-color: #e63939;
             color: #ffffff !important;
+            padding: 14px 28px;
             text-decoration: none;
+            border-radius: 50px;
             font-weight: bold;
-            border-radius: 30px;
-            letter-spacing: 0.5px;
-        }
-        .btn:hover {
-            background: #ff4d4d;
+            display: inline-block;
         }
         .info {
             background: rgba(255,255,255,0.04);
@@ -77,37 +72,35 @@
 <div class="container">
     <div class="header">
         <h1>🩸 BLOODLINK</h1>
-        <p>Password Reset</p>
+        <p>Réinitialisation de mot de passe</p>
     </div>
 
     <div class="content">
         <p>
-            Hello <strong>{{ user.prenom }} {{ user.nom }}</strong>,
+            Bonjour <strong>{{ user.prenom }} {{ user.nom }}</strong>,
         </p>
 
         <p>
-            We received a request to reset your password for your BloodLink account.
-            Click the button below to set a new password.
+            Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte BloodLink.
+            Cliquez sur le bouton ci-dessous pour définir un nouveau mot de passe.
         </p>
 
         <div class="btn-wrapper">
-            <a href="{{ resetUrl }}" class="btn">Reset My Password</a>
+            <a href="{{ resetUrl }}" class="btn">Réinitialiser mon mot de passe</a>
         </div>
 
         <div class="info">
-            ⏳ <strong>Expiration:</strong><br>
-            This link will expire on <strong>{{ expiresAt|date('Y-m-d H:i') }}</strong>.
+            ⏳ <strong>Expiration :</strong><br>
+            Ce lien expirera le <strong>{{ expiresAt|date('d/m/Y H:i') }}</strong>.
         </div>
 
         <p style="margin-top: 24px; font-size: 14px;">
-            If you didn’t request this reset, you can safely ignore this email.
-            Your password will remain unchanged.
+            Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail en toute sécurité. Votre mot de passe actuel restera inchangé.
         </p>
     </div>
 
     <div class="footer">
-        © {{ "now"|date("Y") }} BloodLink — Saving lives together.<br>
-        This is an automated message. Please do not reply.
+        &copy; {{ "now"|date("Y") }} BloodLink. Tous droits réservés.
     </div>
 </div>
 

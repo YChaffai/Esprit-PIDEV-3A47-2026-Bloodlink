@@ -16,20 +16,20 @@ class PasswordResetType extends AbstractType
       ->add('password', RepeatedType::class, [
         'type' => PasswordType::class,
         'first_options' => [
-          'label' => 'New Password',
+          'label' => 'Nouveau mot de passe',
           'attr' => [
-            'placeholder' => 'Enter new password',
+            'placeholder' => 'Entrez votre nouveau mot de passe',
             'class' => 'form-control form-control-lg bg-light border-0 rounded-3'
           ],
         ],
         'second_options' => [
-          'label' => 'Confirm Password',
+          'label' => 'Confirmez le mot de passe',
           'attr' => [
-            'placeholder' => 'Confirm new password',
+            'placeholder' => 'Confirmez votre nouveau mot de passe',
             'class' => 'form-control form-control-lg bg-light border-0 rounded-3'
           ],
         ],
-        'invalid_message' => 'The password fields must match',
+        'invalid_message' => 'Les champs du mot de passe doivent correspondre.',
         'required' => false,
       ]);
   }

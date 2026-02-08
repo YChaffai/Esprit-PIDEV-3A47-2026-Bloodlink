@@ -10,20 +10,19 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
           <h2 class="m-0" style="font-weight:900;">
             <i class="fa-solid fa-user-pen me-2" style="color:var(--primary);"></i>
-            Edit User
+            Modifier l'utilisateur
           </h2>
 
           <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill">
-            <i class="fa-solid fa-arrow-left me-2"></i>Back to list
+            <i class="fa-solid fa-arrow-left me-2"></i>Retour à la liste
           </a>
         </div>
 
-        {# ✅ base_front already shows flashes, so no need to loop here #}
 
         {{ include('user/_form.html.twig', {
           form: form,
-          button_label: 'Update',
-          title: 'Update User Information'
+          button_label: 'Mettre à jour',
+          title: "Modifier les informations de l'utilisateur"
         }) }}
       </div>
 

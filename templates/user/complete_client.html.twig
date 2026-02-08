@@ -1,12 +1,12 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}Complete Client Profile{% endblock %}
+{% block title %}Compléter le profil Client{% endblock %}
 
 {% block body %}
   <div class="row justify-content-center mt-4">
     <div class="col-lg-9 col-xl-8">
 
-      {# Stepper (dark) #}
+      {# Stepper #}
       <div class="position-relative mb-5">
         <div class="position-absolute top-50 start-0 w-100 translate-middle-y"
              style="height:1px; background: var(--border);"></div>
@@ -17,15 +17,23 @@
                  style="width:42px;height:42px;background: rgba(25,135,84,.18); border:1px solid rgba(25,135,84,.35);">
               <i class="fa-solid fa-check" style="color:#bff5d5;"></i>
             </div>
-            <span class="small fw-bold mt-2" style="color:#bff5d5;">Account Created</span>
+            <span class="small fw-bold mt-2" style="color:#bff5d5;">Compte Créé</span>
           </div>
 
           <div class="d-flex flex-column align-items-center">
             <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width:52px;height:52px;background: rgba(230,57,57,.18); border:1px solid rgba(230,57,57,.45); box-shadow:0 15px 35px rgba(230,57,57,.15);">
-              <i class="fa-solid fa-id-card" style="color:#ffd1d1;"></i>
+                 style="width:52px;height:52px;background: rgba(230,57,57,.18); border:1px solid rgba(230,57,57,.35); position:relative; z-index:2;">
+              <i class="fa-solid fa-droplet" style="color:var(--primary);"></i>
             </div>
-            <span class="small fw-bold mt-2" style="color:#ffd1d1;">Client Details</span>
+            <span class="small fw-bold mt-2" style="color:var(--primary);">Santé</span>
+          </div>
+
+          <div class="d-flex flex-column align-items-center">
+            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:42px;height:42px;background: #1a1a1a; border:1px solid var(--border);">
+              <i class="fa-solid fa-flag-checkered text-muted"></i>
+            </div>
+            <span class="small fw-bold mt-2 text-muted">Terminé</span>
           </div>
         </div>
       </div>
@@ -33,60 +41,35 @@
       <div class="glass-card p-4 p-md-5">
         <div class="mb-4">
           <h2 class="m-0" style="font-weight:900;">
-            <i class="fa-solid fa-wand-magic-sparkles me-2" style="color:var(--primary);"></i>
-            Finalize Client Profile
+            <i class="fa-solid fa-heart-pulse me-2" style="color:var(--primary);"></i>Informations de Donneur
           </h2>
-          <p class="mb-0 mt-2" style="color:var(--muted);">
-            Please provide the donor details below.
-          </p>
+          <p style="color:var(--muted);">Aidez-nous à mieux vous connaître pour sauver des vies.</p>
         </div>
 
         {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
-
           <div class="row g-4">
             <div class="col-md-6">
-              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Blood Type</label>
-
-              {{ form_widget(form.typeSang, {
-                attr: {
-                  class: 'form-select form-select-lg select-dark' ~ (form.typeSang.vars.errors|length ? ' is-invalid' : '')
-                }
-              }) }}
-
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Groupe Sanguin</label>
+              {{ form_widget(form.typeSang, { attr: { class: 'form-select form-select-lg select-dark' ~ (form.typeSang.vars.errors|length ? ' is-invalid' : '') } }) }}
               {% for error in form.typeSang.vars.errors %}
-                <div class="mt-2 error-pill small">
-                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
-                </div>
+                <div class="mt-2 error-pill small"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
               {% endfor %}
             </div>
 
             <div class="col-md-6">
-              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Last Donation</label>
-
-              {{ form_widget(form.dernierDon, {
-                attr: {
-                  class: 'form-control form-control-lg input-dark' ~ (form.dernierDon.vars.errors|length ? ' is-invalid' : '')
-                }
-              }) }}
-
+              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Date du dernier don</label>
+              {{ form_widget(form.dernierDon, { attr: { class: 'form-control form-control-lg input-dark' ~ (form.dernierDon.vars.errors|length ? ' is-invalid' : '') } }) }}
               {% for error in form.dernierDon.vars.errors %}
-                <div class="mt-2 error-pill small">
-                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
-                </div>
+                <div class="mt-2 error-pill small"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
               {% endfor %}
             </div>
           </div>
 
           <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-            <a href="{{ path('app_user_index') }}" class="btn btn-link p-0" style="color:var(--muted);">
-              Skip for now
-            </a>
-
             <button type="submit" class="btn btn-outline-light btn-lg rounded-pill px-5">
-              Complete Setup <i class="fa-solid fa-arrow-right ms-2"></i>
+              Confirmer <i class="fa-solid fa-arrow-right ms-2"></i>
             </button>
           </div>
-
         {{ form_end(form) }}
       </div>
 
@@ -105,16 +88,12 @@
       box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
       border-color: rgba(230,57,57,.5) !important;
     }
-
-    .form-control.is-invalid, .form-select.is-invalid{
-      border: 1.5px solid rgba(220,53,69,.85) !important;
-    }
-    .error-pill{
-      background: rgba(220,53,69,.14);
-      border: 1px solid rgba(220,53,69,.25);
-      color: #ffb3b3;
-      padding: 10px 12px;
-      border-radius: 12px;
+    .select-dark option { background: #1a1a1a; color: #fff; }
+    .error-pill {
+      background: rgba(230,57,57,0.15);
+      color: #ff8e8e;
+      padding: 6px 12px;
+      border-radius: 8px;
     }
   </style>
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}Set New Password{% endblock %}
+{% block title %}Définir un nouveau mot de passe{% endblock %}
 
 {% block body %}
   <div class="row justify-content-center mt-4">
@@ -11,9 +11,9 @@
           <div class="mb-3">
             <i class="fa-solid fa-key" style="font-size:3rem; color:var(--primary);"></i>
           </div>
-          <h2 class="m-0" style="font-weight:900;">Set New Password</h2>
+          <h2 class="m-0" style="font-weight:900;">Nouveau mot de passe</h2>
           <p class="mt-2 mb-0" style="color:var(--muted);">
-            Please enter your new password below.
+            Veuillez saisir votre nouveau mot de passe ci-dessous.
           </p>
         </div>
 
@@ -21,53 +21,47 @@
 
           <div class="mb-4">
             <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
-              New Password
+              Nouveau mot de passe
             </label>
 
             {{ form_widget(form.password.first, {
               attr: {
-                class: 'form-control form-control-lg input-dark' ~ (form.password.first.vars.errors|length ? ' is-invalid' : ''),
+                class: 'form-control form-control-lg input-dark' ~ (form.password.vars.errors|length > 0 ? ' is-invalid' : ''),
                 placeholder: '••••••••'
               }
             }) }}
 
-            {% for error in form.password.first.vars.errors %}
-              <div class="mt-2 error-pill small">
-                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
-              </div>
-            {% endfor %}
-
             <div class="small mt-2" style="color:var(--muted);">
-              At least 6 characters with letters and numbers
+              Au moins 6 caractères avec des lettres et des chiffres
             </div>
           </div>
 
           <div class="mb-4">
             <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
-              Confirm Password
+              Confirmez le mot de passe
             </label>
 
             {{ form_widget(form.password.second, {
               attr: {
-                class: 'form-control form-control-lg input-dark' ~ (form.password.second.vars.errors|length ? ' is-invalid' : ''),
+                class: 'form-control form-control-lg input-dark' ~ (form.password.vars.errors|length > 0 ? ' is-invalid' : ''),
                 placeholder: '••••••••'
               }
             }) }}
 
-            {% for error in form.password.second.vars.errors %}
-              <div class="mt-2 error-pill small">
-                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
-              </div>
+            {% for error in form.password.vars.errors %}
+                <div class="error-pill small mb-2">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
             {% endfor %}
           </div>
 
           <button type="submit" class="btn btn-outline-light btn-lg w-100 rounded-pill mb-3">
-            <i class="fa-solid fa-circle-check me-2"></i>Reset Password
+            <i class="fa-solid fa-circle-check me-2"></i>Réinitialiser le mot de passe
           </button>
 
           <div class="text-center">
             <a href="{{ path('app_login') }}" class="text-decoration-none" style="color:var(--muted);">
-              <i class="fa-solid fa-arrow-left me-2"></i>Back to Login
+              <i class="fa-solid fa-arrow-left me-2"></i>Retour à la connexion
             </a>
           </div>
 
@@ -90,15 +84,12 @@
       box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
       border-color: rgba(230,57,57,.5) !important;
     }
-    .form-control.is-invalid{
-      border: 1.5px solid rgba(220,53,69,.85) !important;
-    }
-    .error-pill{
-      background: rgba(220,53,69,.14);
-      border: 1px solid rgba(220,53,69,.25);
-      color: #ffb3b3;
-      padding: 10px 12px;
-      border-radius: 12px;
+    .error-pill {
+      background: rgba(230,57,57,0.15);
+      color: #ff8e8e;
+      padding: 8px 15px;
+      border-radius: 50px;
+      border: 1px solid rgba(230,57,57,0.3);
     }
   </style>
 {% endblock %}
