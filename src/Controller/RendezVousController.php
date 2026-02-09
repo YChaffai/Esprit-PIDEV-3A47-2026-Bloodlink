@@ -189,7 +189,8 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
 
     //-------------------------------------------backoffice--------------------------------------------------------------//
  #[Route('backoffice/rendez_vous/new', name: 'rendezvousback_new')]
-public function newback(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo): Response
+public function newback(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo,
+        SmsService $smsService): Response
 {
      $questionnaire = $request->getSession()->get('pending_questionnaireback');
     
@@ -221,6 +222,28 @@ public function newback(Request $request, EntityManagerInterface $em, CampagneRe
         $em->persist($questionnaire); 
         $em->persist($rendezVous);
          $em->flush();
+
+          // --- 3. APPEL DU SERVICE SMS ---
+            // On vérifie si le client a un numéro de téléphone
+            $telephone = $clientManaged->getTelephone();
+            
+            if ($telephone) {
+                // On formate la date pour qu'elle soit lisible dans le SMS
+                $dateLisible = $rendezVous->getDateDon()->format('d/m/Y à H:i');
+                $nomLieu = $rendezVous->getEntite()->getNom();
+
+                $smsService->sendRendezVousConfirmation(
+                    $telephone,                  // Numéro du client
+                    $clientManaged->getPrenom(), // Prénom
+                    $dateLisible,                // Date
+                    $nomLieu                     // Lieu
+                );
+                
+                $this->addFlash('success', 'Rendez-vous confirmé et SMS envoyé !');
+            } else {
+                $this->addFlash('success', 'Rendez-vous confirmé (Aucun SMS envoyé : numéro manquant).');
+            }
+            // ------------
         
 $request->getSession()->remove('pending_questionnaireback');
         return $this->redirectToRoute('rendezvousback_list');
