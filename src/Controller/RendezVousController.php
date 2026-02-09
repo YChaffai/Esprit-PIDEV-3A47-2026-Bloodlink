@@ -14,7 +14,7 @@ use App\Entity\RendezVous;
 use App\Entity\Questionnaire;
 use App\Form\UpdateRendezVousType;
 use App\Repository\RendezVousRepository;
-
+use App\Service\SmsService; 
 final class RendezVousController extends AbstractController
 {
     #[Route('/rendez/vous', name: 'app_rendez_vous')]
@@ -27,7 +27,8 @@ final class RendezVousController extends AbstractController
 
      //-------------------------------------------frontoffice--------------------------------------------------------------//
     #[Route('/rendez_vous/new', name: 'rendezvous_new')]
-public function new(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo): Response
+public function new(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo,
+        SmsService $smsService): Response
 {
      $questionnaire = $request->getSession()->get('pending_questionnaire');
     
@@ -60,6 +61,28 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
         $em->flush();
         $em->persist($rendezVous);
          $em->flush();
+
+          // --- 3. APPEL DU SERVICE SMS ---
+            // On vérifie si le client a un numéro de téléphone
+            $telephone = $clientManaged->getTelephone();
+            
+            if ($telephone) {
+                // On formate la date pour qu'elle soit lisible dans le SMS
+                $dateLisible = $rendezVous->getDateDon()->format('d/m/Y à H:i');
+                $nomLieu = $rendezVous->getEntite()->getNom();
+
+                $smsService->sendRendezVousConfirmation(
+                    $telephone,                  // Numéro du client
+                    $clientManaged->getPrenom(), // Prénom
+                    $dateLisible,                // Date
+                    $nomLieu                     // Lieu
+                );
+                
+                $this->addFlash('success', 'Rendez-vous confirmé et SMS envoyé !');
+            } else {
+                $this->addFlash('success', 'Rendez-vous confirmé (Aucun SMS envoyé : numéro manquant).');
+            }
+            // ------------
         
 
         return $this->redirectToRoute('rendezvous_list', ['client_id' => $client->getId()]);

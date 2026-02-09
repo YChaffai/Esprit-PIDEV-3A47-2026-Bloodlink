@@ -40,6 +40,9 @@ class Client
     #[ORM\OneToMany(targetEntity: Questionnaire::class, mappedBy: 'client', orphanRemoval: true)]
     private Collection $questionnaires;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $telephone = null;
+
     public function __construct()
     {
         $this->questionnaires = new ArrayCollection();
@@ -137,6 +140,18 @@ class Client
                 $questionnaire->setClient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone;
 
         return $this;
     }
