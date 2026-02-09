@@ -15,8 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/user')]
 final class UserController extends AbstractController
@@ -33,39 +31,35 @@ final class UserController extends AbstractController
   public function new(
     Request $request,
     EntityManagerInterface $entityManager,
-    UserPasswordHasherInterface $passwordHasher,
-    ValidatorInterface $validator
+    UserPasswordHasherInterface $passwordHasher
   ): Response {
     $user = new User();
-    $form = $this->createForm(UserType::class, $user);
+    $form = $this->createForm(UserType::class, $user, [
+      'is_new' => true
+    ]);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()) {
-      $plainPassword = $form->get('password')->getData();
-      $passwordValid = true;
-
-      if (empty($plainPassword)) {
-        $form->get('password')->addError(new FormError('Le mot de passe est obligatoire'));
-        $passwordValid = false;
-      } elseif (strlen($plainPassword) < 6) {
-        $form->get('password')->addError(new FormError('6 caractères minimum'));
-        $passwordValid = false;
-      } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $plainPassword)) {
-        $form->get('password')->addError(new FormError('Au moins une lettre et un chiffre requis'));
-        $passwordValid = false;
+    if ($form->isSubmitted() && $form->isValid()) {
+      if (!$user->getNom() || !$user->getPrenom() || !$user->getEmail() || !$user->getRole()) {
+        $this->addFlash('error', 'Tous les champs obligatoires doivent être remplis');
+        return $this->render('user/new.html.twig', [
+          'form' => $form,
+          'user' => $user,
+        ]);
       }
 
-      $errors = $validator->validate($user);
-
-      if (count($errors) > 0) {
-        foreach ($errors as $error) {
-          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
-        }
+      $plainPassword = $user->getPlainPassword();
+      if (!$plainPassword) {
+        $this->addFlash('error', 'Le mot de passe est obligatoire');
+        return $this->render('user/new.html.twig', [
+          'form' => $form,
+          'user' => $user,
+        ]);
       }
 
-      if ($passwordValid && $form->isValid()) {
-        $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
+      $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
 
+      try {
         $entityManager->persist($user);
         $entityManager->flush();
 
@@ -77,6 +71,8 @@ final class UserController extends AbstractController
 
         $this->addFlash('success', 'User created successfully!');
         return $this->redirectToRoute('app_user_index');
+      } catch (\Exception $e) {
+        $this->addFlash('error', 'Erreur lors de la création de l\'utilisateur: ' . $e->getMessage());
       }
     }
 
@@ -90,8 +86,7 @@ final class UserController extends AbstractController
   public function completeClient(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager,
-    ValidatorInterface $validator
+    EntityManagerInterface $entityManager
   ): Response {
     if ($user->getClient()) {
       $this->addFlash('info', 'Client information already exists.');
@@ -104,22 +99,12 @@ final class UserController extends AbstractController
     $form = $this->createForm(ClientType::class, $client);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()) {
-      $errors = $validator->validate($client);
+    if ($form->isSubmitted() && $form->isValid()) {
+      $entityManager->persist($client);
+      $entityManager->flush();
 
-      if (count($errors) > 0) {
-        foreach ($errors as $error) {
-          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
-        }
-      }
-
-      if ($form->isValid()) {
-        $entityManager->persist($client);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Client information completed successfully!');
-        return $this->redirectToRoute('app_user_index');
-      }
+      $this->addFlash('success', 'Client information completed successfully!');
+      return $this->redirectToRoute('app_user_index');
     }
 
     return $this->render('user/complete_client.html.twig', [
@@ -132,8 +117,7 @@ final class UserController extends AbstractController
   public function completeBanque(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager,
-    ValidatorInterface $validator
+    EntityManagerInterface $entityManager
   ): Response {
     if ($user->getBanque()) {
       $this->addFlash('info', 'Banque information already exists.');
@@ -146,22 +130,12 @@ final class UserController extends AbstractController
     $form = $this->createForm(BanqueType::class, $banque);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()) {
-      $errors = $validator->validate($banque);
+    if ($form->isSubmitted() && $form->isValid()) {
+      $entityManager->persist($banque);
+      $entityManager->flush();
 
-      if (count($errors) > 0) {
-        foreach ($errors as $error) {
-          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
-        }
-      }
-
-      if ($form->isValid()) {
-        $entityManager->persist($banque);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Banque information completed successfully!');
-        return $this->redirectToRoute('app_user_index');
-      }
+      $this->addFlash('success', 'Banque information completed successfully!');
+      return $this->redirectToRoute('app_user_index');
     }
 
     return $this->render('user/complete_banque.html.twig', [
@@ -174,8 +148,7 @@ final class UserController extends AbstractController
   public function editClient(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager,
-    ValidatorInterface $validator
+    EntityManagerInterface $entityManager
   ): Response {
     $client = $user->getClient();
 
@@ -187,21 +160,11 @@ final class UserController extends AbstractController
     $form = $this->createForm(ClientType::class, $client);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()) {
-      $errors = $validator->validate($client);
+    if ($form->isSubmitted() && $form->isValid()) {
+      $entityManager->flush();
 
-      if (count($errors) > 0) {
-        foreach ($errors as $error) {
-          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
-        }
-      }
-
-      if ($form->isValid()) {
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Client information updated successfully!');
-        return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
-      }
+      $this->addFlash('success', 'Client information updated successfully!');
+      return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
     }
 
     return $this->render('user/edit_client.html.twig', [
@@ -215,8 +178,7 @@ final class UserController extends AbstractController
   public function editBanque(
     Request $request,
     User $user,
-    EntityManagerInterface $entityManager,
-    ValidatorInterface $validator
+    EntityManagerInterface $entityManager
   ): Response {
     $banque = $user->getBanque();
 
@@ -228,21 +190,11 @@ final class UserController extends AbstractController
     $form = $this->createForm(BanqueType::class, $banque);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()) {
-      $errors = $validator->validate($banque);
+    if ($form->isSubmitted() && $form->isValid()) {
+      $entityManager->flush();
 
-      if (count($errors) > 0) {
-        foreach ($errors as $error) {
-          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
-        }
-      }
-
-      if ($form->isValid()) {
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Banque information updated successfully!');
-        return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
-      }
+      $this->addFlash('success', 'Banque information updated successfully!');
+      return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
     }
 
     return $this->render('user/edit_banque.html.twig', [
@@ -265,43 +217,35 @@ final class UserController extends AbstractController
     Request $request,
     User $user,
     EntityManagerInterface $entityManager,
-    UserPasswordHasherInterface $passwordHasher,
-    ValidatorInterface $validator
+    UserPasswordHasherInterface $passwordHasher
   ): Response {
-    $form = $this->createForm(UserType::class, $user);
+    $form = $this->createForm(UserType::class, $user, [
+      'is_new' => false
+    ]);
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()) {
-      $plainPassword = $form->get('password')->getData();
-      $passwordValid = true;
-
-      if (!empty($plainPassword)) {
-        if (strlen($plainPassword) < 6) {
-          $form->get('password')->addError(new FormError('password must be at least 6 characters long'));
-          $passwordValid = false;
-        } elseif (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $plainPassword)) {
-          $form->get('password')->addError(new FormError('password must contain at least one letter and one number'));
-          $passwordValid = false;
-        }
+    if ($form->isSubmitted() && $form->isValid()) {
+      // Additional safety check - ensure all required fields are set
+      if (!$user->getNom() || !$user->getPrenom() || !$user->getEmail() || !$user->getRole()) {
+        $this->addFlash('error', 'Tous les champs obligatoires doivent être remplis');
+        return $this->render('user/edit.html.twig', [
+          'user' => $user,
+          'form' => $form,
+        ]);
       }
 
-      $errors = $validator->validate($user);
-
-      if (count($errors) > 0) {
-        foreach ($errors as $error) {
-          $form->get($error->getPropertyPath())->addError(new FormError($error->getMessage()));
-        }
+      $plainPassword = $user->getPlainPassword();
+      if ($plainPassword) {
+        $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
       }
 
-      if ($passwordValid && $form->isValid()) {
-        if (!empty($plainPassword)) {
-          $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
-        }
-
+      try {
         $entityManager->flush();
 
         $this->addFlash('success', 'User updated successfully!');
         return $this->redirectToRoute('app_user_index');
+      } catch (\Exception $e) {
+        $this->addFlash('error', 'Erreur lors de la mise à jour de l\'utilisateur: ' . $e->getMessage());
       }
     }
 

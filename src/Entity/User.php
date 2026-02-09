@@ -39,15 +39,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   )]
   private ?string $prenom = null;
 
-  #[ORM\Column(length: 255, unique: true)]
+  #[ORM\Column(length: 180, unique: true)]
   #[Assert\NotBlank(message: "L'adresse email ne peut pas être vide")]
   #[Assert\Email(message: "L'adresse email '{{ value }}' n'est pas valide")]
   private ?string $email = null;
 
-  #[ORM\Column(length: 255)]
+  #[ORM\Column]
   private ?string $password = null;
 
-  #[ORM\Column(length: 255)]
+  /**
+   * Non-persisted field for password handling in forms
+   */
+  #[Assert\Length(min: 6, minMessage: 'Le mot de passe doit faire au moins 6 caractères')]
+  #[Assert\Regex(
+    pattern: '/^(?=.*[A-Za-z])(?=.*\d).+$/',
+    message: 'Le mot de passe doit contenir au moins une lettre et un chiffre'
+  )]
+  private ?string $plainPassword = null;
+
+  #[ORM\Column(length: 50)]
   #[Assert\NotBlank(message: 'Le rôle doit être spécifié')]
   #[Assert\Choice(
     choices: ['admin', 'client', 'doctor', 'banque', 'cnts'],
@@ -61,33 +71,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   #[ORM\OneToOne(mappedBy: "user", targetEntity: Banque::class, cascade: ["persist", "remove"])]
   private ?Banque $banque = null;
 
-  public function getClient(): ?Client
-  {
-    return $this->client;
-  }
-
-  public function setClient(?Client $client): static
-  {
-    $this->client = $client;
-    if ($client && $client->getUser() !== $this) {
-      $client->setUser($this);
-    }
-    return $this;
-  }
-
-  public function getBanque(): ?Banque
-  {
-    return $this->banque;
-  }
-
-  public function setBanque(?Banque $banque): static
-  {
-    $this->banque = $banque;
-    if ($banque && $banque->getUser() !== $this) {
-      $this->banque = $banque;
-    }
-    return $this;
-  }
+  // --- Getters and Setters ---
 
   public function getId(): ?int
   {
@@ -138,6 +122,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     return $this;
   }
 
+  public function getPlainPassword(): ?string
+  {
+    return $this->plainPassword;
+  }
+
+  public function setPlainPassword(?string $plainPassword): static
+  {
+    $this->plainPassword = $plainPassword;
+    return $this;
+  }
+
   public function getRole(): ?string
   {
     return $this->role;
@@ -149,6 +144,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     return $this;
   }
 
+  public function getClient(): ?Client
+  {
+    return $this->client;
+  }
+
+  public function setClient(?Client $client): static
+  {
+    $this->client = $client;
+    if ($client && $client->getUser() !== $this) {
+      $client->setUser($this);
+    }
+    return $this;
+  }
+
+  public function getBanque(): ?Banque
+  {
+    return $this->banque;
+  }
+
+  public function setBanque(?Banque $banque): static
+  {
+    $this->banque = $banque;
+    if ($banque && $banque->getUser() !== $this) {
+      $banque->setUser($this);
+    }
+    return $this;
+  }
+
+  // --- Security Methods ---
+
   public function getUserIdentifier(): string
   {
     return (string) $this->email;
@@ -158,18 +183,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   {
     $roles = [];
 
-    if ($this->role === 'admin') {
-      $roles[] = 'ROLE_ADMIN';
-    } elseif ($this->role === 'client') {
-      $roles[] = 'ROLE_CLIENT';
-    } elseif ($this->role === 'doctor') {
-      $roles[] = 'ROLE_DOCTOR';
-    } elseif ($this->role === 'banque') {
-      $roles[] = 'ROLE_BANQUE';
-    } elseif ($this->role === 'cnts') {
-      $roles[] = 'ROLE_CNTS';
+    // Map custom $role string to Symfony's ROLE_ format
+    if ($this->role) {
+      $roles[] = 'ROLE_' . strtoupper($this->role);
     }
 
+    // Guarantee every user at least has ROLE_USER
     $roles[] = 'ROLE_USER';
 
     return array_unique($roles);
@@ -177,6 +196,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
   public function eraseCredentials(): void
   {
-    // clear temporary data if needed
+    // If you store any temporary, sensitive data on the user, clear it here
+    $this->plainPassword = null;
   }
 }
