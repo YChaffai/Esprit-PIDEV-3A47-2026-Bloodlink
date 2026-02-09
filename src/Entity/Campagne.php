@@ -37,6 +37,9 @@ class Campagne
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $date_debut = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $type_sang = null;
+
    
     public function __construct()
     {
@@ -135,6 +138,18 @@ class Campagne
     public function setDateDebut(?\DateTime $date_debut): static
     {
         $this->date_debut = $date_debut;
+
+        return $this;
+    }
+
+    public function getTypeSang(): ?string
+    {
+        return $this->type_sang;
+    }
+
+    public function setTypeSang(?string $type_sang): static
+    {
+        $this->type_sang = $type_sang;
 
         return $this;
     }
