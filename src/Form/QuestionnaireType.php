@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 class QuestionnaireType extends AbstractType
 {
@@ -25,6 +26,8 @@ class QuestionnaireType extends AbstractType
             // ])
             // ->add('nom')
             // ->add('prenom')
+        // ->add('nom', HiddenType::class, ['mapped' => false]) 
+        // ->add('prenom', HiddenType::class, ['mapped' => false])
             ->add('age')
             ->add('sexe', ChoiceType::class, [
                 'choices' => [
@@ -47,7 +50,7 @@ class QuestionnaireType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Suivant'
+                'label' => 'Continue'
             ]);
         ;
     }

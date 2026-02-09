@@ -51,6 +51,7 @@ final class QuestionnaireController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid() ) {
             //$questionnaire->setClient($this->getUser());  // Associe le questionnaire à l'utilisateur connecté
+            // dd($form->getErrors(true));
             $questionnaire->setClient($client);
             $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
             $em->persist($questionnaire);
