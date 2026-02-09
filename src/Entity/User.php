@@ -47,9 +47,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   #[ORM\Column]
   private ?string $password = null;
 
-  /**
-   * Non-persisted field for password handling in forms
-   */
   #[Assert\Length(min: 6, minMessage: 'Le mot de passe doit faire au moins 6 caractères')]
   #[Assert\Regex(
     pattern: '/^(?=.*[A-Za-z])(?=.*\d).+$/',
@@ -70,8 +67,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
   #[ORM\OneToOne(mappedBy: "user", targetEntity: Banque::class, cascade: ["persist", "remove"])]
   private ?Banque $banque = null;
-
-  // --- Getters and Setters ---
 
   public function getId(): ?int
   {
@@ -172,8 +167,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     return $this;
   }
 
-  // --- Security Methods ---
-
   public function getUserIdentifier(): string
   {
     return (string) $this->email;
@@ -183,20 +176,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   {
     $roles = [];
 
-    // Map custom $role string to Symfony's ROLE_ format
-    if ($this->role) {
-      $roles[] = 'ROLE_' . strtoupper($this->role);
+    if ($this->role === 'admin') {
+      $roles[] = 'ROLE_ADMIN';
+    } elseif ($this->role === 'client') {
+      $roles[] = 'ROLE_CLIENT';
+    } elseif ($this->role === 'doctor') {
+      $roles[] = 'ROLE_DOCTOR';
+    } elseif ($this->role === 'banque') {
+      $roles[] = 'ROLE_BANQUE';
+    } elseif ($this->role === 'cnts') {
+      $roles[] = 'ROLE_CNTS';
     }
 
-    // Guarantee every user at least has ROLE_USER
     $roles[] = 'ROLE_USER';
 
     return array_unique($roles);
   }
-
   public function eraseCredentials(): void
   {
-    // If you store any temporary, sensitive data on the user, clear it here
     $this->plainPassword = null;
   }
 }

@@ -225,7 +225,6 @@ final class UserController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-      // Additional safety check - ensure all required fields are set
       if (!$user->getNom() || !$user->getPrenom() || !$user->getEmail() || !$user->getRole()) {
         $this->addFlash('error', 'Tous les champs obligatoires doivent être remplis');
         return $this->render('user/edit.html.twig', [
