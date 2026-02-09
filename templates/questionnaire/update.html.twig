@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Update questionnaire{% endblock %}
 {% block body %}
@@ -8,5 +8,73 @@
     {{ form(form) }}
     </div>
     
+</div>
+{% endblock %} #}
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le questionnaire{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width: 800px;">
+    <h1>Modifier le questionnaire</h1>
+
+    <div class="glass-card">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            
+            {# Réutilisation du style cohérent avec le reste de la plateforme #}
+            {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px; width: 100%;' %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">ÂGE</label>
+                    {{ form_widget(form.age, {'attr': {'style': inputStyle}}) }}
+                    <div class="text-danger small">{{ form_errors(form.age) }}</div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">SEXE</label>
+                    {{ form_widget(form.sexe, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
+                    <div class="text-danger small">{{ form_errors(form.sexe) }}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">POIDS (KG)</label>
+                    {{ form_widget(form.poids, {'attr': {'style': inputStyle}}) }}
+                    <div class="text-danger small">{{ form_errors(form.poids) }}</div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    {# Si le champ Campagne est présent dans l'update #}
+                    {% if form.campagne is defined %}
+                        <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">CAMPAGNE</label>
+                        {{ form_widget(form.campagne, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.campagne) }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">AUTRES INFORMATIONS</label>
+                    {{ form_widget(form.autres, {'attr': {'style': inputStyle, 'placeholder': 'Antécédents...'}}) }}
+                    <div class="text-danger small">{{ form_errors(form.autres) }}</div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-3">
+                <button type="submit" class="btn btn-primary flex-grow-1 rounded-pill" style="height: 55px; font-weight: 800; text-transform: uppercase;">
+                    Enregistrer les modifications
+                </button>
+                <a href="{{ path('questionnaire_list', { 'client_id': questionnaires.client.id }) }}" class="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center" style="height: 55px; padding: 0 30px;">
+                    Annuler
+                </a>
+            </div>
+
+        {{ form_end(form, {'render_rest': false}) }}
+    </div>
 </div>
 {% endblock %}

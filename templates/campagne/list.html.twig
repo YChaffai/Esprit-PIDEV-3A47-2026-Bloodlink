@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Liste des campagnes{% endblock %}
 
@@ -13,5 +13,42 @@
         </div>
     {% endfor %}
     
+</div>
+{% endblock %} #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des campagnes{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Campagnes de Don de Sang</h1>
+
+    <div class="row">
+        {% for camp in campagne %}
+            <div class="col-md-4 mb-4">
+                {# Utilisation de la glass-card définie dans ton base front #}
+                <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h3 class="h5 fw-bold text-white mb-3">{{ camp.titre }}</h3>
+                        <p class="text-white-50">Participez à cette campagne et aidez-nous à sauver des vies.</p>
+                    </div>
+
+                    <div class="mt-4">
+                        {# Lien avec ID client dynamique au lieu du 3 statique #}
+                        <a href="{{ path('questionnaire_new', { id : camp.id, client_id:4 }) }}" 
+                           class="btn btn-danger w-100 rounded-pill" 
+                           style="height: 45px; font-weight: bold;">
+                           PARTICIPER
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <p class="text-white">Aucune campagne disponible pour le moment.</p>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

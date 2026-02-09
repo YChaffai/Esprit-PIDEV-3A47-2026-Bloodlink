@@ -135,7 +135,8 @@ final class QuestionnaireController extends AbstractController
             return $this->redirectToRoute('questionnaire_list', ['client_id' => $clientId]);
         }
         return $this->render('questionnaire/update.html.twig', [
-            "form" => $form
+            "form" => $form,
+            'questionnaires' => $questionnaire
         ]);
     }
 

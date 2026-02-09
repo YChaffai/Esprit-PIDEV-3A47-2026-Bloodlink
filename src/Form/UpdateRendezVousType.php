@@ -30,9 +30,9 @@ class UpdateRendezVousType extends AbstractType
                 'choice_label' => 'nom',
                 'placeholder' => 'choisissez l\'entité de collecte'
             ])
-             ->add('submit', SubmitType::class, [
-                'label' => 'Prendre rendez-vous'
-            ]);
+            //  ->add('submit', SubmitType::class, [
+            //     'label' => 'Prendre rendez-vous'
+            // ]);
         ;
     }
 
