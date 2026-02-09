@@ -24,13 +24,25 @@ class FrontDossierController extends AbstractController
     }
 
     #[Route('/front/dossier', name: 'front_dossier_show', methods: ['GET'])]
-    public function index(DossierMedRepository $repo, ClientRepository $clientRepo): Response
+   #[Route('/front/dossier', name: 'front_dossier_show', methods: ['GET'])]
+    public function index(DossierMedRepository $repo, ClientRepository $clientRepo, Request $request): Response
     {
         $client = $this->currentClient($clientRepo);
-        $dossiers = $repo->findBy(['client' => $client], ['id' => 'DESC']);
+
+        // 1. Get parameters from URL (e.g. ?q=plasma&sort=date&dir=ASC)
+        $search = $request->query->get('q');
+        $sort = $request->query->get('sort', 'date'); // Default sort by date
+        $direction = $request->query->get('dir', 'DESC'); // Default direction DESC
+
+        // 2. Use custom repository method
+        $dossiers = $repo->findByClientSearchAndSort($client, $search, $sort, $direction);
 
         return $this->render('front/dossier/index.html.twig', [
             'dossiers' => $dossiers,
+            // Pass params back to view to keep form filled
+            'currentSearch' => $search,
+            'currentSort' => $sort,
+            'currentDir' => $direction
         ]);
     }
 

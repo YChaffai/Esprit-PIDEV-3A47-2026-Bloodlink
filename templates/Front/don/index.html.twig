@@ -5,6 +5,7 @@
 {% block body %}
   <div class="py-4 py-md-5">
 
+    {# --- HEADER --- #}
     <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
       <div>
         <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
@@ -12,16 +13,64 @@
           <i class="fa-solid fa-hand-holding-droplet me-2" style="color:var(--primary);"></i>
           Mes Dons
         </h1>
-        <div style="color:var(--muted);">Tout votre historique de dons au même endroit.</div>
+        <div style="color:var(--muted);">
+          Historique complet de vos contributions.
+        </div>
       </div>
+      
+      {# Optional: "Add Don" is usually for Admin, but if you have a declaration form, put button here #}
+    </div>
+
+    {# --- SEARCH & FILTER BAR --- #}
+    <div class="glass-card p-3 mb-4">
+        <form method="get" action="{{ path('front_don_index') }}" class="row g-3 align-items-center">
+            
+            {# Search Input #}
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-secondary text-muted" style="border-right:0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ currentSearch }}" 
+                           class="form-control bg-transparent text-white border-secondary border-start-0" 
+                           placeholder="Rechercher (Type, Qté...)" 
+                           style="box-shadow:none;">
+                </div>
+            </div>
+
+            {# Sort Dropdown #}
+            <div class="col-6 col-md-4">
+                <select name="sort" class="form-select bg-transparent text-white border-secondary" style="box-shadow:none;" onchange="this.form.submit()">
+                    <option value="date" class="text-dark" {% if currentSort == 'date' %}selected{% endif %}>📅 Trier par Date</option>
+                    <option value="quantite" class="text-dark" {% if currentSort == 'quantite' %}selected{% endif %}>💧 Trier par Quantité</option>
+                    <option value="typeDon" class="text-dark" {% if currentSort == 'typeDon' %}selected{% endif %}>🩸 Trier par Type</option>
+                </select>
+            </div>
+
+            {# Direction Toggle #}
+            <div class="col-6 col-md-2 d-grid">
+                {% set newDir = currentDir == 'ASC' ? 'DESC' : 'ASC' %}
+                {% set icon = currentDir == 'ASC' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short' %}
+                
+                {# Hidden input to keep search query active #}
+                <input type="hidden" name="q" value="{{ currentSearch }}">
+                
+                {# Toggle Button #}
+                <a href="{{ path('front_don_index', {'q': currentSearch, 'sort': currentSort, 'dir': newDir}) }}" 
+                   class="btn btn-outline-secondary text-white fw-bold d-flex align-items-center justify-content-center gap-2">
+                   <i class="fa-solid {{ icon }}"></i> 
+                   {{ currentDir == 'ASC' ? 'Croissant' : 'Décroissant' }}
+                </a>
+            </div>
+        </form>
     </div>
 
     {% if dons|length > 0 %}
       <div class="glass-card overflow-hidden">
         <div class="p-4 d-flex justify-content-between align-items-center"
              style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
-          <div class="fw-black">Historique</div>
-          <div class="small" style="color:var(--muted);">{{ dons|length }} enregistrements</div>
+          <div class="fw-black">Liste des Dons</div>
+          <div class="small" style="color:var(--muted);">{{ dons|length }} dons trouvés</div>
         </div>
 
         <div class="table-responsive">
@@ -29,51 +78,57 @@
                  style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
             <thead>
               <tr style="color:var(--muted);">
-                <th class="py-3">Date</th>
-                <th class="py-3">Type</th>
+                <th class="py-3">Type & Date</th>
                 <th class="py-3">Quantité</th>
-                {# ✅ Action Column Added #}
+                <th class="py-3">Lieu / Entité</th>
                 <th class="py-3 text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
               {% for don in dons %}
                 <tr style="border-top:1px solid var(--border);">
+                  
+                  {# COLUMN 1: Type & Date #}
                   <td class="py-3">
-                    {% if don.date %}
-                      <span class="badge rounded-pill px-3 py-2"
-                            style="background:rgba(255,255,255,.06); border:1px solid var(--border); color:white;">
-                        {{ don.date|date('d/m/Y') }}
-                      </span>
-                    {% else %}
-                      —
-                    {% endif %}
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex flex-column align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25" 
+                             style="width:50px; height:50px;">
+                            <i class="fa-solid fa-droplet text-danger"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white">
+                                {{ don.typeDon }}
+                            </div>
+                            <div class="small" style="color:var(--muted);">
+                                {{ don.date|date('d/m/Y') }} à {{ don.date|date('H:i') }}
+                            </div>
+                        </div>
+                    </div>
                   </td>
 
+                  {# COLUMN 2: Quantity #}
                   <td class="py-3">
-                    <span class="badge rounded-pill px-3 py-2"
-                          style="background:rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:white;">
-                      {{ don.typeDon ?? '—' }}
+                    <span class="badge bg-transparent border border-secondary text-white fw-normal" style="font-size:0.9rem;">
+                        {{ don.quantite }} ml
                     </span>
                   </td>
 
+                  {# COLUMN 3: Entity #}
                   <td class="py-3">
-                    {% if don.quantite %}
-                      <strong>{{ don.quantite }}</strong> <span class="small" style="color:var(--muted);">ml</span>
-                    {% else %}
-                      —
-                    {% endif %}
+                     <div class="small text-white">
+                        <i class="fa-solid fa-hospital me-2 text-muted"></i>Centre #{{ don.idEntite }}
+                     </div>
                   </td>
 
-                  {# ✅ Delete Button Added #}
+                  {# COLUMN 4: Actions (Delete only as agreed) #}
                   <td class="py-3 text-end">
-                    <form method="post" action="{{ path('front_don_delete', {'id': don.id}) }}"
-                          class="d-inline" onsubmit="return confirm('Supprimer ce don ?');">
-                      <input type="hidden" name="_token" value="{{ csrf_token('delete_don_' ~ don.id) }}">
-                      <button class="btn btn-sm rounded-pill fw-bold"
-                              style="background:rgba(230,57,57,.12); color:white; border:1px solid rgba(230,57,57,.25);">
-                        <i class="fa-solid fa-trash me-1"></i> Supprimer
-                      </button>
+                    <form method="post" action="{{ path('front_don_delete', {'id': don.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet historique ?');" class="d-inline-block">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ don.id) }}">
+                        <button class="btn btn-sm rounded-pill fw-bold" 
+                                style="background:rgba(230,57,57,.12); color:white; border:1px solid rgba(230,57,57,.25);"
+                                title="Supprimer de l'historique">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </form>
                   </td>
                 </tr>
@@ -83,14 +138,17 @@
         </div>
       </div>
     {% else %}
+      {# Empty State #}
       <div class="glass-card p-5 text-center">
         <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
              style="width:76px;height:76px;background: rgba(230,57,57,.12); border: 1px solid rgba(230,57,57,.25);">
-          <i class="fa-solid fa-hand-holding-droplet fs-2" style="color:var(--primary);"></i>
+          <i class="fa-solid fa-magnifying-glass fs-2" style="color:var(--primary);"></i>
         </div>
-
-        <h4 class="fw-black mb-2">Aucun don enregistré</h4>
-        <p class="mb-4" style="color:var(--muted);">Votre historique apparaîtra ici une fois que vous aurez effectué un don en centre.</p>
+        <h4 class="fw-black mb-2">Aucun don trouvé</h4>
+        <p class="mb-0" style="color:var(--muted);">
+           Essayez de modifier vos filtres ou effectuez un nouveau don.
+        </p>
+        <a href="{{ path('front_don_index') }}" class="btn btn-sm btn-outline-light rounded-pill mt-3">Réinitialiser</a>
       </div>
     {% endif %}
   </div>

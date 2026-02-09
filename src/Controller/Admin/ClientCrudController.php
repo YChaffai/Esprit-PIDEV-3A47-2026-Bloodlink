@@ -3,11 +3,16 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Client;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManagerInterface; // 👈 THIS WAS MISSING
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 
 class ClientCrudController extends AbstractCrudController
 {
@@ -24,9 +29,27 @@ class ClientCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id')->hideOnForm(),
+            // 1. ID Column (Visible on Index)
+            IdField::new('id')->onlyOnIndex(),
 
-            ChoiceField::new('typeSang', 'Groupe sanguin')
+            // 2. "Client" Column (Name + ID) - Visible ONLY on Index
+            TextField::new('fullNameWithId', 'Client')
+                ->setVirtual(true)
+                ->onlyOnIndex()
+                ->formatValue(function ($value, $entity) {
+                    // Safe check to ensure we don't crash if data is missing
+                    $prenom = $entity->getPrenom() ?? '';
+                    $nom = $entity->getNom() ?? '';
+                    return sprintf('%s %s (#%d)', $prenom, $nom, $entity->getId());
+                }),
+
+            // 3. Form Fields (Visible ONLY on Create/Edit forms)
+            TextField::new('nom', 'Nom')->hideOnIndex(),
+            TextField::new('prenom', 'Prénom')->hideOnIndex(),
+            EmailField::new('email', 'Email'),
+
+            // 4. Other Columns
+            ChoiceField::new('typeSang', 'Groupe Sanguin')
                 ->setChoices([
                     'A+' => 'A+', 'A-' => 'A-',
                     'B+' => 'B+', 'B-' => 'B-',
@@ -34,6 +57,8 @@ class ClientCrudController extends AbstractCrudController
                     'O+' => 'O+', 'O-' => 'O-',
                 ])
                 ->renderAsBadges(),
+
+            
         ];
     }
 

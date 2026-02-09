@@ -28,21 +28,32 @@ class FrontDonController extends AbstractController
         return $client;
     }
 
-    #[Route('/front/don', name: 'front_don_index', methods: ['GET'])]
-    public function index(DonRepository $donRepo, ClientRepository $clientRepo): Response
+  #[Route('/front/don', name: 'front_don_index', methods: ['GET'])]
+    public function index(DonRepository $donRepo, ClientRepository $clientRepo, Request $request): Response
     {
-        $client = $this->currentClient($clientRepo);
+        // 1. Get Current Client
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+        $client = $clientRepo->find($user->getId());
 
-        $dons = $donRepo->findBy(
-            ['client' => $client],
-            ['date' => 'DESC']
-        );
+        // 2. Get parameters from URL
+        $search = $request->query->get('q');
+        $sort = $request->query->get('sort', 'date'); // Default: Date
+        $direction = $request->query->get('dir', 'DESC'); // Default: Newest first
+
+        // 3. Fetch Data
+        $dons = $donRepo->findByClientSearchAndSort($client, $search, $sort, $direction);
 
         return $this->render('front/don/index.html.twig', [
             'dons' => $dons,
+            // Pass params back to view to keep UI state
+            'currentSearch' => $search,
+            'currentSort' => $sort,
+            'currentDir' => $direction
         ]);
     }
-
     // ❌ NOTE: 'new' and 'edit' methods are intentionally removed to prevent client creation/modification of donation data.
 
     #[Route('/front/don/{id}/delete', name: 'front_don_delete', methods: ['POST'])]

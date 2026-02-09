@@ -43,6 +43,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Dossier Médicaux', 'fa fa-notes-medical', DossierMed::class);
 
         yield MenuItem::section('Navigation');
-        yield MenuItem::linkToUrl('Retour au site', 'fa fa-arrow-left', '/');
+        yield MenuItem::linkToUrl('Retour au site', 'fa fa-arrow-left', 'http://127.0.0.1:8000/front');
     }
 }
