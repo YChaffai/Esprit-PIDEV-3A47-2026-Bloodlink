@@ -5,6 +5,8 @@ namespace App\Controller\front;
 use App\Entity\Demande;
 use App\Repository\TransfertRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -12,20 +14,69 @@ use Symfony\Component\Routing\Attribute\Route;
 class TransfertController extends AbstractController
 {
     #[Route('/', name: 'front_transfert_index', methods: ['GET'])]
-    public function index(TransfertRepository $transfertRepository): Response
+    public function index(Request $request, TransfertRepository $repo): Response
     {
-        // Récupérer tous les transferts
-        $transferts = $transfertRepository->findAll();
+        $sortField = $request->query->get('sort', 'id');
+    $sortDir   = $request->query->get('dir', 'ASC');
 
-        return $this->render('front/index.html.twig', [
-            'transferts' => $transferts,
-        ]);
+    $allowedFields = ['id', 'quantite', 'dateEnvoie', 'dateReception', 'status'];
+
+    if (!in_array($sortField, $allowedFields)) {
+        $sortField = 'id';
+    }
+
+    $sortDir = strtoupper($sortDir) === 'DESC' ? 'DESC' : 'ASC';
+
+    $qb = $repo->createQueryBuilder('t')
+               ->leftJoin('t.demande', 'd')
+               ->addSelect('d')
+               ->orderBy('t.' . $sortField, $sortDir);
+
+    $transferts = $qb->getQuery()->getResult();
+
+    return $this->render('front/index.html.twig', [
+        'transferts' => $transferts,
+        'sortField'  => $sortField,
+        'sortDir'    => $sortDir,
+    ]);
+    }
+
+    #[Route('/search', name: 'front_transfert_search', methods: ['GET'])]
+    public function search(Request $request, TransfertRepository $repo): JsonResponse
+    {
+        $q = $request->query->get('q');
+
+    $qb = $repo->createQueryBuilder('t');
+
+    if ($q) {
+        $qb->where('t.toOrg LIKE :q')
+           ->orWhere('t.status LIKE :q')
+           ->setParameter('q', '%' . $q . '%');
+    }
+
+    $transferts = $qb->getQuery()->getResult();
+
+    $data = [];
+
+    foreach ($transferts as $t) {
+        $data[] = [
+            'id' => $t->getId(),
+            'demande' => $t->getDemande()->getId(),
+            'toOrg' => $t->getToOrg(),
+            'quantite' => $t->getQuantite(),
+            'status' => $t->getStatus(),
+            'dateEnvoie' => $t->getDateEnvoie()?->format('d/m/Y'),
+            'dateReception' => $t->getDateReception()?->format('d/m/Y'),
+        ];
+    }
+
+    return new JsonResponse($data);
     }
 
     #[Route('/{id}', name: 'front_transfert_show', methods: ['GET'])]
-    public function show($id, TransfertRepository $transfertRepository): Response
+    public function show($id, TransfertRepository $repo): Response
     {
-        $transfert = $transfertRepository->find($id);
+        $transfert = $repo->find($id);
 
         return $this->render('front/show.html.twig', [
             'transfert' => $transfert,

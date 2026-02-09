@@ -1,46 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Liste des demandes</title>
-    <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
-        th { background: #e63939; color: #fff; }
-        .badge { padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 10px; }
-        .EN_ATTENTE { background: #f4a261; }
-        .VALIDEE { background: #2a9d8f; }
-        .REFUSEE { background: #e63946; }
-    </style>
+<meta charset="UTF-8">
+<title>BloodLink - Liste des demandes</title>
+
+<style>
+@page {
+    margin: 40px;
+}
+
+body {
+    font-family: 'DejaVu Sans', sans-serif;
+    font-size: 12px;
+    color: #111;
+}
+
+/* Header */
+.pdf-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.pdf-header h1 {
+    color: #e63939;
+    font-size: 20px;
+    margin: 0;
+}
+
+.pdf-header p {
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th {
+    background: #e63939;
+    color: #ffffff;
+    padding: 8px;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+
+td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+/* Status badge */
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.EN_ATTENTE { background: #f4a261; }
+.VALIDEE { background: #2a9d8f; }
+.REFUSEE { background: #e63946; }
+
+/* Footer */
+.pdf-footer {
+    margin-top: 30px;
+    font-size: 10px;
+    text-align: right;
+    color: #777;
+}
+</style>
 </head>
+
 <body>
-    <h2>Liste des demandes</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Banque</th>
-                <th>Type</th>
-                <th>Quantité</th>
-                <th>Urgence</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for demande in demandes %}
-            <tr>
-                <td>{{ demande.id }}</td>
-                <td>{{ demande.idBanque }}</td>
-                <td>{{ demande.typeSang }}</td>
-                <td>{{ demande.quantite }}</td>
-                <td>{{ demande.urgence }}</td>
-                <td>
-                    <span class="badge {{ demande.status }}">{{ demande.status|replace({'_':' '}) }}</span>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+<div class="pdf-header">
+    <h1>🩸 BLOODLINK</h1>
+    <p>Liste des demandes générée le {{ "now"|date("d/m/Y à H:i") }}</p>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Banque</th>
+            <th>Type</th>
+            <th>Quantité</th>
+            <th>Urgence</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for demande in demandes %}
+        <tr>
+            <td>#{{ demande.id }}</td>
+            <td>{{ demande.idBanque }}</td>
+            <td><strong>{{ demande.typeSang }}</strong></td>
+            <td>{{ demande.quantite }}</td>
+            <td>{{ demande.urgence }}</td>
+            <td>
+                <span class="badge {{ demande.status }}">
+                    {{ demande.status|replace({'_':' '}) }}
+                </span>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" style="text-align:center; padding:15px;">
+                Aucune demande trouvée
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pdf-footer">
+    © {{ "now"|date("Y") }} BloodLink
+</div>
+
 </body>
 </html>

@@ -102,6 +102,7 @@ public function show(?Demande $demande): Response
         return $this->redirectToRoute('app_demande_index', [], Response::HTTP_SEE_OTHER);
     }
     #[Route('/admin/demande/search', name: 'back_demande_search', methods: ['GET'])]
+#[Route('/admin/demande/search', name: 'back_demande_search', methods: ['GET'])]
 public function search(Request $request, DemandeRepository $repo): JsonResponse
 {
     $keyword = $request->query->get('q');
@@ -122,10 +123,15 @@ public function search(Request $request, DemandeRepository $repo): JsonResponse
             'banque' => $demande->getIdBanque(),
             'type' => $demande->getTypeSang(),
             'quantite' => $demande->getQuantite(),
+            'urgence' => $demande->getUrgence(),
             'status' => $demande->getStatus(),
+            'createdAt' => $demande->getCreatedAt()
+                ? $demande->getCreatedAt()->format('d/m/Y')
+                : '-',
         ];
     }
 
     return new JsonResponse($data);
 }
+
 }

@@ -4,64 +4,116 @@
 
 {% block body %}
 <div class="main-container">
-
     <div class="glass-card p-4">
 
-        {# HEADER #}
+        {# ================= HEADER ================= #}
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <h2 class="text-white mb-0">Liste des Transferts</h2>
+            <h2 class="text-white mb-0">
+                <i class="fa-solid fa-right-left me-2 text-danger"></i>
+                Liste des Transferts
+            </h2>
 
             <a href="{{ path('app_demande_index') }}"
-               class="btn btn-sm btn-outline-danger">
+               class="btn btn-sm btn-outline-danger rounded-pill">
                 🔙 Retour aux Demandes
             </a>
         </div>
 
-        {# LISTE DES TRANSFERTS #}
-        <div>
+        {# ================= RECHERCHE + TRI ================= #}
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+            {# Recherche #}
+            <div style="max-width:400px; width:100%;">
+                <div class="input-group">
+                    <span class="input-group-text bg-dark text-white border-0">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text"
+                           id="searchInput"
+                           class="form-control bg-dark text-white border-0"
+                           placeholder="Rechercher...">
+                </div>
+            </div>
+
+            {# TRI #}
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+                <span class="text-white-50">Trier :</span>
+
+                <a href="{{ path('front_transfert_index', {
+                    sort: 'id',
+                    dir: sortDir is defined and sortDir == 'ASC' ? 'DESC' : 'ASC'
+                }) }}"
+                   class="btn btn-sm btn-outline-light rounded-pill">
+                    ID
+                </a>
+
+                <a href="{{ path('front_transfert_index', {
+                    sort: 'dateEnvoie',
+                    dir: sortDir is defined and sortDir == 'ASC' ? 'DESC' : 'ASC'
+                }) }}"
+                   class="btn btn-sm btn-outline-light rounded-pill">
+                    Date Envoi
+                </a>
+
+                <a href="{{ path('front_transfert_index', {
+                    sort: 'status',
+                    dir: sortDir is defined and sortDir == 'ASC' ? 'DESC' : 'ASC'
+                }) }}"
+                   class="btn btn-sm btn-outline-light rounded-pill">
+                    Statut
+                </a>
+            </div>
+
+        </div>
+
+        {# ================= NOMS DES CHAMPS ================= #}
+        <div class="row text-white-50 fw-bold mb-2 px-2">
+            <div class="col-md-1">ID</div>
+            <div class="col-md-2">Demande</div>
+            <div class="col-md-2">Destinataire</div>
+            <div class="col-md-1 text-center">Qté</div>
+            <div class="col-md-2 text-center">Statut</div>
+            <div class="col-md-1 text-center">Envoi</div>
+            <div class="col-md-1 text-center">Réception</div>
+            <div class="col-md-2 text-end">Action</div>
+        </div>
+
+        {# ================= LISTE ================= #}
+        <div id="transfertContainer">
 
             {% for transfert in transferts %}
                 <div class="glass-card mb-3 p-3"
                      style="border-left:4px solid var(--primary); background:rgba(255,255,255,0.03);">
 
-                    <div class="row align-items-center">
+                    <div class="row align-items-center gy-3">
 
-                        <div class="col-md-1">
-                            <span class="text-white-50 small">#{{ transfert.id }}</span>
+                        <div class="col-md-1 text-white">
+                            #{{ transfert.id }}
                         </div>
 
-                        <div class="col-md-2">
-                            <span class="text-white-50 small">Demande</span><br>
-                            <span class="text-white">#{{ transfert.demande.id }}</span>
+                        <div class="col-md-2 text-white">
+                            #{{ transfert.demande.id }}
                         </div>
 
-                        <div class="col-md-2">
-                            <span class="text-white-50 small">Destinataire</span><br>
-                            <span class="text-white">{{ transfert.toOrg }}</span>
+                        <div class="col-md-2 text-white">
+                            {{ transfert.toOrg }}
                         </div>
 
-                        <div class="col-md-1 text-center">
-                            <span class="text-white-50 small">Qté</span><br>
-                            <span class="text-white">{{ transfert.quantite }}</span>
+                        <div class="col-md-1 text-center text-white">
+                            {{ transfert.quantite }}
                         </div>
 
                         <div class="col-md-2 text-center">
-                            {% if transfert.status == 'EN_COURS' %}
-                                <span class="badge bg-warning text-dark">En cours</span>
-                            {% elseif transfert.status == 'RECU' %}
-                                <span class="badge bg-success">Reçu</span>
-                            {% elseif transfert.status == 'ANNULE' %}
-                                <span class="badge bg-danger">Annulé</span>
-                            {% else %}
-                                <span class="badge bg-secondary">{{ transfert.status }}</span>
-                            {% endif %}
+                            <span class="badge bg-secondary">
+                                {{ transfert.status }}
+                            </span>
                         </div>
 
-                        <div class="col-md-1 text-center text-white-50 small">
+                        <div class="col-md-1 text-center text-white-50">
                             {{ transfert.dateEnvoie ? transfert.dateEnvoie|date('d/m/Y') : '-' }}
                         </div>
 
-                        <div class="col-md-1 text-center text-white-50 small">
+                        <div class="col-md-1 text-center text-white-50">
                             {{ transfert.dateReception ? transfert.dateReception|date('d/m/Y') : '-' }}
                         </div>
 
@@ -84,6 +136,60 @@
         </div>
 
     </div>
-
 </div>
+
+{# ================= AJAX SEARCH ================= #}
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function () {
+
+    let query = this.value;
+
+    fetch("{{ path('front_transfert_search') }}?q=" + query)
+        .then(response => response.json())
+        .then(data => {
+
+            let container = document.getElementById('transfertContainer');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card text-center p-4">
+                        <p class="text-white-50 mb-0">Aucun résultat trouvé.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            data.forEach(t => {
+                container.innerHTML += `
+                    <div class="glass-card mb-3 p-3"
+                         style="border-left:4px solid var(--primary); background:rgba(255,255,255,0.03);">
+
+                        <div class="row align-items-center gy-3">
+
+                            <div class="col-md-1 text-white">#${t.id}</div>
+                            <div class="col-md-2 text-white">#${t.demande}</div>
+                            <div class="col-md-2 text-white">${t.toOrg}</div>
+                            <div class="col-md-1 text-center text-white">${t.quantite}</div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-secondary">${t.status}</span>
+                            </div>
+                            <div class="col-md-1 text-center text-white-50">${t.dateEnvoie ?? '-'}</div>
+                            <div class="col-md-1 text-center text-white-50">${t.dateReception ?? '-'}</div>
+                            <div class="col-md-2 text-end">
+                                <a href="/transfert/${t.id}"
+                                   class="btn btn-sm btn-outline-light rounded-circle">
+                                   <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            });
+
+        });
+});
+</script>
+
 {% endblock %}
