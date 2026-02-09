@@ -30,7 +30,7 @@ class FrontDonController extends AbstractController
         return $client;
     }
 
-    // ✅ THIS is the route your navbar needs: front_don_index
+    // ✅ Navbar route: front_don_index
     #[Route('/front/don', name: 'front_don_index', methods: ['GET'])]
     public function index(DonRepository $donRepo, ClientRepository $clientRepo): Response
     {
@@ -52,13 +52,16 @@ class FrontDonController extends AbstractController
         $client = $this->currentClient($clientRepo);
 
         $don = new Don();
-        $don->setDate(new \DateTime());   // default date
-        $don->setIdEntite(1);             // DB requires NOT NULL (change if you have real entitycollecte)
+        $don->setDate(new \DateTime()); // default date
+        $don->setIdEntite(1);           // DB requires NOT NULL
+        $don->setClient($client);       // ✅ IMPORTANT: set BEFORE validation
 
         $form = $this->createForm(DonType::class, $don);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // (Optional safety) ensure ownership stays correct
             $don->setClient($client);
 
             $em->persist($don);
@@ -83,10 +86,17 @@ class FrontDonController extends AbstractController
             throw $this->createAccessDeniedException('Not your donation.');
         }
 
+        // ✅ Keep client assigned (prevents null validation if form mapping changes)
+        $don->setClient($client);
+
         $form = $this->createForm(DonType::class, $don);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // (Optional safety) keep ownership
+            $don->setClient($client);
+
             $em->flush();
 
             $this->addFlash('success', 'Donation updated.');
@@ -95,7 +105,7 @@ class FrontDonController extends AbstractController
 
         return $this->render('front/don/edit.html.twig', [
             'form' => $form->createView(),
-            'don' => $don,
+            'don'  => $don,
         ]);
     }
 
@@ -108,7 +118,7 @@ class FrontDonController extends AbstractController
             throw $this->createAccessDeniedException('Not your donation.');
         }
 
-        if ($this->isCsrfTokenValid('delete_don_'.$don->getId(), (string)$request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete_don_'.$don->getId(), (string) $request->request->get('_token'))) {
             $em->remove($don);
             $em->flush();
             $this->addFlash('success', 'Donation deleted.');
