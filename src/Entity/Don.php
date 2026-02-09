@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DonRepository::class)]
+#[ORM\HasLifecycleCallbacks] // ✅ Required for automatic timestamps
 class Don
 {
     #[ORM\Id]
@@ -21,7 +22,6 @@ class Don
     #[ORM\Column]
     #[Assert\NotNull(message: "La quantité est obligatoire.")]
     #[Assert\Positive(message: "La quantité doit être positive.")]
-    #[Assert\NotBlank(message: "La quantité est obligatoire.")]
     #[Assert\Range(
         min: 50,
         max: 1000,
@@ -37,93 +37,68 @@ class Don
     )]
     private ?string $typeDon = null;
 
+    // ✅ Matches 'id_entite' requirement
     #[ORM\Column(name: 'id_entite')]
     #[Assert\NotNull(message: "L'entité est obligatoire.")]
-    #[Assert\Positive(message: "ID entité invalide.")]
     private ?int $idEntite = 1;
 
+    // ✅ Matches 'id_client' requirement (Foreign Key)
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: 'id_client', referencedColumnName: 'id', nullable: false)]
     #[Assert\NotNull(message: "Le client est obligatoire.")]
     private ?Client $client = null;
 
-    public function getId(): ?int
+    // ✅ NEW: Created At
+    #[ORM\Column(name: 'created_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    // ✅ NEW: Updated At
+    #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
+
+    // --- LIFECYCLE CALLBACKS ---
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
     {
-        return $this->id;
+        $this->createdAt = new \DateTimeImmutable();
+        // Also set updatedAt on creation
+        $this->updatedAt = new \DateTime();
     }
 
-    public function getDate(): ?\DateTimeInterface
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
     {
-        return $this->date;
+        $this->updatedAt = new \DateTime();
     }
 
-    public function setDate(\DateTimeInterface $date): static
-    {
-        $this->date = $date;
-        return $this;
-    }
+    // --- GETTERS & SETTERS ---
 
-    public function getQuantite(): ?float
-    {
-        return $this->quantite;
-    }
+    public function getId(): ?int { return $this->id; }
 
-    public function setQuantite(float $quantite): static
-    {
-        $this->quantite = $quantite;
-        return $this;
-    }
+    public function getDate(): ?\DateTimeInterface { return $this->date; }
+    public function setDate(\DateTimeInterface $date): static { $this->date = $date; return $this; }
 
-    public function getTypeDon(): ?string
-    {
-        return $this->typeDon;
-    }
+    public function getQuantite(): ?float { return $this->quantite; }
+    public function setQuantite(float $quantite): static { $this->quantite = $quantite; return $this; }
 
-    public function setTypeDon(string $typeDon): static
-    {
-        $this->typeDon = $typeDon;
-        return $this;
-    }
+    public function getTypeDon(): ?string { return $this->typeDon; }
+    public function setTypeDon(string $typeDon): static { $this->typeDon = $typeDon; return $this; }
 
-    public function getIdEntite(): ?int
-    {
-        return $this->idEntite;
-    }
+    public function getIdEntite(): ?int { return $this->idEntite; }
+    public function setIdEntite(int $idEntite): static { $this->idEntite = $idEntite; return $this; }
 
-    public function setIdEntite(int $idEntite): static
-    {
-        $this->idEntite = $idEntite;
-        return $this;
-    }
+    public function getClient(): ?Client { return $this->client; }
+    public function setClient(?Client $client): static { $this->client = $client; return $this; }
 
-    public function getClient(): ?Client
-    {
-        return $this->client;
-    }
+    public function getCreatedAt(): ?\DateTimeImmutable { return $this->createdAt; }
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static { $this->createdAt = $createdAt; return $this; }
 
-    public function setClient(?Client $client): static
-    {
-        $this->client = $client;
-        return $this;
-    }
+    public function getUpdatedAt(): ?\DateTimeInterface { return $this->updatedAt; }
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static { $this->updatedAt = $updatedAt; return $this; }
 
-    /**
-     * ✅ Fix for: "Object of class App\Entity\Don could not be converted to string"
-     * EasyAdmin + Symfony forms need a string label for entity choices.
-     */
     public function __toString(): string
     {
-        $id = $this->id ?? 0;
-
-        $type = $this->typeDon ?: 'Don';
-        $date = $this->date ? $this->date->format('Y-m-d') : 'no-date';
-
-        $q = $this->quantite !== null
-            ? rtrim(rtrim(number_format((float) $this->quantite, 2, '.', ''), '0'), '.') . ' ml'
-            : null;
-
-        return $q
-            ? sprintf('#%d • %s • %s • %s', $id, $type, $date, $q)
-            : sprintf('#%d • %s • %s', $id, $type, $date);
+        return sprintf('#%d - %s (%s)', $this->id, $this->typeDon, $this->date ? $this->date->format('d/m/Y') : 'N/A');
     }
 }

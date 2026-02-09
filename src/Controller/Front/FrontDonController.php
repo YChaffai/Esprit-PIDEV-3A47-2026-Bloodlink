@@ -3,7 +3,6 @@
 namespace App\Controller\Front;
 
 use App\Entity\Don;
-use App\Form\DonType;
 use App\Repository\ClientRepository;
 use App\Repository\DonRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +20,6 @@ class FrontDonController extends AbstractController
             throw $this->createAccessDeniedException('You must be logged in.');
         }
 
-        // In your SQL: client.id = user.id
         $client = $clientRepo->find($user->getId());
         if (!$client) {
             throw $this->createNotFoundException('Client profile not found for this user.');
@@ -30,7 +28,6 @@ class FrontDonController extends AbstractController
         return $client;
     }
 
-    // ✅ Navbar route: front_don_index
     #[Route('/front/don', name: 'front_don_index', methods: ['GET'])]
     public function index(DonRepository $donRepo, ClientRepository $clientRepo): Response
     {
@@ -46,74 +43,14 @@ class FrontDonController extends AbstractController
         ]);
     }
 
-    #[Route('/front/don/new', name: 'front_don_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $em, ClientRepository $clientRepo): Response
-    {
-        $client = $this->currentClient($clientRepo);
-
-        $don = new Don();
-        $don->setDate(new \DateTime()); // default date
-        $don->setIdEntite(1);           // DB requires NOT NULL
-        $don->setClient($client);       // ✅ IMPORTANT: set BEFORE validation
-
-        $form = $this->createForm(DonType::class, $don);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // (Optional safety) ensure ownership stays correct
-            $don->setClient($client);
-
-            $em->persist($don);
-            $em->flush();
-
-            $this->addFlash('success', 'Donation added.');
-            return $this->redirectToRoute('front_don_index');
-        }
-
-        return $this->render('front/don/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/front/don/{id}/edit', name: 'front_don_edit', methods: ['GET', 'POST'])]
-    public function edit(Don $don, Request $request, EntityManagerInterface $em, ClientRepository $clientRepo): Response
-    {
-        $client = $this->currentClient($clientRepo);
-
-        // ✅ Ownership check
-        if ($don->getClient()?->getId() !== $client->getId()) {
-            throw $this->createAccessDeniedException('Not your donation.');
-        }
-
-        // ✅ Keep client assigned (prevents null validation if form mapping changes)
-        $don->setClient($client);
-
-        $form = $this->createForm(DonType::class, $don);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // (Optional safety) keep ownership
-            $don->setClient($client);
-
-            $em->flush();
-
-            $this->addFlash('success', 'Donation updated.');
-            return $this->redirectToRoute('front_don_index');
-        }
-
-        return $this->render('front/don/edit.html.twig', [
-            'form' => $form->createView(),
-            'don'  => $don,
-        ]);
-    }
+    // ❌ NOTE: 'new' and 'edit' methods are intentionally removed to prevent client creation/modification of donation data.
 
     #[Route('/front/don/{id}/delete', name: 'front_don_delete', methods: ['POST'])]
     public function delete(Don $don, Request $request, EntityManagerInterface $em, ClientRepository $clientRepo): Response
     {
         $client = $this->currentClient($clientRepo);
 
+        // SECURITY: Check ownership
         if ($don->getClient()?->getId() !== $client->getId()) {
             throw $this->createAccessDeniedException('Not your donation.');
         }
@@ -121,7 +58,7 @@ class FrontDonController extends AbstractController
         if ($this->isCsrfTokenValid('delete_don_'.$don->getId(), (string) $request->request->get('_token'))) {
             $em->remove($don);
             $em->flush();
-            $this->addFlash('success', 'Donation deleted.');
+            $this->addFlash('success', 'Don supprimé.');
         }
 
         return $this->redirectToRoute('front_don_index');

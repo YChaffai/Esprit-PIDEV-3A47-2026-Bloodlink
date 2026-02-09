@@ -20,20 +20,13 @@ class FrontDossierController extends AbstractController
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
-
-        // In your SQL: client.id = user.id
-        $client = $clientRepo->find($user->getId());
-        if (!$client) {
-            throw $this->createNotFoundException('Client profile not found.');
-        }
-        return $client;
+        return $clientRepo->find($user->getId());
     }
 
     #[Route('/front/dossier', name: 'front_dossier_show', methods: ['GET'])]
     public function index(DossierMedRepository $repo, ClientRepository $clientRepo): Response
     {
         $client = $this->currentClient($clientRepo);
-
         $dossiers = $repo->findBy(['client' => $client], ['id' => 'DESC']);
 
         return $this->render('front/dossier/index.html.twig', [
@@ -41,64 +34,38 @@ class FrontDossierController extends AbstractController
         ]);
     }
 
-    #[Route('/front/dossier/new', name: 'front_dossier_new', methods: ['GET','POST'])]
-    public function new(Request $request, EntityManagerInterface $em, ClientRepository $clientRepo): Response
-    {
-        $client = $this->currentClient($clientRepo);
-
-        $dossier = new DossierMed();
-        $dossier->setClient($client);
-
-        $form = $this->createForm(DossierMedType::class, $dossier, [
-            'client' => $client,
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // donation must be owned by same client
-            if ($dossier->getDon()?->getClient()?->getId() !== $client->getId()) {
-                throw $this->createAccessDeniedException();
-            }
-
-            $em->persist($dossier);
-            $em->flush();
-
-            $this->addFlash('success', 'Medical dossier created.');
-            return $this->redirectToRoute('front_dossier_show');
-        }
-
-        return $this->render('front/dossier/new.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    #[Route('/front/dossier/{id}/edit', name: 'front_dossier_edit', methods: ['GET','POST'])]
+    #[Route('/front/dossier/{id}/edit', name: 'front_dossier_edit', methods: ['GET', 'POST'])]
     public function edit(DossierMed $dossier, Request $request, EntityManagerInterface $em, ClientRepository $clientRepo): Response
     {
         $client = $this->currentClient($clientRepo);
 
+        // Security: Ownership check
         if ($dossier->getClient()?->getId() !== $client->getId()) {
-            throw $this->createAccessDeniedException();
+            throw $this->createAccessDeniedException('Ce dossier ne vous appartient pas.');
         }
 
         $form = $this->createForm(DossierMedType::class, $dossier, [
             'client' => $client,
         ]);
+
+        // 🔒 LOCK FIELDS: Client cannot change these
+        $form->remove('nom');
+        $form->remove('prenom');
+        $form->remove('typeSang');
+        $form->remove('don');
+        $form->remove('sexe'); // Assuming gender is also non-modifiable identity data
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($dossier->getDon()?->getClient()?->getId() !== $client->getId()) {
-                throw $this->createAccessDeniedException();
-            }
-
             $em->flush();
-            $this->addFlash('success', 'Medical dossier updated.');
+            $this->addFlash('success', 'Dossier mis à jour avec succès.');
             return $this->redirectToRoute('front_dossier_show');
         }
 
         return $this->render('front/dossier/edit.html.twig', [
             'form' => $form->createView(),
-            'dossier' => $dossier,
+            'dossier' => $dossier, // Pass this to display the locked values as text
         ]);
     }
 
@@ -114,7 +81,7 @@ class FrontDossierController extends AbstractController
         if ($this->isCsrfTokenValid('delete_dossier_'.$dossier->getId(), (string)$request->request->get('_token'))) {
             $em->remove($dossier);
             $em->flush();
-            $this->addFlash('success', 'Medical dossier deleted.');
+            $this->addFlash('success', 'Dossier médical supprimé.');
         }
 
         return $this->redirectToRoute('front_dossier_show');

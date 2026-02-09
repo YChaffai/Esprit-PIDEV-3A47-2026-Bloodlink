@@ -25,25 +25,26 @@ class DonCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Don')
             ->setEntityLabelInPlural('Dons')
-            ->setDefaultSort(['id' => 'DESC'])
-            ->setSearchFields(['id', 'typeDon', 'quantite']);
+            ->setDefaultSort(['date' => 'DESC'])
+            // Apply the custom glassmorphism detail view
+            ->overrideTemplate('crud/detail', 'admin/don/show.html.twig');
     }
 
     public function configureFields(string $pageName): iterable
     {
         return [
+            // ID: Read-only
             IdField::new('id')->hideOnForm(),
 
-            // ✅ Correct field type for datetime
-            // Using a simple format; if intl is disabled, this usually still works in most setups
-            DateTimeField::new('date', 'Date')
-                ->setFormat('yyyy-MM-dd HH:mm')
-                ->hideOnForm(), // keep as display only in admin (optional)
+            // Client: Editable (Select dropdown)
+            AssociationField::new('client', 'Donneur')
+                ->setRequired(true),
 
-            NumberField::new('quantite', 'Quantité')
-                ->setNumDecimals(2)
-                ->setFormTypeOption('attr', ['step' => '0.01']),
+            // Date: Editable
+            DateTimeField::new('date', 'Date du don')
+                ->setFormat('yyyy-MM-dd HH:mm'),
 
+            // Type: Editable
             ChoiceField::new('typeDon', 'Type de don')
                 ->setChoices([
                     'Sang total' => 'Sang total',
@@ -53,22 +54,29 @@ class DonCrudController extends AbstractCrudController
                 ])
                 ->renderAsBadges(),
 
-            IntegerField::new('idEntite', 'ID Entité')
-                ->hideOnIndex(),
+            // Quantity: Editable
+            NumberField::new('quantite', 'Quantité (ml)')
+                ->setNumDecimals(2)
+                ->setFormTypeOption('attr', ['step' => '0.01']),
 
-            AssociationField::new('client', 'Donneur'),
+            // Entity ID: Editable
+            IntegerField::new('idEntite', 'ID Entité'),
+
+            // Timestamps: Read-only (Hidden on Create/Edit forms)
+            DateTimeField::new('createdAt', 'Créé le')
+                ->hideOnForm()
+                ->setFormat('yyyy-MM-dd HH:mm'),
+                
+            DateTimeField::new('updatedAt', 'Modifié le')
+                ->hideOnForm()
+                ->setFormat('yyyy-MM-dd HH:mm'),
         ];
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
-        if ($entityInstance instanceof Don) {
-            if ($entityInstance->getDate() === null) {
-                $entityInstance->setDate(new \DateTime());
-            }
-            if ($entityInstance->getIdEntite() === null) {
-                $entityInstance->setIdEntite(1);
-            }
+        if ($entityInstance instanceof Don && $entityInstance->getIdEntite() === null) {
+            $entityInstance->setIdEntite(1); // Default value if somehow missing
         }
         parent::persistEntity($entityManager, $entityInstance);
     }
