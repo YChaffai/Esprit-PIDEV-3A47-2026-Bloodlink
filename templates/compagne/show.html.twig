@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Campagne{% endblock %}
+
+{% block body %}
+    <h1>Détails de la Campagne</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ compagne.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ compagne.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ compagne.description }}</td>
+            </tr>
+            <tr>
+                <th>Date Début</th>
+                <td>{{ compagne.dateDebut ? compagne.dateDebut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date Fin</th>
+                <td>{{ compagne.dateFin ? compagne.dateFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Créé le</th>
+                <td>{{ compagne.createdAt ? compagne.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Entité de collecte</th>
+                <td>
+                    {% if compagne.entite %}
+                        {{ compagne.entite.nom }}
+                    {% else %}
+                        Aucune entité associée
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Mis à jour le</th>
+                <td>{{ compagne.updatedAt ? compagne.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_compagne_index') }}">Retour à la liste</a>
+
+    <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}">Modifier</a>
+
+    {{ include('compagne/_delete_form.html.twig') }}
+{% endblock %}

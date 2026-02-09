@@ -41,4 +41,24 @@ class EntitecollecteRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findBySearchAndSort(?string $search, string $sort, string $direction): array
+    {
+        $qb = $this->createQueryBuilder('e');
+
+        if ($search) {
+            $qb->andWhere('e.nom LIKE :search OR e.localisation LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        $allowedSorts = ['id', 'nom', 'localisation', 'telephone'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        return $qb->orderBy('e.' . $sort, $direction)
+            ->getQuery()
+            ->getResult();
+    }
 }

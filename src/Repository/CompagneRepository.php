@@ -40,4 +40,26 @@ class CompagneRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findBySearchAndSort(?string $search, string $sort, string $direction): array
+    {
+        $qb = $this->createQueryBuilder('c');
+
+        if ($search) {
+            $qb->andWhere('c.titre LIKE :search OR c.description LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Validate sort field to prevent SQL injection
+        $allowedSorts = ['id', 'titre', 'date_debut', 'date_fin', 'created_at', 'updated_at'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        // Validate direction
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        return $qb->orderBy('c.' . $sort, $direction)
+            ->getQuery()
+            ->getResult();
+    }
 }
