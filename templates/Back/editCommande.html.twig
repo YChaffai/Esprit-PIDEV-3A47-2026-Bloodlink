@@ -1,0 +1,222 @@
+{% extends 'baseFront.html.twig' %}
+
+{# Optional but recommended: Bootstrap form structure #}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block title %}Modifier Commande{% endblock %}
+
+{% block stylesheets %}
+  <style>
+    /* --- Form theme (matches your baseFront variables) --- */
+    .bl-form-card{
+      padding: 28px;
+    }
+
+    .bl-form-title{
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -.5px;
+      margin-bottom: 2px;
+    }
+
+    .bl-form-subtitle{
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .bl-label{
+      display:block;
+      margin-bottom: 8px;
+      font-size: .82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.65);
+      font-weight: 800;
+    }
+
+    .bl-control{
+      width: 100%;
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 18px !important;
+      padding: 14px 16px !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .bl-control::placeholder{
+      color: rgba(255,255,255,.35) !important;
+    }
+
+    .bl-control:focus{
+      border-color: rgba(230,57,57,.55) !important;
+      box-shadow: 0 0 0 .2rem rgba(230,57,57,.15) !important;
+    }
+
+    /* make selects look like your inputs */
+    select.bl-control{
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, rgba(255,255,255,.65) 50%),
+        linear-gradient(135deg, rgba(255,255,255,.65) 50%, transparent 50%);
+      background-position:
+        calc(100% - 22px) calc(50% - 3px),
+        calc(100% - 16px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 44px !important;
+    }
+
+    /* dropdown list (works on most browsers) */
+    select.bl-control option,
+    select.bl-control optgroup{
+      background: #111;
+      color: #fff;
+    }
+
+    /* Errors */
+    .bl-error{
+      margin-top: 8px;
+      color: rgba(230,57,57,.95);
+      font-size: .9rem;
+      font-weight: 600;
+    }
+
+    /* Buttons */
+    .btn-pill{
+      border-radius: 999px !important;
+      padding: 12px 18px !important;
+      font-weight: 800 !important;
+    }
+
+    .btn-soft-danger{
+      background: rgba(230,57,57,.15) !important;
+      border: 1px solid rgba(230,57,57,.45) !important;
+      color: #fff !important;
+    }
+
+    .btn-soft-danger:hover{
+      background: rgba(230,57,57,.25) !important;
+      border-color: rgba(230,57,57,.7) !important;
+    }
+
+    .btn-outline-soft{
+      border: 1px solid rgba(255,255,255,.18) !important;
+      color: #fff !important;
+      background: transparent !important;
+    }
+
+    .btn-outline-soft:hover{
+      border-color: rgba(255,255,255,.35) !important;
+      background: rgba(255,255,255,.06) !important;
+    }
+
+    /* Make form layout nicer */
+    .bl-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 18px;
+    }
+
+    @media (max-width: 992px){
+      .bl-grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid px-0">
+
+    <div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+      <div>
+        <h1 class="bl-form-title">Modifier</h1>
+        <p class="bl-form-subtitle">Mettre à jour les détails de la commande.</p>
+      </div>
+
+      <a href="{{ path('back_commandes_index') }}"
+         class="btn btn-outline-light btn-pill btn-outline-soft">
+        <i class="fa-solid fa-arrow-left me-2"></i> Retour
+      </a>
+    </div>
+
+    <div class="glass-card bl-form-card">
+
+      {# ✅ FORM START #}
+      {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+      <div class="bl-grid">
+
+        {# --- Adjust field names to your real CommandeType fields --- #}
+
+        <div>
+          {{ form_label(form.reference, 'REFERENCE', { label_attr: { class: 'bl-label' } }) }}
+          {{ form_widget(form.reference, { attr: { class: 'bl-control', placeholder: 'Ex: 2026-001' } }) }}
+          <div class="bl-error">{{ form_errors(form.reference) }}</div>
+        </div>
+
+        <div>
+          {{ form_label(form.quantite, 'QUANTITE', { label_attr: { class: 'bl-label' } }) }}
+          {{ form_widget(form.quantite, { attr: { class: 'bl-control', placeholder: 'Ex: 3' } }) }}
+          <div class="bl-error">{{ form_errors(form.quantite) }}</div>
+        </div>
+
+        <div>
+          {{ form_label(form.typeSang, 'TYPE SANG', { label_attr: { class: 'bl-label' } }) }}
+          {{ form_widget(form.typeSang, { attr: { class: 'bl-control' } }) }}
+          <div class="bl-error">{{ form_errors(form.typeSang) }}</div>
+        </div>
+
+        <div>
+          {{ form_label(form.priorite, 'PRIORITE', { label_attr: { class: 'bl-label' } }) }}
+          {{ form_widget(form.priorite, { attr: { class: 'bl-control' } }) }}
+          <div class="bl-error">{{ form_errors(form.priorite) }}</div>
+        </div>
+
+        {# If you still have relations (banque/stock/client), keep them styled too #}
+        {% if form.banque is defined %}
+          <div>
+            {{ form_label(form.banque, 'BANQUE', { label_attr: { class: 'bl-label' } }) }}
+            {{ form_widget(form.banque, { attr: { class: 'bl-control' } }) }}
+            <div class="bl-error">{{ form_errors(form.banque) }}</div>
+          </div>
+        {% endif %}
+
+        {% if form.stock is defined %}
+          <div>
+            {{ form_label(form.stock, 'STOCK', { label_attr: { class: 'bl-label' } }) }}
+            {{ form_widget(form.stock, { attr: { class: 'bl-control' } }) }}
+            <div class="bl-error">{{ form_errors(form.stock) }}</div>
+          </div>
+        {% endif %}
+
+        {% if form.client is defined %}
+          <div>
+            {{ form_label(form.client, 'CLIENT', { label_attr: { class: 'bl-label' } }) }}
+            {{ form_widget(form.client, { attr: { class: 'bl-control' } }) }}
+            <div class="bl-error">{{ form_errors(form.client) }}</div>
+          </div>
+        {% endif %}
+
+      </div>
+
+      {# This renders hidden fields like _token #}
+      {{ form_rest(form) }}
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <a href="{{ path('back_commandes_index') }}"
+           class="btn btn-pill btn-outline-soft btn-outline-light">
+          Cancel
+        </a>
+
+        <button type="submit" class="btn btn-pill btn-soft-danger">
+          <i class="fa-solid fa-floppy-disk me-2"></i> Save
+        </button>
+      </div>
+
+      {{ form_end(form) }}
+      {# ✅ FORM END #}
+
+    </div>
+  </div>
+{% endblock %}

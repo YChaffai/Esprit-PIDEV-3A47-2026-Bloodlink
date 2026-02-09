@@ -1,0 +1,181 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+
+  <style>
+    /* Match your dark/glass theme */
+    .choices__inner{
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      color: var(--text) !important;
+      padding: .6rem .9rem !important;
+      min-height: calc(1.5em + 1.2rem + 2px);
+    }
+    .choices__list--dropdown, .choices__list[aria-expanded]{
+      background: #111 !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      color: var(--text) !important;
+      overflow: hidden;
+    }
+    .choices__list--dropdown .choices__item{
+      color: var(--text) !important;
+      padding: 12px 14px !important;
+    }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted{
+      background: rgba(230,57,57,.20) !important;
+    }
+    .choices[data-type*="select-one"]::after{
+      border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}Nouvelle Commande{% endblock %}
+
+{% block body %}
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-.5px;">Nouvelle Commande</h1>
+      <p class="text-white-50 mb-0">Remplissez les informations puis sauvegardez.</p>
+    </div>
+
+    <a href="{{ path('front_commandes_index') }}"
+       class="btn btn-outline-light btn-lg rounded-pill px-4">
+      <i class="fa-solid fa-arrow-left me-2"></i> Retour
+    </a>
+  </div>
+
+  <div class="glass-card p-3 p-md-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div class="rounded-circle d-flex align-items-center justify-content-center"
+           style="width:46px;height:46px;background:rgba(230,57,57,.12);border:1px solid rgba(230,57,57,.25);">
+        <i class="fa-solid fa-file-circle-plus" style="color:var(--primary)"></i>
+      </div>
+      <div>
+        <div class="fw-black text-uppercase" style="letter-spacing:.06em;">Créer</div>
+        <div class="text-white-50" style="font-size:.92rem;">Détails de la commande</div>
+      </div>
+    </div>
+
+    {{ form_start(form) }}
+
+{# Display global form errors (e.g., stock insuffisant) #}
+{% if form.vars.errors|length > 0 %}
+  <div class="alert alert-danger rounded-3 mb-3">
+    {% for error in form.vars.errors %}
+      <div><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="row g-3">
+
+  <div class="col-md-6">
+    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
+      {{ form_label(form.reference) }}
+    </div>
+    {{ form_widget(form.reference, {
+      attr: {
+        class: 'form-control form-control-lg',
+        style: 'background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:16px;'
+      }
+    }) }}
+    {{ form_errors(form.reference) }}
+  </div>
+
+  <div class="col-md-6">
+    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
+      {{ form_label(form.quantite) }}
+    </div>
+    {{ form_widget(form.quantite, {
+      attr: {
+        class: 'form-control form-control-lg',
+        style: 'background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:16px;'
+      }
+    }) }}
+    {{ form_errors(form.quantite) }}
+  </div>
+
+  <div class="col-md-6">
+    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
+      {{ form_label(form.typeSang) }}
+    </div>
+    {{ form_widget(form.typeSang, { attr: { class: 'form-select form-select-lg js-choices' } }) }}
+    {{ form_errors(form.typeSang) }}
+  </div>
+
+  <div class="col-md-6">
+    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
+      {{ form_label(form.priorite) }}
+    </div>
+    {{ form_widget(form.priorite, {
+      attr: {
+        class: 'form-select form-select-lg js-choices',
+      }
+    }) }}
+    {{ form_errors(form.priorite) }}
+  </div>
+
+  {# ✅ These were showing tiny because they were rendered by "rest" #}
+  <div class="col-md-4">
+    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
+      {{ form_label(form.banque) }}
+    </div>
+    {{ form_widget(form.banque, {
+      attr: {
+        class: 'form-select form-select-lg js-choices',
+      }
+    }) }}
+    {{ form_errors(form.banque) }}
+  </div>
+
+  
+
+  <div class="col-md-4">
+    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
+      {{ form_label(form.client) }}
+    </div>
+    {{ form_widget(form.client, {
+      attr: {
+        class: 'form-select form-select-lg js-choices',
+        style: 'background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:16px;'
+      }
+    }) }}
+    {{ form_errors(form.client) }}
+  </div>
+
+</div>
+
+<div class="d-flex justify-content-end gap-2 mt-4">
+  <a href="{{ path('front_commandes_index') }}"
+     class="btn btn-outline-light btn-lg rounded-pill px-4">
+    Cancel
+  </a>
+
+  <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">
+    <i class="fa-solid fa-floppy-disk me-2"></i> Save
+  </button>
+</div>
+
+{# ✅ IMPORTANT: don’t render rest twice #}
+{{ form_end(form) }}
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script>
+    document.querySelectorAll('.js-choices').forEach((el) => {
+      new Choices(el, {
+        searchEnabled: false,
+        shouldSort: false,
+        itemSelectText: '',
+      });
+    });
+  </script>
+{% endblock %}

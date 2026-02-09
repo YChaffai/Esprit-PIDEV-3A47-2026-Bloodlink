@@ -1,0 +1,191 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Gestion des Stocks{% endblock %}
+
+{% block body %}
+  <div class="container-fluid px-0">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+      <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-.5px;">Stocks</h1>
+        <p class="text-white-50 mb-0">Consultez et gérez les stocks de sang disponibles.</p>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a href="{{ path('back_stock_new') }}" class="btn btn-danger rounded-pill px-4">
+          <i class="fa-solid fa-plus me-2"></i> Nouveau Stock
+        </a>
+      </div>
+    </div>
+
+    <div class="glass-card p-3 p-md-4">
+      <div class="d-flex flex-column flex-md-row gap-2 gap-md-3 align-items-md-center justify-content-between mb-3">
+        <div class="input-group" style="max-width:420px;">
+          <span class="input-group-text bg-transparent text-white border-0" style="border:1px solid var(--border)!important;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input id="stock-search" type="text"
+                 class="form-control bg-transparent text-white"
+                 placeholder="Rechercher (type sang, org...)​"
+                 style="border:1px solid var(--border);">
+        </div>
+
+        <div class="d-flex gap-2">
+          <select id="stock-type-org" class="form-select bg-transparent text-white"
+                  style="border:1px solid var(--border); max-width:220px;">
+            <option value="">Toutes organisations</option>
+            <option value="banque">Banque</option>
+            <option value="entitecollecte">Entite Collecte</option>
+            <option value="crts">CRTS</option>
+            <option value="cnts">CNTS</option>
+          </select>
+
+          <select id="stock-type-sang" class="form-select bg-transparent text-white"
+                  style="border:1px solid var(--border); max-width:180px;">
+            <option value="">Tous types sang</option>
+            <option value="a+">A+</option>
+            <option value="a-">A-</option>
+            <option value="b+">B+</option>
+            <option value="b-">B-</option>
+            <option value="ab+">AB+</option>
+            <option value="ab-">AB-</option>
+            <option value="o+">O+</option>
+            <option value="o-">O-</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-dark table-borderless align-middle mb-0" style="--bs-table-bg: transparent;">
+          <thead>
+            <tr class="text-white-50 text-uppercase" style="font-size:.8rem; letter-spacing:.06em;">
+              <th>ID</th>
+              <th>Type Sang</th>
+              <th>Quantité</th>
+              <th>Organisation</th>
+              <th>Org ID</th>
+              <th>Créé le</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="stock-rows">
+            {% if stocks is empty %}
+              <tr>
+                <td colspan="7">
+                  <div class="py-4 text-center text-white-50">
+                    <i class="fa-regular fa-folder-open me-2"></i>
+                    Aucun stock trouvé.
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+
+            {% for s in stocks %}
+              {% set typeSang = s.typeSang ?? '-' %}
+              {% set typeOrg = s.typeOrg ?? '-' %}
+              {% set typeOrgId = s.typeOrgid ?? '-' %}
+              {% set qty = s.quantite ?? 0 %}
+              {% set createdAt = s.createdAt ? s.createdAt|date('d/m/Y H:i') : '-' %}
+
+              <tr class="stock-row"
+                  data-search="{{ (typeSang ~ ' ' ~ typeOrg ~ ' ' ~ typeOrgId)|lower }}"
+                  data-type-org="{{ typeOrg|lower }}"
+                  data-type-sang="{{ typeSang|lower }}">
+                <td class="fw-semibold">
+                  <span class="badge rounded-pill bg-light text-dark me-2">#{{ s.id }}</span>
+                </td>
+
+                <td>
+                  <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border"
+                        style="border-color: rgba(230,57,57,.35)!important;">
+                    {{ typeSang }}
+                  </span>
+                </td>
+
+                <td class="fw-semibold">{{ qty }}</td>
+
+                <td>
+                  <span class="badge rounded-pill bg-info bg-opacity-25 text-white border"
+                        style="border-color: rgba(13,202,240,.35)!important;">
+                    {{ typeOrg }}
+                  </span>
+                </td>
+
+                <td class="fw-semibold">{{ typeOrgId }}</td>
+
+                <td class="text-white-50">{{ createdAt }}</td>
+
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <a href="{{ path('back_stock_edit', {id: s.id}) }}"
+                       class="btn btn-sm btn-outline-light rounded-pill px-3">
+                      <i class="fa-solid fa-pen-to-square me-1"></i> Modifier
+                    </a>
+
+                    <form method="post"
+                          action="{{ path('back_stock_delete', {id: s.id}) }}"
+                          onsubmit="return confirm('Supprimer ce stock ?');"
+                          class="d-inline">
+                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ s.id) }}">
+                      <button class="btn btn-sm rounded-pill px-3"
+                              style="border:1px solid rgba(230,57,57,.45); color:#fff; background:rgba(230,57,57,.15);">
+                        <i class="fa-solid fa-trash me-1"></i> Supprimer
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-white-50 mt-3" id="stock-count"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  <script>
+    (function () {
+      const searchInput = document.getElementById('stock-search');
+      const typeOrgSelect = document.getElementById('stock-type-org');
+      const typeSangSelect = document.getElementById('stock-type-sang');
+      const rows = Array.from(document.querySelectorAll('.stock-row'));
+      const countEl = document.getElementById('stock-count');
+
+      function applyFilters() {
+        const q = (searchInput.value || '').trim().toLowerCase();
+        const typeOrg = (typeOrgSelect.value || '').trim().toLowerCase();
+        const typeSang = (typeSangSelect.value || '').trim().toLowerCase();
+
+        let visible = 0;
+
+        rows.forEach(row => {
+          const hay = row.dataset.search || '';
+          const org = row.dataset.typeOrg || '';
+          const sang = row.dataset.typeSang || '';
+
+          const matchQ = !q || hay.includes(q);
+          const matchOrg = !typeOrg || org === typeOrg;
+          const matchSang = !typeSang || sang === typeSang;
+
+          const show = matchQ && matchOrg && matchSang;
+          row.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        if (countEl) {
+          countEl.textContent = `${visible} stock(s) affiché(s)`;
+        }
+      }
+
+      [searchInput, typeOrgSelect, typeSangSelect].forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', applyFilters);
+        el.addEventListener('change', applyFilters);
+      });
+
+      applyFilters();
+    })();
+  </script>
+{% endblock %}

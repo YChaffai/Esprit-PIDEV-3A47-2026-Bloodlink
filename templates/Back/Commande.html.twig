@@ -1,0 +1,207 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Mes Commandes{% endblock %}
+
+{% block body %}
+  <div class="container-fluid px-0">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+      <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-.5px;">Commandes</h1>
+        <p class="text-white-50 mb-0">Consultez la liste des commandes et leur statut.</p>
+      </div>
+
+      <div class="d-flex gap-2">
+        {# Optional: create button (if you have the route) #}
+        {# <a href="{{ path('front_commande_new') }}" class="btn btn-danger rounded-pill px-4">
+          <i class="fa-solid fa-plus me-2"></i> Nouvelle commande
+        </a> #}
+      </div>
+    </div>
+
+    <div class="glass-card p-3 p-md-4">
+      <div class="d-flex flex-column flex-md-row gap-2 gap-md-3 align-items-md-center justify-content-between mb-3">
+        <div class="input-group" style="max-width:420px;">
+          <span class="input-group-text bg-transparent text-white border-0" style="border:1px solid var(--border)!important;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input id="cmd-search" type="text"
+                 class="form-control bg-transparent text-white"
+                 placeholder="Rechercher (référence, sang, statut...)"
+                 style="border:1px solid var(--border);">
+        </div>
+
+        <div class="d-flex gap-2">
+          <select id="cmd-status" class="form-select bg-transparent text-white"
+                  style="border:1px solid var(--border); max-width:220px;">
+            <option value="">Tous les statuts</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+
+          <select id="cmd-priority" class="form-select bg-transparent text-white"
+                  style="border:1px solid var(--border); max-width:220px;">
+            <option value="">Toutes priorités</option>
+            <option value="low">Low</option>
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-dark table-borderless align-middle mb-0" style="--bs-table-bg: transparent;">
+          <thead>
+            <tr class="text-white-50 text-uppercase" style="font-size:.8rem; letter-spacing:.06em;">
+              <th>Référence</th>
+              <th>Type sang</th>
+              <th>Quantité</th>
+              <th>Priorité</th>
+              <th>Statut</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="cmd-rows">
+            {% if commandes is empty %}
+              <tr>
+                <td colspan="6">
+                  <div class="py-4 text-center text-white-50">
+                    <i class="fa-regular fa-folder-open me-2"></i>
+                    Aucune commande trouvée.
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
+
+            {% for c in commandes %}
+              {# Adjust these getters to your real entity fields #}
+              {% set ref = c.reference ?? c.id %}
+              {% set blood = c.typeSang ?? c.type_sang ?? '-' %}
+              {% set qty = c.quantite ?? '-' %}
+              {% set priority = c.priorite ?? '-' %}
+              {% set status = c.status ?? '-' %}
+
+              <tr class="cmd-row"
+                  data-search="{{ (ref ~ ' ' ~ blood ~ ' ' ~ priority ~ ' ' ~ status)|lower }}"
+                  data-status="{{ status|lower }}"
+                  data-priority="{{ priority|lower }}">
+                <td class="fw-semibold">
+                  <span class="badge rounded-pill bg-light text-dark me-2">#{{ ref }}</span>
+                </td>
+
+                <td>
+                  <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border"
+                        style="border-color: rgba(230,57,57,.35)!important;">
+                    {{ blood }}
+                  </span>
+                </td>
+
+                <td class="fw-semibold">{{ qty }}</td>
+
+                <td>
+                  {% set p = priority|lower %}
+                  {% if p in ['urgent','high'] %}
+                    <span class="badge rounded-pill bg-warning text-dark">{{ priority }}</span>
+                  {% elseif p in ['low'] %}
+                    <span class="badge rounded-pill bg-secondary">{{ priority }}</span>
+                  {% else %}
+                    <span class="badge rounded-pill bg-info text-dark">{{ priority }}</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% set s = status|lower %}
+                  {% if s in ['accepted','valide','approved'] %}
+                    <span class="badge rounded-pill bg-success bg-opacity-25 text-white border"
+                          style="border-color: rgba(25,135,84,.35)!important;">
+                      {{ status }}
+                    </span>
+                  {% elseif s in ['rejected','refuse','denied'] %}
+                    <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border"
+                          style="border-color: rgba(220,53,69,.35)!important;">
+                      {{ status }}
+                    </span>
+                  {% else %}
+                    <span class="badge rounded-pill bg-light bg-opacity-10 text-white border"
+                          style="border-color: rgba(255,255,255,.12)!important;">
+                      {{ status }}
+                    </span>
+                  {% endif %}
+                </td>
+
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2">
+                    <a href="{{ path('admin_commande_edit', {id: c.id}) }}"
+                      class="btn btn-sm btn-outline-light rounded-pill px-3">
+                      <i class="fa-solid fa-pen-to-square me-1"></i> Modifier
+                    </a>
+
+                    <form method="post"
+                          action="{{ path('admin_commande_delete', {id: c.id}) }}"
+                          onsubmit="return confirm('Supprimer cette commande ?');"
+                          class="d-inline">
+                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ c.id) }}">
+                      <button class="btn btn-sm rounded-pill px-3"
+                              style="border:1px solid rgba(230,57,57,.45); color:#fff; background:rgba(230,57,57,.15);">
+                        <i class="fa-solid fa-trash me-1"></i> Supprimer
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-white-50 mt-3" id="cmd-count"></div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  <script>
+    (function () {
+      const searchInput = document.getElementById('cmd-search');
+      const statusSelect = document.getElementById('cmd-status');
+      const prioritySelect = document.getElementById('cmd-priority');
+      const rows = Array.from(document.querySelectorAll('.cmd-row'));
+      const countEl = document.getElementById('cmd-count');
+
+      function applyFilters() {
+        const q = (searchInput.value || '').trim().toLowerCase();
+        const status = (statusSelect.value || '').trim().toLowerCase();
+        const priority = (prioritySelect.value || '').trim().toLowerCase();
+
+        let visible = 0;
+
+        rows.forEach(row => {
+          const hay = row.dataset.search || '';
+          const s = row.dataset.status || '';
+          const p = row.dataset.priority || '';
+
+          const matchQ = !q || hay.includes(q);
+          const matchS = !status || s === status;
+          const matchP = !priority || p === priority;
+
+          const show = matchQ && matchS && matchP;
+          row.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        if (countEl) {
+          countEl.textContent = `${visible} commande(s) affichée(s)`;
+        }
+      }
+
+      [searchInput, statusSelect, prioritySelect].forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', applyFilters);
+        el.addEventListener('change', applyFilters);
+      });
+
+      applyFilters();
+    })();
+  </script>
+{% endblock %}
