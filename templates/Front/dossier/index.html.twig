@@ -1,0 +1,133 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mon Dossier | BloodLink{% endblock %}
+
+{% block body %}
+  <div class="py-4 py-md-5">
+
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+        <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+          <i class="fa-solid fa-file-medical me-2" style="color:var(--primary);"></i>
+          Mon Dossier
+        </h1>
+        <div style="color:var(--muted);">Vos dossiers médicaux, accessibles et organisés.</div>
+      </div>
+
+      <a href="{{ path('front_dossier_new') }}"
+         class="btn btn-lg rounded-pill fw-bold"
+         style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+        <i class="fa-solid fa-plus me-2"></i> Créer un dossier
+      </a>
+    </div>
+
+    {% if dossiers|length > 0 %}
+      <div class="row g-4">
+        {% for dossier in dossiers %}
+          <div class="col-12 col-lg-6">
+            <div class="glass-card h-100 overflow-hidden">
+
+              <div class="p-4 d-flex justify-content-between align-items-center"
+                   style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center"
+                       style="width:48px;height:48px;background: rgba(230,57,57,.12); border: 1px solid rgba(230,57,57,.25);">
+                    <i class="fa-solid fa-file-medical" style="color:var(--primary);"></i>
+                  </div>
+
+                  <div>
+                    <div class="small mb-1" style="color:var(--muted);">Patient</div>
+                    <div class="fw-black fs-5">
+                      {{ dossier.nom|upper }} {{ dossier.prenom|capitalize }}
+                    </div>
+                  </div>
+                </div>
+
+                <span class="badge rounded-pill px-3 py-2"
+                      style="background:rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:white;">
+                  {{ dossier.typeSang }}
+                </span>
+              </div>
+
+              <div class="p-4">
+                <div class="row g-3">
+                  <div class="col-6">
+                    <div class="p-3 rounded-4" style="background:rgba(255,255,255,.03); border:1px solid var(--border);">
+                      <div class="small" style="color:var(--muted);">Âge</div>
+                      <div class="fw-black">{{ dossier.age }} <span class="small" style="color:var(--muted);">ans</span></div>
+                    </div>
+                  </div>
+
+                  <div class="col-6">
+                    <div class="p-3 rounded-4" style="background:rgba(255,255,255,.03); border:1px solid var(--border);">
+                      <div class="small" style="color:var(--muted);">Sexe</div>
+                      <div class="fw-black">{{ dossier.sexe }}</div>
+                    </div>
+                  </div>
+
+                  <div class="col-4">
+                    <div class="p-3 rounded-4" style="background:rgba(255,255,255,.03); border:1px solid var(--border);">
+                      <div class="small" style="color:var(--muted);">Taille</div>
+                      <div class="fw-black">{{ dossier.taille }} <span class="small" style="color:var(--muted);">cm</span></div>
+                    </div>
+                  </div>
+
+                  <div class="col-4">
+                    <div class="p-3 rounded-4" style="background:rgba(255,255,255,.03); border:1px solid var(--border);">
+                      <div class="small" style="color:var(--muted);">Poids</div>
+                      <div class="fw-black">{{ dossier.poid }} <span class="small" style="color:var(--muted);">kg</span></div>
+                    </div>
+                  </div>
+
+                  <div class="col-4">
+                    <div class="p-3 rounded-4" style="background:rgba(255,255,255,.03); border:1px solid var(--border);">
+                      <div class="small" style="color:var(--muted);">Temp.</div>
+                      <div class="fw-black">{{ dossier.temperature }} <span class="small" style="color:var(--muted);">°C</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                  <a href="{{ path('front_dossier_edit', {'id': dossier.id}) }}"
+                     class="btn btn-lg rounded-pill fw-bold flex-fill"
+                     style="background:transparent; color:white; border:1px solid var(--border);">
+                    <i class="fa-solid fa-pen me-2"></i> Modifier
+                  </a>
+
+                  <form method="post" action="{{ path('front_dossier_delete', {'id': dossier.id}) }}"
+                        class="flex-fill"
+                        onsubmit="return confirm('Supprimer ce dossier ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_dossier_' ~ dossier.id) }}">
+                    <button class="btn btn-lg rounded-pill fw-bold w-100"
+                            style="background:rgba(230,57,57,.12); color:white; border:1px solid rgba(230,57,57,.25);">
+                      <i class="fa-solid fa-trash me-2"></i> Supprimer
+                    </button>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <div class="glass-card p-5 text-center">
+        <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+             style="width:76px;height:76px;background: rgba(230,57,57,.12); border: 1px solid rgba(230,57,57,.25);">
+          <i class="fa-solid fa-file-medical fs-2" style="color:var(--primary);"></i>
+        </div>
+
+        <h4 class="fw-black mb-2">Aucun dossier médical</h4>
+        <p class="mb-4" style="color:var(--muted);">Créez votre dossier pour suivre vos informations de santé.</p>
+
+        <a href="{{ path('front_dossier_new') }}"
+           class="btn btn-lg rounded-pill fw-bold px-5"
+           style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-plus me-2"></i> Créer un dossier
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

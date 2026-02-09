@@ -1,0 +1,12 @@
+{% extends 'base_front.html.twig' %}
+{% block title %}Modifier Dossier | BloodLink{% endblock %}
+
+{% block body %}
+  {% include 'front/dossier/_form.html.twig' with {
+    title: 'Modifier Dossier Médical',
+    subtitle: 'Mettez à jour vos informations.',
+    back_path: path('front_dossier_show'),
+    button_label: 'Enregistrer',
+    form: form
+  } %}
+{% endblock %}

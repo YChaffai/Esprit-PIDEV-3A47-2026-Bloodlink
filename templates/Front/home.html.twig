@@ -1,0 +1,38 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Accueil | BloodLink{% endblock %}
+
+{% block body %}
+  <div class="glass-card p-4 p-md-5 mt-4">
+    <h1 class="fw-black mb-2">Bienvenue sur BloodLink</h1>
+    <p style="color:var(--muted);" class="mb-4">
+      Accueil du module Donneur.
+    </p>
+
+    {% if app.user %}
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ path('front_don_index') }}" class="btn btn-lg rounded-pill fw-bold"
+           style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-hand-holding-droplet me-2"></i> Mes Dons
+        </a>
+
+        <a href="{{ path('front_dossier_show') }}" class="btn btn-lg rounded-pill fw-bold"
+           style="background:transparent; color:white; border:1px solid var(--border); padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-file-medical me-2"></i> Mon Dossier
+        </a>
+      </div>
+    {% else %}
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{{ path('front_login') }}" class="btn btn-lg rounded-pill fw-bold"
+           style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-right-to-bracket me-2"></i> Se connecter
+        </a>
+
+        <a href="{{ path('front_register') }}" class="btn btn-lg rounded-pill fw-bold"
+           style="background:transparent; color:white; border:1px solid var(--border); padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-user-plus me-2"></i> Créer un compte
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

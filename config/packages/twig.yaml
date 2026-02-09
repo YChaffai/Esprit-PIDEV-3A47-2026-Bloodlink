@@ -1,0 +1,9 @@
+
+
+when@test:
+    twig:
+        strict_variables: true
+twig:
+    file_name_pattern: '*.twig'
+    # Ajoute cette ligne pour activer Bootstrap 5 partout :
+    form_themes: ['bootstrap_5_layout.html.twig']

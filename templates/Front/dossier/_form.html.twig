@@ -1,0 +1,83 @@
+{# templates/front/dossier/_form.html.twig #}
+<div class="py-4 py-md-5" style="max-width: 920px; margin: 0 auto;">
+
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+      <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+        <i class="fa-solid fa-file-medical me-2" style="color:var(--primary);"></i>
+        {{ title|default('Dossier Médical') }}
+      </h1>
+      <div style="color:var(--muted);">{{ subtitle|default('') }}</div>
+    </div>
+
+    {% if back_path is defined %}
+      <a href="{{ back_path }}"
+         class="btn btn-lg rounded-pill fw-bold"
+         style="background:transparent; color:white; border:1px solid var(--border); padding:.85rem 1.1rem;">
+        <i class="fa-solid fa-arrow-left me-2"></i> Retour
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="glass-card p-4 p-md-5">
+    {{ form_start(form) }}
+
+      {% if form.vars.errors|length %}
+        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card">
+          <i class="fa-solid fa-triangle-exclamation me-2"></i>
+          Veuillez corriger les erreurs dans le formulaire.
+        </div>
+      {% endif %}
+
+      <div class="row g-3">
+        <div class="col-12">
+          {{ form_widget(form) }}
+        </div>
+      </div>
+
+      <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+        <button type="submit"
+                class="btn btn-lg rounded-pill fw-bold flex-fill"
+                style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-floppy-disk me-2"></i>
+          {{ button_label|default('Enregistrer') }}
+        </button>
+
+        {% if back_path is defined %}
+          <a href="{{ back_path }}"
+             class="btn btn-lg rounded-pill fw-bold flex-fill"
+             style="background:transparent; color:white; border:1px solid var(--border); padding:.95rem 1.2rem;">
+            Annuler
+          </a>
+        {% endif %}
+      </div>
+
+    {{ form_end(form) }}
+  </div>
+</div>
+
+<style>
+  .glass-card input,
+  .glass-card select,
+  .glass-card textarea {
+    background: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    padding: .95rem 1rem !important;
+  }
+  .glass-card input:focus,
+  .glass-card select:focus,
+  .glass-card textarea:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 .2rem rgba(230,57,57,.20) !important;
+    border-color: rgba(230,57,57,.35) !important;
+  }
+  .glass-card label {
+    color: var(--muted) !important;
+    font-weight: 600 !important;
+    margin-bottom: .35rem;
+  }
+  .glass-card .invalid-feedback { color: #ffb3b3 !important; }
+</style>

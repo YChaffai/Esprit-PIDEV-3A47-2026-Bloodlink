@@ -1,0 +1,13 @@
+framework:
+  secret: '%env(APP_SECRET)%'
+  #csrf_protection: true
+  #http_method_override: true
+
+  # Uncomment this line if you want to enable session support.
+  session:
+    handler_id: null
+    cookie_secure: auto
+    cookie_samesite: lax
+
+  #fragments: true
+  #esi: true

@@ -1,0 +1,12 @@
+{% extends 'base_front.html.twig' %}
+{% block title %}Nouveau Don | BloodLink{% endblock %}
+
+{% block body %}
+  {% include 'front/don/_form.html.twig' with {
+    title: 'Nouveau Don',
+    subtitle: 'Ajoutez un don à votre historique.',
+    back_path: path('front_don_index'),
+    button_label: 'Enregistrer',
+    form: form
+  } %}
+{% endblock %}

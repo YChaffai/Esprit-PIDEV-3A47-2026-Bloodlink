@@ -1,0 +1,170 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mes Dons | BloodLink{% endblock %}
+
+{% block body %}
+  <div class="py-4 py-md-5">
+
+    {# Header #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+      <div>
+        <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+        <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+          <i class="fa-solid fa-hand-holding-droplet me-2" style="color:var(--primary);"></i>
+          Mes Dons
+        </h1>
+        <div style="color:var(--muted);">Tout votre historique de dons au même endroit.</div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ path('front_new_don') }}"
+           class="btn btn-lg rounded-pill fw-bold"
+           style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+          <i class="fa-solid fa-plus me-2"></i> Nouveau don
+        </a>
+
+        {% if client is defined %}
+          <span class="badge rounded-pill px-3 py-2 align-self-center"
+                style="background:rgba(255,255,255,.06); border:1px solid var(--border); color:white;">
+            Groupe: <strong class="ms-1">{{ client.typeSang ?? '—' }}</strong>
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if dons|length > 0 %}
+
+      {# Quick stats #}
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+          <div class="glass-card p-4 h-100">
+            <div class="small" style="color:var(--muted);">Total dons</div>
+            <div class="fs-3 fw-black">{{ dons|length }}</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="glass-card p-4 h-100">
+            <div class="small" style="color:var(--muted);">Dernier don</div>
+            <div class="fw-black">
+              {% set last = dons|first %}
+              {% if last.dateDon is defined and last.dateDon %}
+                {{ last.dateDon|date('d/m/Y') }}
+              {% else %}
+                —
+              {% endif %}
+            </div>
+            <div class="small mt-1" style="color:var(--muted);">
+              {% if last.typeDon is defined and last.typeDon %}
+                Type: {{ last.typeDon }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="glass-card p-4 h-100">
+            <div class="small" style="color:var(--muted);">Conseil</div>
+            <div class="fw-black">Restez régulier ✅</div>
+            <div class="small mt-1" style="color:var(--muted);">
+              Un don peut sauver jusqu’à 3 vies.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Table #}
+      <div class="glass-card overflow-hidden">
+        <div class="p-4 d-flex justify-content-between align-items-center"
+             style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+          <div class="fw-black">Historique</div>
+          <div class="small" style="color:var(--muted);">
+            {{ dons|length }} enregistrements
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-dark mb-0 align-middle" style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
+            <thead>
+              <tr style="color:var(--muted);">
+                <th class="py-3">Date</th>
+                <th class="py-3">Type</th>
+                <th class="py-3">Quantité</th>
+                <th class="py-3 text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for don in dons %}
+                <tr style="border-top:1px solid var(--border);">
+                  <td class="py-3">
+                    {% if don.dateDon is defined and don.dateDon %}
+                      <span class="badge rounded-pill px-3 py-2"
+                            style="background:rgba(255,255,255,.06); border:1px solid var(--border); color:white;">
+                        {{ don.dateDon|date('d/m/Y') }}
+                      </span>
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+
+                  <td class="py-3">
+                    {% if don.typeDon is defined and don.typeDon %}
+                      <span class="badge rounded-pill px-3 py-2"
+                            style="background:rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:white;">
+                        {{ don.typeDon }}
+                      </span>
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+
+                  <td class="py-3">
+                    {% if don.quantite is defined and don.quantite %}
+                      <strong>{{ don.quantite }}</strong>
+                      <span style="color:var(--muted);" class="small">ml</span>
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+
+                  <td class="py-3 text-end">
+                    {# If you later add front show/edit routes, plug them here #}
+                    {#
+                    <a href="{{ path('front_don_show', {'id': don.id}) }}"
+                       class="btn btn-sm rounded-pill fw-bold me-2"
+                       style="background:transparent; color:white; border:1px solid var(--border);">
+                      <i class="fa-solid fa-eye me-1"></i> Voir
+                    </a>
+
+                    <a href="{{ path('front_don_edit', {'id': don.id}) }}"
+                       class="btn btn-sm rounded-pill fw-bold"
+                       style="background:rgba(230,57,57,.12); color:white; border:1px solid rgba(230,57,57,.25);">
+                      <i class="fa-solid fa-pen me-1"></i> Modifier
+                    </a>
+                    #}
+
+                    <span class="small" style="color:var(--muted);">—</span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    {% else %}
+
+      {# Empty state #}
+      <div class="glass-card p-5 text-center">
+        <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+             style="width:76px;height:76px;background: rgba(230,57,57,.12); border: 1px solid rgba(230,57,57,.25);">
+          <i class="fa-solid fa-hand-holding-droplet fs-2" style="color:var(--primary);"></i>
+        </div>
+
+        <h4 class="fw-black mb-2">Aucun don enregistré</h4>
+        <p class="mb-4" style="color:var(--muted);">
+          Ajoutez votre premier don pour commencer votre historique.
+        </p>
+
+        <a href="{{ path('front_new_don') }}" class="btn btn-lg rounded-pill fw-bold px-5"
+           style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
