@@ -17,15 +17,12 @@
           Historique complet de vos contributions.
         </div>
       </div>
-      
-      {# Optional: "Add Don" is usually for Admin, but if you have a declaration form, put button here #}
     </div>
 
     {# --- SEARCH & FILTER BAR --- #}
     <div class="glass-card p-3 mb-4">
         <form method="get" action="{{ path('front_don_index') }}" class="row g-3 align-items-center">
             
-            {# Search Input #}
             <div class="col-12 col-md-6">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-secondary text-muted" style="border-right:0;">
@@ -38,7 +35,6 @@
                 </div>
             </div>
 
-            {# Sort Dropdown #}
             <div class="col-6 col-md-4">
                 <select name="sort" class="form-select bg-transparent text-white border-secondary" style="box-shadow:none;" onchange="this.form.submit()">
                     <option value="date" class="text-dark" {% if currentSort == 'date' %}selected{% endif %}>📅 Trier par Date</option>
@@ -47,15 +43,10 @@
                 </select>
             </div>
 
-            {# Direction Toggle #}
             <div class="col-6 col-md-2 d-grid">
                 {% set newDir = currentDir == 'ASC' ? 'DESC' : 'ASC' %}
                 {% set icon = currentDir == 'ASC' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short' %}
-                
-                {# Hidden input to keep search query active #}
                 <input type="hidden" name="q" value="{{ currentSearch }}">
-                
-                {# Toggle Button #}
                 <a href="{{ path('front_don_index', {'q': currentSearch, 'sort': currentSort, 'dir': newDir}) }}" 
                    class="btn btn-outline-secondary text-white fw-bold d-flex align-items-center justify-content-center gap-2">
                    <i class="fa-solid {{ icon }}"></i> 
@@ -78,10 +69,11 @@
                  style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
             <thead>
               <tr style="color:var(--muted);">
-                <th class="py-3">Type & Date</th>
+                <th class="py-3 ps-4">Type & Date</th>
+                <th class="py-3 text-center">Étiquette Sac</th>
                 <th class="py-3">Quantité</th>
                 <th class="py-3">Lieu / Entité</th>
-                <th class="py-3 text-end">Actions</th>
+                <th class="py-3 pe-4 text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -89,7 +81,7 @@
                 <tr style="border-top:1px solid var(--border);">
                   
                   {# COLUMN 1: Type & Date #}
-                  <td class="py-3">
+                  <td class="py-3 ps-4">
                     <div class="d-flex align-items-center gap-3">
                         <div class="d-flex flex-column align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25" 
                              style="width:50px; height:50px;">
@@ -106,22 +98,55 @@
                     </div>
                   </td>
 
-                  {# COLUMN 2: Quantity #}
+                  {# --- API INTEGRATION START: QuickChart.io QR Code --- #}
+                  {# 
+                     Feature: Génération d'étiquette numérique (Digital Label)
+                     API: https://quickchart.io/qr
+                  #}
+                  <td class="py-3 text-center">
+                    
+                    {# Step 1: Prepare Clean Data (Simplified for better scanning) #}
+                    {% set qrContent %}
+SAC #{{ don.id }}
+TYPE: {{ don.typeDon }}
+DATE: {{ don.date|date('d/m/Y') }}
+QTE: {{ don.quantite }} ml
+                    {% endset %}
+                    
+                    {# Step 2: Call API #}
+                    <div class="d-inline-block p-1 bg-white rounded" title="Scanner pour lire les données">
+                        {# 
+                           API Parameters:
+                           - text: The data to encode
+                           - size=200: High resolution
+                           - margin=2: White border (Crucial for scanning)
+                           - dark=000000: Pure black (Best contrast)
+                           - ec=M: Medium Error Correction (Fixes scanning issues)
+                        #}
+                        <img src="https://quickchart.io/qr?text={{ qrContent|url_encode }}&size=200&margin=2&dark=000000&light=ffffff&ec=M" 
+                             alt="QR Code"
+                             style="width: 60px; height: 60px; display:block;">
+                    </div>
+                    <div style="font-size:10px; color:var(--muted); margin-top:4px;">Données Sac</div>
+                  </td>
+                  {# --- API INTEGRATION END --- #}
+
+                  {# COLUMN 3: Quantity #}
                   <td class="py-3">
                     <span class="badge bg-transparent border border-secondary text-white fw-normal" style="font-size:0.9rem;">
                         {{ don.quantite }} ml
                     </span>
                   </td>
 
-                  {# COLUMN 3: Entity #}
+                  {# COLUMN 4: Entity #}
                   <td class="py-3">
                      <div class="small text-white">
                         <i class="fa-solid fa-hospital me-2 text-muted"></i>Centre #{{ don.idEntite }}
                      </div>
                   </td>
 
-                  {# COLUMN 4: Actions (Delete only as agreed) #}
-                  <td class="py-3 text-end">
+                  {# COLUMN 5: Actions #}
+                  <td class="py-3 pe-4 text-end">
                     <form method="post" action="{{ path('front_don_delete', {'id': don.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet historique ?');" class="d-inline-block">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ don.id) }}">
                         <button class="btn btn-sm rounded-pill fw-bold" 
