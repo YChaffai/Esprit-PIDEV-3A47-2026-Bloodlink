@@ -9,14 +9,18 @@
     {{ form_start(form) }}
     <div class="row">
 
-        {% for field in ['demande', 'fromOrg', 'fromOrgId', 'toOrg', 'toOrgId', 'quantite', 'status', 'dateEnvoie', 'dateReception', 'idStock'] %}
+        {% for field in ['demande', 'fromOrg', 'fromOrgId', 'toOrg', 
+                         'toOrgId', 'quantite', 'status', 
+                         'dateEnvoie', 'dateReception', 'stock'] %}
         <div class="col-md-6 mb-3">
             {{ form_label(attribute(form, field)) }}
+
             {% if field == 'status' %}
                 {{ form_widget(attribute(form, field), {'attr': {'class': 'form-select'}}) }}
             {% else %}
                 {{ form_widget(attribute(form, field), {'attr': {'class': 'form-control'}}) }}
             {% endif %}
+
             {{ form_errors(attribute(form, field)) }}
         </div>
         {% endfor %}
@@ -28,5 +32,4 @@
 
     {{ form_end(form) }}
 </div>
-
 {% endblock %}

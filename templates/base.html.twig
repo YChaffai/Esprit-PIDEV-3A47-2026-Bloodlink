@@ -117,6 +117,84 @@
 
     {% block body %}{% endblock %}
 </div>
+<div class="container-fluid">
+  <h3 class="mb-3">Carte des banques de sang et itinéraires</h3>
 
+  <div class="admin-glass rounded-4 p-3" style="height: 400px;">
+    <div id="map" style="height: 100%; border-radius: 14px;"></div>
+  </div>
+</div>
+
+{# Leaflet CSS & JS #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+{# Routing Machine #}
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Coordonnées: [latitude, longitude]
+  const cnts = [ 36.8065, 10.1585]; // CNTs
+  const banques = [
+    { name: "Banque Nicole", coords: [36.8062, 10.1565] },
+    { name: "Clinique Taoufik", coords: [36.8285, 10.1742] }
+  ];
+
+  // Initialisation map
+  const map = L.map('map').setView(cnts, 14);
+
+  // Tiles OpenStreetMap
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  // Marker CNTs
+  L.marker(cnts, {
+    title: 'CNTs',
+    riseOnHover: true
+  }).addTo(map).bindPopup("<b>CNTs</b>").openPopup();
+
+  // Markers banques
+  banques.forEach(b => {
+    L.marker(b.coords, {title: b.name, riseOnHover: true})
+      .addTo(map)
+      .bindPopup(`<b>${b.name}</b><br><button class="btn btn-sm btn-outline-light mt-2" onclick="tracerItineraire([${b.coords}])">Tracer itinéraire</button>`);
+  });
+
+  let control = null;
+
+  window.tracerItineraire = function(destination) {
+    if (control) map.removeControl(control);
+    control = L.Routing.control({
+      waypoints: [
+        L.latLng(cnts[0], cnts[1]),
+        L.latLng(destination[0], destination[1])
+      ],
+      lineOptions: { styles: [{color: '#e63939', opacity: 0.8, weight: 5}] },
+      routeWhileDragging: false,
+      addWaypoints: false
+    }).addTo(map);
+  }
+
+});
+</script>
+
+<style>
+  .admin-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    backdrop-filter: blur(14px);
+  }
+
+  .leaflet-popup-content button {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+</style>
 </body>
 </html>

@@ -6,44 +6,52 @@
 <div class="main-container">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-white">Stock Disponible</h2>
+        <h2 class="text-white fw-bold">Stock Disponible</h2>
         <a href="{{ path('app_demande_index') }}" class="btn btn-danger">
             ← Retour
         </a>
     </div>
 
-    <div class="table-responsive">
-    <table class="table table-dark table-hover align-middle text-white">
-        <thead>
-            <tr>
-                <th>Type de Sang</th>
-                <th>Quantité Disponible</th>
-                <th>Dernière Mise à Jour</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stock in stocks %}
-            <tr class="align-middle">
-                <td>{{ stock.typeSang }}</td>
-                <td>
+    {# Liste des stocks style glass #}
+    {% for stock in stocks %}
+        <div class="glass-card mb-3 p-4" style="border-left: 4px solid var(--primary);">
+            <div class="row align-items-center">
+
+                <div class="col-md-4">
+                    <span class="text-white-50 small">Type de Sang</span><br>
+                    <span class="text-white fw-bold fs-5">
+                        {{ stock.typeSang }}
+                    </span>
+                </div>
+
+                <div class="col-md-4 text-center">
+                    <span class="text-white-50 small">Quantité Disponible</span><br>
                     {% if stock.quantite <= 5 %}
-                        <span class="badge bg-danger">{{ stock.quantite }}</span>
+                        <span class="badge bg-danger px-3 py-2 fs-6">
+                            {{ stock.quantite }} unités
+                        </span>
                     {% else %}
-                        {{ stock.quantite }}
+                        <span class="text-white fs-5">
+                            {{ stock.quantite }} unités
+                        </span>
                     {% endif %}
-                </td>
-                <td>{{ stock.updatedAt ? stock.updatedAt|date('d/m/Y H:i') : '-' }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="3" class="text-center text-muted py-4">Aucun stock disponible</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+                </div>
 
+                <div class="col-md-4 text-end">
+                    <span class="text-white-50 small">Dernière Mise à Jour</span><br>
+                    <span class="text-white">
+                        {{ stock.updatedAt ? stock.updatedAt|date('d/m/Y H:i') : '-' }}
+                    </span>
+                </div>
 
+            </div>
+        </div>
+
+    {% else %}
+        <div class="text-center p-5 glass-card">
+            <p class="text-white-50 mb-0">Aucun stock disponible.</p>
+        </div>
+    {% endfor %}
 
 </div>
 {% endblock %}

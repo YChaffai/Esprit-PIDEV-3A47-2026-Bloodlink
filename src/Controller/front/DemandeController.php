@@ -59,12 +59,18 @@ public function index(Request $request, DemandeRepository $repo): Response
     }
 
     #[Route('/{id}', name: 'app_demande_show', methods: ['GET'])]
-    public function show(Demande $demande): Response
-    {
-        return $this->render('demande/show.html.twig', [
-            'demande' => $demande,
-        ]);
+public function show(?Demande $demande): Response
+{
+    if (!$demande) {
+        $this->addFlash('danger', 'Demande introuvable !');
+        return $this->redirectToRoute('app_demande_index');
     }
+
+    return $this->render('demande/show.html.twig', [
+        'demande' => $demande,
+    ]);
+}
+
 
     #[Route('/{id}/edit', name: 'app_demande_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Demande $demande, EntityManagerInterface $entityManager): Response

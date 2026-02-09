@@ -1,0 +1,22 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Détails de la Demande{% endblock %}
+
+{% block body %}
+<div class="main-container">
+    <div class="glass-card p-4">
+        <h2 class="text-white mb-3">Demande #{{ demande.id }}</h2>
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item"><strong>Banque :</strong> {{ demande.idBanque }}</li>
+            <li class="list-group-item"><strong>Type de sang :</strong> {{ demande.typeSang }}</li>
+            <li class="list-group-item"><strong>Quantité :</strong> {{ demande.quantite }}</li>
+            <li class="list-group-item"><strong>Urgence :</strong> {{ demande.urgence }}</li>
+            <li class="list-group-item"><strong>Status :</strong> {{ demande.status }}</li>
+            <li class="list-group-item"><strong>Créée le :</strong> {{ demande.createdAt ? demande.createdAt|date('d/m/Y H:i') : '-' }}</li>
+            <li class="list-group-item"><strong>Dernière mise à jour :</strong> {{ demande.updatedAt ? demande.updatedAt|date('d/m/Y H:i') : '-' }}</li>
+        </ul>
+        <a href="{{ path('admin_demande_index') }}" class="btn btn-secondary">Retour</a>
+        <a href="{{ path('admin_demande_edit', {'id': demande.id}) }}" class="btn btn-danger">Modifier</a>
+    </div>
+</div>
+{% endblock %}

@@ -5,59 +5,85 @@
 {% block body %}
 <div class="main-container">
 
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-        <h1 class="text-white mb-3">Liste des Transferts</h1>
+    <div class="glass-card p-4">
 
-        <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ path('app_demande_index') }}" class="btn btn-danger">🔙 Retour aux Demandes</a>
+        {# HEADER #}
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h2 class="text-white mb-0">Liste des Transferts</h2>
+
+            <a href="{{ path('app_demande_index') }}"
+               class="btn btn-sm btn-outline-danger">
+                🔙 Retour aux Demandes
+            </a>
         </div>
+
+        {# LISTE DES TRANSFERTS #}
+        <div>
+
+            {% for transfert in transferts %}
+                <div class="glass-card mb-3 p-3"
+                     style="border-left:4px solid var(--primary); background:rgba(255,255,255,0.03);">
+
+                    <div class="row align-items-center">
+
+                        <div class="col-md-1">
+                            <span class="text-white-50 small">#{{ transfert.id }}</span>
+                        </div>
+
+                        <div class="col-md-2">
+                            <span class="text-white-50 small">Demande</span><br>
+                            <span class="text-white">#{{ transfert.demande.id }}</span>
+                        </div>
+
+                        <div class="col-md-2">
+                            <span class="text-white-50 small">Destinataire</span><br>
+                            <span class="text-white">{{ transfert.toOrg }}</span>
+                        </div>
+
+                        <div class="col-md-1 text-center">
+                            <span class="text-white-50 small">Qté</span><br>
+                            <span class="text-white">{{ transfert.quantite }}</span>
+                        </div>
+
+                        <div class="col-md-2 text-center">
+                            {% if transfert.status == 'EN_COURS' %}
+                                <span class="badge bg-warning text-dark">En cours</span>
+                            {% elseif transfert.status == 'RECU' %}
+                                <span class="badge bg-success">Reçu</span>
+                            {% elseif transfert.status == 'ANNULE' %}
+                                <span class="badge bg-danger">Annulé</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ transfert.status }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-1 text-center text-white-50 small">
+                            {{ transfert.dateEnvoie ? transfert.dateEnvoie|date('d/m/Y') : '-' }}
+                        </div>
+
+                        <div class="col-md-1 text-center text-white-50 small">
+                            {{ transfert.dateReception ? transfert.dateReception|date('d/m/Y') : '-' }}
+                        </div>
+
+                        <div class="col-md-2 text-end">
+                            <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}"
+                               class="btn btn-sm btn-outline-light rounded-circle">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="glass-card text-center p-4">
+                    <p class="text-white-50 mb-0">Aucun transfert trouvé.</p>
+                </div>
+            {% endfor %}
+
+        </div>
+
     </div>
 
-    <div class="table-responsive glass-card p-3">
-        <table class="table table-dark table-striped align-middle mb-0">
-            <thead style="background:#b30000;color:white;">
-                <tr>
-                    <th>ID</th>
-                    <th>Demande</th>
-                    <th>Banque Destinataire</th>
-                    <th>Quantité</th>
-                    <th>Status</th>
-                    <th>Date Envoi</th>
-                    <th>Date Réception</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for transfert in transferts %}
-                <tr>
-                    <td>{{ transfert.id }}</td>
-                    <td>{{ transfert.demande.id }}</td>
-                    <td>{{ transfert.toOrg }}</td>
-                    <td>{{ transfert.quantite }}</td>
-                    <td>
-                        {% if transfert.status == 'EN_COURS' %}
-                            <span class="badge bg-warning text-dark">En cours</span>
-                        {% elseif transfert.status == 'RECU' %}
-                            <span class="badge bg-success">Reçu</span>
-                        {% elseif transfert.status == 'ANNULE' %}
-                            <span class="badge bg-danger">Annulé</span>
-                        {% else %}
-                            <span class="badge bg-secondary">{{ transfert.status }}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ transfert.dateEnvoie ? transfert.dateEnvoie|date('d/m/Y') : '-' }}</td>
-                    <td>{{ transfert.dateReception ? transfert.dateReception|date('d/m/Y') : '-' }}</td>
-                    <td>
-                        <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}" class="btn btn-sm btn-outline-light">Voir</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="8" class="text-center text-muted py-4">Aucun transfert trouvé.</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
 </div>
 {% endblock %}

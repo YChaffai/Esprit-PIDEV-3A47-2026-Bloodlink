@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des demandes</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+        th { background: #e63939; color: #fff; }
+        .badge { padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 10px; }
+        .EN_ATTENTE { background: #f4a261; }
+        .VALIDEE { background: #2a9d8f; }
+        .REFUSEE { background: #e63946; }
+    </style>
+</head>
+<body>
+    <h2>Liste des demandes</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Banque</th>
+                <th>Type</th>
+                <th>Quantité</th>
+                <th>Urgence</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for demande in demandes %}
+            <tr>
+                <td>{{ demande.id }}</td>
+                <td>{{ demande.idBanque }}</td>
+                <td>{{ demande.typeSang }}</td>
+                <td>{{ demande.quantite }}</td>
+                <td>{{ demande.urgence }}</td>
+                <td>
+                    <span class="badge {{ demande.status }}">{{ demande.status|replace({'_':' '}) }}</span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

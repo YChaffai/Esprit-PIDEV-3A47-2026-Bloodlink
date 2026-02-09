@@ -6,6 +6,7 @@ use App\Repository\DemandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DemandeRepository::class)]
 class Demande
@@ -16,36 +17,60 @@ class Demande
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La banque est obligatoire.")]
+    #[Assert\Positive(message: "ID Banque invalide.")]
     private ?int $idBanque = null;
 
     #[ORM\Column(length: 10)]
+    #[Assert\NotBlank(message: "Le type de sang est obligatoire.")]
+    #[Assert\Choice(
+        choices: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+        message: "Type de sang invalide."
+    )]
     private ?string $typeSang = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "La quantité est obligatoire.")]
+    #[Assert\Positive(message: "La quantité doit être supérieure à 0.")]
+    #[Assert\LessThanOrEqual(
+        value: 500,
+        message: "La quantité maximale autorisée est 500."
+    )]
     private ?int $quantite = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "Le niveau d'urgence est obligatoire.")]
+    #[Assert\Choice(
+        choices: ['Normale', 'Urgente'],
+        message: "Niveau d'urgence invalide."
+    )]
     private ?string $urgence = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $status = null;
+    #[Assert\NotBlank]
+    #[Assert\Choice(
+        choices: ['EN_ATTENTE', 'EN_COURS', 'SATISFAITE', 'ANNULEE'],
+        message: "Status invalide."
+    )]
+    private ?string $status = 'EN_ATTENTE';
 
     #[ORM\Column]
+    #[Assert\NotNull]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    /**
-     * @var Collection<int, Transfert>
-     */
     #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'demande')]
     private Collection $transferts;
 
     public function __construct()
     {
         $this->transferts = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
+
+    // ================= GETTERS & SETTERS =================
 
     public function getId(): ?int
     {
@@ -60,7 +85,6 @@ class Demande
     public function setIdBanque(int $idBanque): static
     {
         $this->idBanque = $idBanque;
-
         return $this;
     }
 
@@ -72,7 +96,6 @@ class Demande
     public function setTypeSang(string $typeSang): static
     {
         $this->typeSang = $typeSang;
-
         return $this;
     }
 
@@ -84,7 +107,6 @@ class Demande
     public function setQuantite(int $quantite): static
     {
         $this->quantite = $quantite;
-
         return $this;
     }
 
@@ -96,7 +118,6 @@ class Demande
     public function setUrgence(string $urgence): static
     {
         $this->urgence = $urgence;
-
         return $this;
     }
 
@@ -108,7 +129,6 @@ class Demande
     public function setStatus(string $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
@@ -120,7 +140,6 @@ class Demande
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -132,7 +151,6 @@ class Demande
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
 
@@ -150,19 +168,16 @@ class Demande
             $this->transferts->add($transfert);
             $transfert->setDemande($this);
         }
-
         return $this;
     }
 
     public function removeTransfert(Transfert $transfert): static
     {
         if ($this->transferts->removeElement($transfert)) {
-            // set the owning side to null (unless already changed)
             if ($transfert->getDemande() === $this) {
                 $transfert->setDemande(null);
             }
         }
-
         return $this;
     }
 }
