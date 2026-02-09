@@ -1,35 +1,78 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Modifier Transfert{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="mb-4" style="color:#b30000;">Modifier Transfert</h1>
+<div class="main-container">
 
-    {{ form_start(form) }}
-    <div class="row">
+    <div class="glass-card p-4 mt-4">
 
-        {% for field in ['demande', 'fromOrg', 'fromOrgId', 'toOrg', 
-                         'toOrgId', 'quantite', 'status', 
-                         'dateEnvoie', 'dateReception', 'stock'] %}
-        <div class="col-md-6 mb-3">
-            {{ form_label(attribute(form, field)) }}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-white">
+                <i class="fas fa-exchange-alt me-2 text-danger"></i>
+                Modifier le transfert
+            </h2>
 
-            {% if field == 'status' %}
-                {{ form_widget(attribute(form, field), {'attr': {'class': 'form-select'}}) }}
-            {% else %}
-                {{ form_widget(attribute(form, field), {'attr': {'class': 'form-control'}}) }}
-            {% endif %}
-
-            {{ form_errors(attribute(form, field)) }}
+            <a href="{{ path('back_transfert_index') }}" 
+               class="btn btn-outline-light btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Retour
+            </a>
         </div>
-        {% endfor %}
+
+        {{ form_start(form, {
+            'attr': {
+                'class': 'needs-validation',
+                'novalidate': 'novalidate'
+            }
+        }) }}
+
+        <div class="row">
+
+            {% for field in ['demande', 'fromOrg', 'fromOrgId', 'toOrg', 
+                             'toOrgId', 'quantite', 'status', 
+                             'dateEnvoie', 'dateReception', 'stock'] %}
+
+                {% if attribute(form, field) is defined %}
+                <div class="col-md-6 mb-3">
+
+                    {{ form_label(attribute(form, field), null, {
+                        'label_attr': {'class': 'form-label text-white'}
+                    }) }}
+
+                    {% if field == 'status' %}
+                        {{ form_widget(attribute(form, field), {
+                            'attr': {'class': 'form-select bg-dark text-white'}
+                        }) }}
+                    {% else %}
+                        {{ form_widget(attribute(form, field), {
+                            'attr': {'class': 'form-control bg-dark text-white'}
+                        }) }}
+                    {% endif %}
+
+                    <div class="text-danger small">
+                        {{ form_errors(attribute(form, field)) }}
+                    </div>
+
+                </div>
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+        <hr class="border-secondary">
+
+        <div class="d-flex justify-content-end gap-2 mt-3">
+
+            <button class="btn btn-danger px-4">
+                <i class="fas fa-save me-2"></i>
+                Enregistrer
+            </button>
+
+        </div>
+
+        {{ form_end(form) }}
 
     </div>
-
-    <button class="btn btn-primary mt-3">Enregistrer</button>
-    <a href="{{ path('back_transfert_index') }}" class="btn btn-secondary mt-3">Retour</a>
-
-    {{ form_end(form) }}
 </div>
 {% endblock %}

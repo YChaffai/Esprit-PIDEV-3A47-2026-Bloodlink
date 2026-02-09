@@ -1,43 +1,102 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}{{ edit ? 'Modifier Demande' : 'Nouvelle Demande' }}{% endblock %}
+{% block title %}
+    {{ edit ? 'Modifier Demande' : 'Nouvelle Demande' }}
+{% endblock %}
 
 {% block body %}
-<div class="glass-card p-4 mt-5">
+<div class="main-container">
 
-    <h1 class="text-white mb-4">{{ edit ? 'Modifier la demande' : 'Créer une nouvelle demande de sang' }}</h1>
+    <div class="glass-card p-4 mt-4">
 
-    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate':'novalidate'}}) }}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-white">
+                <i class="fas fa-tint me-2 text-danger"></i>
+                {{ edit ? 'Modifier la demande' : 'Créer une nouvelle demande' }}
+            </h2>
 
-    <div class="mb-3">
-        {{ form_label(form.idBanque, 'ID Banque', {'label_attr': {'class':'text-white'}}) }}
-        {{ form_widget(form.idBanque, {'attr': {'class':'form-control bg-dark text-white'}, 'required': false}) }}
-        {{ form_errors(form.idBanque) }}
+            <a href="{{ path('admin_demande_index') }}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Retour
+            </a>
+        </div>
+
+        {{ form_start(form, {
+            'attr': {
+                'class': 'needs-validation',
+                'novalidate':'novalidate'
+            }
+        }) }}
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.idBanque, 'ID Banque', {'label_attr': {'class':'form-label text-white'}}) }}
+                {{ form_widget(form.idBanque, {
+                    'attr': {
+                        'class':'form-control bg-dark text-white',
+                        'required': false
+                    }
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.idBanque) }}
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.typeSang, 'Type de sang', {'label_attr': {'class':'form-label text-white'}}) }}
+                {{ form_widget(form.typeSang, {
+                    'attr': {
+                        'class':'form-select bg-dark text-white',
+                        'required': false
+                    }
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.typeSang) }}
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.quantite, 'Quantité', {'label_attr': {'class':'form-label text-white'}}) }}
+                {{ form_widget(form.quantite, {
+                    'attr': {
+                        'class':'form-control bg-dark text-white',
+                        'required': false
+                    }
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.quantite) }}
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.urgence, 'Urgence', {'label_attr': {'class':'form-label text-white'}}) }}
+                {{ form_widget(form.urgence, {
+                    'attr': {
+                        'class':'form-select bg-dark text-white',
+                        'required': false
+                    }
+                }) }}
+                <div class="text-danger small">
+                    {{ form_errors(form.urgence) }}
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="border-secondary">
+
+        <div class="d-flex justify-content-end gap-2 mt-3">
+
+            <button class="btn btn-danger px-4">
+                <i class="fas fa-save me-2"></i>
+                {{ edit ? 'Mettre à jour' : 'Enregistrer' }}
+            </button>
+
+        </div>
+
+        {{ form_end(form) }}
+
     </div>
 
-    <div class="mb-3">
-        {{ form_label(form.typeSang, 'Type de sang', {'label_attr': {'class':'text-white'}}) }}
-        {{ form_widget(form.typeSang, {'attr': {'class':'form-select bg-dark text-white'}, 'required': false}) }}
-        {{ form_errors(form.typeSang) }}
-    </div>
-
-    <div class="mb-3">
-        {{ form_label(form.quantite, 'Quantité', {'label_attr': {'class':'text-white'}}) }}
-        {{ form_widget(form.quantite, {'attr': {'class':'form-control bg-dark text-white'}, 'required': false}) }}
-        {{ form_errors(form.quantite) }}
-    </div>
-
-    <div class="mb-3">
-        {{ form_label(form.urgence, 'Urgence', {'label_attr': {'class':'text-white'}}) }}
-        {{ form_widget(form.urgence, {'attr': {'class':'form-select bg-dark text-white'}, 'required': false}) }}
-        {{ form_errors(form.urgence) }}
-    </div>
-
-    <div class="d-flex gap-2 mt-3">
-        <button class="btn btn-danger">{{ edit ? 'Mettre à jour' : 'Valider' }}</button>
-        <a href="{{ path('admin_demande_index') }}" class="btn btn-secondary">Retour</a>
-    </div>
-
-    {{ form_end(form) }}
 </div>
 {% endblock %}
