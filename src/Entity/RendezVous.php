@@ -47,6 +47,17 @@ public function validateUniqueDatePerCampagne(ExecutionContextInterface $context
     $campagne = $questionnaire?->getCampagne();
     $currentEntite = $this->getEntite();
 
+
+    // Vérification Date de Début
+    if ($campagne->getDateDebut()) {
+        if ($this->date_don->format('Y-m-d') < $campagne->getDateDebut()->format('Y-m-d')) {
+            $context->buildViolation("La date du rendez-vous ne peut pas être antérieure au début de la campagne (le {{ debut }}).")
+                ->setParameter('{{ debut }}', $campagne->getDateDebut()->format('d/m/Y'))
+                ->atPath('date_don')
+                ->addViolation();
+            return;
+        }
+    }
     // --- AJOUT DU CONTRÔLE DATE FIN ---
     if ($campagne && $campagne->getDateFin()) {
         // On compare les dates au format Y-m-d pour ignorer l'heure du rendez-vous

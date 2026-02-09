@@ -150,6 +150,13 @@ final class QuestionnaireController extends AbstractController
 
     }
 
+     #[Route('/questionnaire/details/{id}', name: 'questionnaire_details')]
+    public function details($id, QuestionnaireRepository $questionnaireRepository): Response{
+        $questionnaire = $questionnaireRepository->find($id);
+        return $this->render('questionnaire/details.html.twig', [
+            "questionnaires" => $questionnaire,
+        ]);
+    }
 
     //-------------------------------------------backoffice--------------------------------------------------------------//
 
@@ -160,10 +167,20 @@ final class QuestionnaireController extends AbstractController
     //     ]);
     // }
 
-     #[Route('/questionnaire/details/{id}', name: 'questionnaireback_details')]
-    public function details($id, QuestionnaireRepository $questionnaireRepository): Response{
+     #[Route('/backoffice/questionnaire/details/{id}', name: 'questionnaireback_details')]
+    public function detailsback($id, QuestionnaireRepository $questionnaireRepository): Response{
         $questionnaire = $questionnaireRepository->find($id);
-        return $this->render('questionnaire/details.html.twig', [
+        
+        return $this->render('questionnaire/detailsback.html.twig', [
+            "questionnaires" => $questionnaire,
+        ]);
+    }
+
+     #[Route('/backoffice/questionnaire/detailsrv/{id}', name: 'questionnairebackrv_details')]
+    public function detailsbackrv($id, QuestionnaireRepository $questionnaireRepository): Response{
+        $questionnaire = $questionnaireRepository->find($id);
+        
+        return $this->render('questionnaire/detailsbackrv.html.twig', [
             "questionnaires" => $questionnaire,
         ]);
     }
@@ -277,7 +294,7 @@ final class QuestionnaireController extends AbstractController
 // 3. On utilise la clé attendue par le controller de destination
             $request->getSession()->set('pending_questionnaireback', $questionnaire);
                 // Rediriger vers la page du rendez-vous (en passant l'ID du questionnaire)
-                return $this->redirectToRoute('rendezvous_new', ['questionnaire_id' => $questionnaire->getId()]);
+                return $this->redirectToRoute('rendezvousback_new', ['questionnaire_id' => $questionnaire->getId()]);
             } else {
                 // Si le client n'est pas trouvé, ajouter un message d'erreur
                 $this->addFlash('error', 'Client non trouvé avec cet email.');
@@ -285,7 +302,7 @@ final class QuestionnaireController extends AbstractController
         }
         $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
-        return $this->render('questionnaire/new.html.twig', [
+        return $this->render('questionnaire/newback.html.twig', [
             'form' => $form->createView(),
         ], new Response(null, $status));
     }

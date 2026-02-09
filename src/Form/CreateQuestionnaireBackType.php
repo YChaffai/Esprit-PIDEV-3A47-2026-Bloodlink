@@ -58,7 +58,7 @@ class CreateQuestionnaireBackType extends AbstractType
 
 ->add('client', EmailType::class, [
     'label' => 'Email du client',
-    'mapped' => false, // Gardé à false car la propriété 'email' n'existe pas dans Questionnaire
+    'mapped' => false, 
     'required' => true,
     'constraints' => [
         new NotBlank([

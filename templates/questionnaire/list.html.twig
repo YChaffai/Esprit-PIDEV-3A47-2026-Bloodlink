@@ -80,7 +80,7 @@
                 <div class="col-md-3">{{ form_widget(filterForm.tri_date, {'attr': {'style': 'height: 38px;'}}) }}</div>
 
                 <div class="col-md-2">
-                     <a href="{{ path('questionnaire_list', { 'client_id': client_id }) }}" class="btn btn-danger w-100">Reset</a>
+                     <a href="{{ path('questionnaire_list', { 'client_id': client_id }) }}" class="btn btn-danger no-popup w-100">Reset</a>
                 </div>
             </div>
         {{ form_end(filterForm, {'render_rest': false}) }}
@@ -93,7 +93,7 @@
             <div class="d-flex gap-2">
                 <a href="{{ path('questionnaire_update', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Update</a>
                 <a  href="{{ path('questionnaire_delete', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Delete</a>
-                <a href="{{ path('questionnaireback_details', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Details</a>
+                <a href="{{ path('questionnaire_details', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Details</a>
             </div>
         </div>
     {% endfor %}

@@ -34,6 +34,9 @@ class Campagne
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date_fin = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $date_debut = null;
+
    
     public function __construct()
     {
@@ -120,6 +123,18 @@ class Campagne
     public function setDateFin(\DateTimeInterface $date_fin): static
     {
         $this->date_fin = $date_fin;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTime
+    {
+        return $this->date_debut;
+    }
+
+    public function setDateDebut(?\DateTime $date_debut): static
+    {
+        $this->date_debut = $date_debut;
 
         return $this;
     }
