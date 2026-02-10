@@ -22,10 +22,19 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserController extends AbstractController
 {
   #[Route(name: 'app_user_index', methods: ['GET'])]
-  public function index(UserRepository $userRepository): Response
+  public function index(Request $request, UserRepository $userRepository): Response
   {
+    $query = $request->query->get('q');
+    $sortField = $request->query->get('sort', 'id');
+    $sortOrder = $request->query->get('order', 'ASC');
+
+    $users = $userRepository->searchAndSort($query, $sortField, $sortOrder);
+
     return $this->render('user/index.html.twig', [
-      'users' => $userRepository->findAll(),
+      'users' => $users,
+      'current_query' => $query,
+      'current_sort' => $sortField,
+      'current_order' => $sortOrder,
     ]);
   }
 

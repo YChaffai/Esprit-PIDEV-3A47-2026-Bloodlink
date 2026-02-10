@@ -40,4 +40,30 @@ class UserRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    /**
+     * @return User[] Returns an array of User objects
+     */
+    public function searchAndSort(?string $query, string $sortField = 'id', string $sortOrder = 'ASC'): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        if ($query) {
+            $qb->andWhere('u.nom LIKE :query OR u.prenom LIKE :query OR u.email LIKE :query OR u.id = :idQuery')
+               ->setParameter('query', '%' . $query . '%')
+               ->setParameter('idQuery', (int)$query); // Cast to int for ID search, though exact match on string might be wanted, ID is usually int.
+        }
+
+        // Validate sort field to prevent SQL injection
+        $allowedSortFields = ['id', 'nom', 'prenom', 'email', 'role'];
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'id';
+        }
+
+        // Validate sort order
+        $sortOrder = strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC';
+
+        return $qb->orderBy('u.' . $sortField, $sortOrder)
+            ->getQuery()
+            ->getResult();
+    }
 }
