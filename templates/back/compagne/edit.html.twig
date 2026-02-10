@@ -1,13 +1,45 @@
-{% extends 'base.html.twig' %}
+{% extends 'back/base_back.html.twig' %}
 
 {% block title %}Admin - Modifier Campagne{% endblock %}
 
 {% block body %}
-    <h1>Modifier la Campagne (Backoffice)</h1>
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2">Modifier la Campagne</h1>
+                <p class="text-white-50 mb-0">Interface d'administration</p>
+            </div>
+            <a href="{{ path('back_compagne_index') }}" class="btn-back">
+                <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+            </a>
+        </div>
 
-    {{ include('back/compagne/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ include('back/compagne/_form.html.twig', {'button_label': 'Mettre à jour la campagne'}) }}
+            </div>
+        </div>
 
-    <a href="{{ path('back_compagne_index') }}">Retour à la liste</a>
+        <div class="mt-5 pt-4 border-top border-secondary border-opacity-25">
+             <div class="d-flex align-items-center justify-content-between">
+                <span class="text-white-50">Zone de danger</span>
+                {{ include('back/compagne/_delete_form.html.twig') }}
+             </div>
+        </div>
+    </div>
 
-    {{ include('back/compagne/_delete_form.html.twig') }}
+    <style>
+        .btn-back {
+            color: #666;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-back:hover {
+            color: white;
+            transform: translateX(-5px);
+        }
+    </style>
 {% endblock %}

@@ -1,48 +1,129 @@
-{% extends 'base.html.twig' %}
+{% extends 'back/base_back.html.twig' %}
 
 {% block title %}Admin - Liste des Campagnes{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <h1>Backoffice - Gestion des Campagnes</h1>
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h1 class="display-5 fw-bold text-white mb-0">Gestion des Campagnes</h1>
+        </div>
 
-        <table class="table table-striped table-hover mt-4">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Titre</th>
-                    <th>Entité</th>
-                    <th>Description</th>
-                    <th>Date Début</th>
-                    <th>Date Fin</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for compagne in compagnes %}
-                <tr>
-                    <td>{{ compagne.id }}</td>
-                    <td>{{ compagne.titre }}</td>
-                    <td>
-                        {% for entite in compagne.entites %}
-                            <span class="badge bg-secondary">{{ entite.nom }}</span>
-                        {% else %}
-                            Aucune
-                        {% endfor %}
-                    </td>
-                    <td>{{ compagne.description|slice(0, 50) }}...</td>
-                    <td>{{ compagne.dateDebut ? compagne.dateDebut|date('Y-m-d') : '' }}</td>
-                    <td>{{ compagne.dateFin ? compagne.dateFin|date('Y-m-d') : '' }}</td>
-                    <td>
-                        <a href="{{ path('back_compagne_edit', {'id': compagne.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="7">Aucun enregistrement trouvé</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-custom">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Description</th>
+                        <th>Entités</th>
+                        <th>Dates</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for compagne in compagnes %}
+                    <tr>
+                        <td class="align-middle">
+                            <div class="fw-bold text-white">{{ compagne.titre }}</div>
+                        </td>
+                        <td class="align-middle">
+                            <div class="text-white-50 small">{{ compagne.description|slice(0, 50) }}{% if compagne.description|length > 50 %}...{% endif %}</div>
+                        </td>
+                        <td class="align-middle">
+                            {% if compagne.entites|length > 0 %}
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for entite in compagne.entites %}
+                                        <span class="badge badge-custom">{{ entite.nom }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted small italic">Aucune</span>
+                            {% endif %}
+                        </td>
+                        <td class="align-middle">
+                            <div class="date-info">
+                                <div class="small text-white-50"><i class="far fa-calendar-alt me-2 text-primary"></i> {{ compagne.dateDebut ? compagne.dateDebut|date('d/m/Y') : '-' }}</div>
+                                <div class="small text-white-50"><i class="far fa-calendar-check me-2"></i> {{ compagne.dateFin ? compagne.dateFin|date('d/m/Y') : '-' }}</div>
+                            </div>
+                        </td>
+                        <td class="text-end align-middle">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{{ path('back_compagne_edit', {'id': compagne.id}) }}" class="btn-action edit" title="Modifier"><i class="fas fa-edit"></i></a>
+                                {{ include('back/compagne/_delete_form.html.twig') }}
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">Aucune campagne trouvée</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <style>
+        .table-custom {
+            --bs-table-bg: transparent !important;
+            --bs-table-color: #fff !important;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: -10px;
+        }
+        
+        .table-custom thead th {
+            background: rgba(255,255,255,0.02) !important;
+            color: #666 !important;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            padding: 15px 20px;
+            border: none !important;
+        }
+
+        .table-custom tbody tr {
+            background: rgba(255,255,255,0.02) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .table-custom tbody tr:hover {
+            background: rgba(255,255,255,0.05) !important;
+            transform: scale(1.005);
+        }
+
+        .table-custom tbody td {
+            padding: 20px !important;
+            border: none !important;
+            color: #ccc !important;
+        }
+
+        .badge-custom {
+            background: rgba(230, 57, 57, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(230, 57, 57, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white !important;
+        }
+        .btn-action i { font-size: 0.9rem; }
+        .btn-action.edit:hover { background: rgba(255, 193, 7, 0.3); color: #ffc107 !important; border-color: #ffc107; }
+
+        .italic { font-style: italic; }
+    </style>
 {% endblock %}
