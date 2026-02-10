@@ -7,17 +7,42 @@ use App\Repository\DemandeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/demande')]
 class DemandeController extends AbstractController
 {
     #[Route('/', name: 'back_demande_index')]
-    public function index(DemandeRepository $repo): Response
+    public function index(Request $request,DemandeRepository $repo): Response
     {
-        return $this->render('back/index.html.twig', [
-            'demandes' => $repo->findAll(),
-        ]);
+       $search = $request->query->get('search', '');
+    $sort   = $request->query->get('sort', 'id');
+    $dir    = $request->query->get('dir', 'ASC');
+
+    $allowedFields = ['id', 'idBanque', 'typeSang', 'quantite', 'urgence', 'status'];
+
+    if (!in_array($sort, $allowedFields)) {
+        $sort = 'id';
+    }
+
+    $dir = strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC';
+
+    $qb = $repo->createQueryBuilder('d');
+
+    if ($search) {
+        $qb->andWhere('d.typeSang LIKE :search OR d.status LIKE :search')
+           ->setParameter('search', '%' . $search . '%');
+    }
+
+    $qb->orderBy('d.' . $sort, $dir);
+
+    return $this->render('back/index.html.twig', [
+        'demandes' => $qb->getQuery()->getResult(),
+        'search'   => $search,
+        'sort'     => $sort,
+        'dir'      => $dir,
+    ]);
     }
 
     #[Route('/{id}/valider', name: 'back_demande_valider')]
