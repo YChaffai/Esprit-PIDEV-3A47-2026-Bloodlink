@@ -3,56 +3,34 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
   #[ORM\Id]
-  #[ORM\GeneratedValue]
-  #[ORM\Column]
-  private ?int $id = null;
-
-  #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-  #[ORM\JoinColumn(nullable: false)]
+  #[ORM\OneToOne(targetEntity: User::class, inversedBy: "client")]
+  #[ORM\JoinColumn(name: "id", referencedColumnName: "id", onDelete: "CASCADE")]
   private ?User $user = null;
 
   #[ORM\Column(length: 255)]
-  #[Assert\NotBlank(message: 'Le groupe sanguin doit être sélectionné')]
-  #[Assert\Choice(
-    choices: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-    message: 'Veuillez sélectionner un groupe sanguin valide'
-  )]
   private ?string $typeSang = null;
 
   #[ORM\Column(type: Types::DATE_MUTABLE)]
-  #[Assert\NotBlank(message: 'La date du dernier don ne peut pas être vide')]
-  #[Assert\LessThanOrEqual(
-    value: 'today',
-    message: 'La date du dernier don ne peut pas être dans le futur'
-  )]
-  private ?\DateTimeInterface $dernierDon = null;
+  private ?\DateTime $dernierDon = null;
 
-  #[ORM\OneToMany(mappedBy: 'client', targetEntity: Commande::class)]
+  /**
+   * @var Collection<int, Commande>
+   */
+  #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'client')]
   private Collection $Commandes;
 
   public function __construct()
   {
-    $this->Commandes = new ArrayCollection();
-  }
-
-  public function __toString(): string
-  {
-    return $this->user ? $this->user->getEmail() : 'Client sans utilisateur';
-  }
-
-  public function getId(): ?int
-  {
-    return $this->id;
+      $this->Commandes = new ArrayCollection();
   }
 
   public function getUser(): ?User
@@ -60,9 +38,12 @@ class Client
     return $this->user;
   }
 
-  public function setUser(?User $user): static
+  public function setUser(User $user): static
   {
     $this->user = $user;
+    if ($user->getClient() !== $this) {
+      $user->setClient($this);
+    }
     return $this;
   }
 
@@ -71,9 +52,10 @@ class Client
     return $this->typeSang;
   }
 
-  public function setTypeSang(?string $typeSang): static
+  public function setTypeSang(string $typeSang): static
   {
     $this->typeSang = $typeSang;
+
     return $this;
   }
 
@@ -82,9 +64,10 @@ class Client
     return $this->dernierDon;
   }
 
-  public function setDernierDon(?\DateTime $dernierDon): static
+  public function setDernierDon(\DateTime $dernierDon): static
   {
     $this->dernierDon = $dernierDon;
+
     return $this;
   }
 
@@ -117,4 +100,8 @@ class Client
 
       return $this;
   }
+  public function __toString(): string
+    {
+        return (string) $this->user;
+    }
 }
