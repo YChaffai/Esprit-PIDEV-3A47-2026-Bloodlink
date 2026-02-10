@@ -27,15 +27,21 @@ class DossierMedType extends AbstractType
                 'class' => Don::class,
                 'choice_label' => function (Don $d) {
                     $date = $d->getDate() ? $d->getDate()->format('Y-m-d H:i') : 'no date';
-                    return "#{$d->getId()} - {$d->getTypeDon()} - {$date}";
+                    $clientName = $d->getClient() && $d->getClient()->getUser() ? $d->getClient()->getUser()->getNomComplet() : 'Inconnu';
+                    return "#{$d->getId()} - {$clientName} ({$d->getTypeDon()}) - {$date}";
                 },
                 'query_builder' => function (DonRepository $repo) use ($client) {
-                    return $repo->createQueryBuilder('d')
-                        ->andWhere('d.client = :c')
-                        ->setParameter('c', $client)
+                    $qb = $repo->createQueryBuilder('d')
                         ->orderBy('d.date', 'DESC');
+                    
+                    if ($client) {
+                        $qb->andWhere('d.client = :c')
+                           ->setParameter('c', $client);
+                    }
+                    
+                    return $qb;
                 },
-                'placeholder' => '-- Select a donation --',
+                'placeholder' => '-- Sélectionner un don --',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez sélectionner un don.']),

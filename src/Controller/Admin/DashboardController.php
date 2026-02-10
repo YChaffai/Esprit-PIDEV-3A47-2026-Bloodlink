@@ -38,11 +38,24 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
         yield MenuItem::section('Gestion');
-        yield MenuItem::linkToCrud('Clients', 'fa fa-user', Client::class);
+        yield MenuItem::linkToCrud('Clients', 'fa fa-address-card', Client::class);
         yield MenuItem::linkToCrud('Dons', 'fa fa-hand-holding-heart', Don::class);
         yield MenuItem::linkToCrud('Dossier Médicaux', 'fa fa-notes-medical', DossierMed::class);
 
+        yield MenuItem::section('Utilisateurs & Banques');
+        yield MenuItem::linkToRoute('Utilisateurs', 'fa fa-users', 'app_user_index');
+        yield MenuItem::linkToRoute('Banques de sang', 'fa fa-hospital', 'app_banque_index');
+
+        yield MenuItem::section('Stocks & Commandes');
+        yield MenuItem::linkToRoute('Stocks', 'fa fa-layer-group', 'back_stock_index');
+        yield MenuItem::linkToRoute('Commandes', 'fa fa-shopping-cart', 'back_commandes_index');
+
+        yield MenuItem::section('Collecte & Rendez-vous');
+        yield MenuItem::linkToRoute('Entités Collecte', 'fa fa-map-marker-alt', 'back_entite_collecte_index');
+        yield MenuItem::linkToRoute('Questionnaires', 'fa fa-clipboard-list', 'questionnaireback_list');
+        yield MenuItem::linkToRoute('Rendez-vous', 'fa fa-calendar-alt', 'rendezvousback_list');
+
         yield MenuItem::section('Navigation');
-        yield MenuItem::linkToUrl('Retour au site', 'fa fa-arrow-left', 'http://127.0.0.1:8000/front');
+        yield MenuItem::linkToUrl('Retour au site', 'fa fa-arrow-left', '/front');
     }
 }

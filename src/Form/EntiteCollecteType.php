@@ -24,11 +24,25 @@ class EntiteCollecteType extends AbstractType
                     new Length(['min' => 3, 'max' => 255])
                 ]
             ])
-            ->add('localisation', TextType::class, [
-                'label' => 'Localisation',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Adresse complète'],
+            ->add('type', TextType::class, [
+                'label' => 'Type d\'entité',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Hôpital, Banque...'],
                 'constraints' => [
-                    new NotBlank(['message' => 'La localisation est obligatoire'])
+                    new NotBlank(['message' => 'Le type est obligatoire'])
+                ]
+            ])
+            ->add('adresse', TextType::class, [
+                'label' => 'Adresse',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 123 Rue de la Santé'],
+                'constraints' => [
+                    new NotBlank(['message' => 'L\'adresse est obligatoire'])
+                ]
+            ])
+            ->add('ville', TextType::class, [
+                'label' => 'Ville',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Tunis'],
+                'constraints' => [
+                    new NotBlank(['message' => 'La ville est obligatoire'])
                 ]
             ])
             ->add('telephone', TextType::class, [

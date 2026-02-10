@@ -67,6 +67,9 @@ class Client
   public function setUser(?User $user): static
   {
     $this->user = $user;
+    if ($user && $user->getClient() !== $this) {
+      $user->setClient($this);
+    }
     return $this;
   }
 

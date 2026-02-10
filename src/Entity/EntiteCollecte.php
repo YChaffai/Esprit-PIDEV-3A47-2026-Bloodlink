@@ -19,13 +19,22 @@ class EntiteCollecte
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'La localisation est obligatoire.')]
-    private ?string $localisation = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le téléphone est obligatoire.')]
     private ?string $telephone = null;
+
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le type est obligatoire.')]
+    private ?string $type = 'Hôpital'; // Hôpital, Banque, Point Mobile
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'L\'adresse est obligatoire.')]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'La ville est obligatoire.')]
+    private ?string $ville = null;
 
     /**
      * @var Collection<int, Campagne>
@@ -55,17 +64,6 @@ class EntiteCollecte
         return $this;
     }
 
-    public function getLocalisation(): ?string
-    {
-        return $this->localisation;
-    }
-
-    public function setLocalisation(string $localisation): static
-    {
-        $this->localisation = $localisation;
-
-        return $this;
-    }
 
     public function getTelephone(): ?string
     {
@@ -76,6 +74,39 @@ class EntiteCollecte
     {
         $this->telephone = $telephone;
 
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): static
+    {
+        $this->adresse = $adresse;
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): static
+    {
+        $this->ville = $ville;
         return $this;
     }
 

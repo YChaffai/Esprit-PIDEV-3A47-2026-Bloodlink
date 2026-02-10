@@ -23,7 +23,7 @@ class CommandeController extends AbstractController
   {
     $commandes = $commandeRepository->findBy([], ['id' => 'DESC']);
 
-    return $this->render('Front/Commande.html.twig', [
+    return $this->render('front/Commande.html.twig', [
       'commandes' => $commandes,
     ]);
   }
@@ -105,7 +105,7 @@ class CommandeController extends AbstractController
       }
     }
 
-    return $this->render('Front/AjoutCommande.html.twig', [
+    return $this->render('front/AjoutCommande.html.twig', [
       'form' => $form->createView(),
     ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200));
   }

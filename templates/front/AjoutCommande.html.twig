@@ -1,0 +1,188 @@
+{% extends 'base_front.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <style>
+    /* Choices.js Glass Theme */
+    .choices__inner {
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      color: var(--text) !important;
+      padding: .6rem .9rem !important;
+      min-height: calc(1.5em + 1.2rem + 2px);
+      transition: all 0.2s ease;
+    }
+    .choices.is-focused .choices__inner {
+        border-color: var(--primary) !important;
+        background: rgba(255,255,255,.05) !important;
+    }
+    .choices__list--dropdown, .choices__list[aria-expanded] {
+      background: #111 !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      color: var(--text) !important;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .choices__list--dropdown .choices__item {
+      color: var(--text) !important;
+      padding: 12px 14px !important;
+    }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+      background: rgba(230,57,57,.2) !important;
+    }
+    .choices[data-type*="select-one"]::after {
+      border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+      right: 15px;
+    }
+    
+    /* Inline Errors */
+    .bl-error { 
+        margin-top: 8px; 
+        color: #ff4d4d; 
+        font-size: .85rem; 
+        font-weight: 600; 
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .bl-error ul { list-style: none; margin: 0; padding: 0; }
+
+    /* Form Labels */
+    .form-label-premium {
+        text-transform: uppercase;
+        font-size: .75rem;
+        letter-spacing: .1em;
+        font-weight: 800;
+        color: var(--muted);
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Inputs */
+    .form-control-premium {
+        background: rgba(255,255,255,.03) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text) !important;
+        border-radius: 16px !important;
+        padding: 0.8rem 1.2rem !important;
+        transition: all 0.2s ease;
+    }
+    .form-control-premium:focus {
+        background: rgba(255,255,255,.05) !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px rgba(230,57,57,0.1) !important;
+    }
+    .form-control-premium::placeholder {
+        color: rgba(255,255,255,0.8) !important;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}Nouvelle Commande | BloodLink{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-cart-plus me-2" style="color:var(--primary);"></i>
+                Créer une Commande
+            </h1>
+            <div style="color:var(--muted);">
+                Remplissez les informations ci-dessous pour soumettre votre demande.
+            </div>
+        </div>
+        <a href="{{ path('front_commandes_index') }}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold transition-all" style="height:48px; border-color:var(--border);">
+            <i class="fa-solid fa-arrow-left me-2"></i> Annuler
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="glass-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-5">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:52px; height:52px; background:rgba(230,57,57,0.1); border:1px solid rgba(230,57,57,0.2);">
+                        <i class="fa-solid fa-clipboard-list fs-4" style="color: var(--primary) !important;"></i>
+                    </div>
+                    <div>
+                        <h2 class="h5 fw-black text-white mb-0 text-uppercase" style="letter-spacing:1px;">Formulaire de Commande</h2>
+                        <span class="text-white small">Veuillez vérifier les quantités avant de sauvegarder.</span>
+                    </div>
+                </div>
+
+                {{ form_start(form, { attr: { novalidate: 'novalidate', class: 'needs-validation' } }) }}
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label-premium">{{ form_label(form.reference) }}</label>
+                            {{ form_widget(form.reference, { attr: { class: 'form-control form-control-lg form-control-premium', placeholder: 'Ex: CMD-2024-001' } }) }}
+                            {% if form.reference.vars.errors|length > 0 %}
+                                <div class="bl-error"><i class="fa-solid fa-circle-exclamation"></i> {{ form_errors(form.reference) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-premium">{{ form_label(form.quantite) }}</label>
+                            {{ form_widget(form.quantite, { attr: { class: 'form-control form-control-lg form-control-premium', placeholder: 'Quantité en ml' } }) }}
+                            {% if form.quantite.vars.errors|length > 0 %}
+                                <div class="bl-error"><i class="fa-solid fa-circle-exclamation"></i> {{ form_errors(form.quantite) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-premium">{{ form_label(form.typeSang) }}</label>
+                            {{ form_widget(form.typeSang, { attr: { class: 'form-select form-select-lg js-choices' } }) }}
+                            {% if form.typeSang.vars.errors|length > 0 %}
+                                <div class="bl-error"><i class="fa-solid fa-circle-exclamation"></i> {{ form_errors(form.typeSang) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label-premium">{{ form_label(form.priorite) }}</label>
+                            {{ form_widget(form.priorite, { attr: { class: 'form-select form-select-lg js-choices' } }) }}
+                            {% if form.priorite.vars.errors|length > 0 %}
+                                <div class="bl-error"><i class="fa-solid fa-circle-exclamation"></i> {{ form_errors(form.priorite) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-12 col-md-8">
+                            <label class="form-label-premium">{{ form_label(form.banque) }}</label>
+                            {{ form_widget(form.banque, { attr: { class: 'form-select form-select-lg js-choices' } }) }}
+                            {% if form.banque.vars.errors|length > 0 %}
+                                <div class="bl-error"><i class="fa-solid fa-circle-exclamation"></i> {{ form_errors(form.banque) }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-4 border-top border-secondary border-opacity-10 d-flex justify-content-end align-items-center gap-3">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-black text-uppercase transition-all" 
+                                style="height:56px; font-size: 0.9rem; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(230,57,57,0.2); background-color: var(--primary); border-color: var(--primary);">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Envoyer la commande
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script>
+    document.querySelectorAll('.js-choices').forEach((el) => {
+      new Choices(el, {
+        searchEnabled: false,
+        shouldSort: false,
+        itemSelectText: '',
+      });
+    });
+  </script>
+{% endblock %}

@@ -17,17 +17,22 @@ class DossierMedRepository extends ServiceEntityRepository
         parent::__construct($registry, DossierMed::class);
     }
 
-    public function findByClientSearchAndSort(Client $client, ?string $search, string $sort, string $direction)
+    public function findByClientSearchAndSort(?Client $client, ?string $search, string $sort, string $direction)
     {
         $qb = $this->createQueryBuilder('dm')
             ->leftJoin('dm.don', 'd')
-            ->addSelect('d')
-            ->andWhere('dm.client = :client')
-            ->setParameter('client', $client);
+            ->leftJoin('dm.client', 'c')
+            ->leftJoin('c.user', 'u')
+            ->addSelect('d', 'c', 'u');
+
+        if ($client) {
+            $qb->andWhere('dm.client = :client')
+               ->setParameter('client', $client);
+        }
 
         // --- SEARCH ---
         if ($search) {
-            $qb->andWhere('d.typeDon LIKE :search OR dm.id LIKE :search OR dm.typeSang LIKE :search')
+            $qb->andWhere('d.typeDon LIKE :search OR dm.id LIKE :search OR dm.typeSang LIKE :search OR u.nom LIKE :search OR u.prenom LIKE :search')
                ->setParameter('search', '%' . $search . '%');
         }
 

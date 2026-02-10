@@ -95,6 +95,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     return $this;
   }
 
+  public function getNomComplet(): string
+  {
+    return trim($this->prenom . ' ' . $this->nom);
+  }
+
   public function getEmail(): ?string
   {
     return $this->email;

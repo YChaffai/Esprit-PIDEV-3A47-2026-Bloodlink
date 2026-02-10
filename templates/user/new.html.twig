@@ -1,30 +1,25 @@
-{% extends 'base_front.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block title %}Créer un utilisateur{% endblock %}
+{% block title %}Ajouter un utilisateur | BloodLink Admin{% endblock %}
 
 {% block body %}
-  <div class="row justify-content-center mt-4">
+<div class="row justify-content-center">
     <div class="col-lg-9 col-xl-8">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Nouvel Utilisateur</h1>
+                <p class="text-white-50 mb-0">Créez un nouveau compte utilisateur dans le système.</p>
+            </div>
 
-      <div class="glass-card p-4 p-md-5">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-          <h2 class="m-0" style="font-weight:900;">
-            <i class="fa-solid fa-user-plus me-2" style="color:var(--primary);"></i>
-            Ajouter un utilisateur
-          </h2>
-
-          <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill">
-            <i class="fa-solid fa-arrow-left me-2"></i>Retour à la liste
-          </a>
+            <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+            </a>
         </div>
 
-        {# Inclusion du formulaire avec les labels en français #}
         {{ include('user/_form.html.twig', {
-          button_label: 'Créer le compte',
-          title: 'Informations du nouvel utilisateur'
+            button_label: 'CRÉER LE COMPTE',
+            title: 'DÉTAILS DU NOUVEL UTILISATEUR'
         }) }}
-      </div>
-
     </div>
-  </div>
+</div>
 {% endblock %}

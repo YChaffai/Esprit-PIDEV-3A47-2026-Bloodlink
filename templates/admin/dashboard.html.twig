@@ -1,252 +1,121 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block content_title %}Dashboard{% endblock %}
+{% block title %}Dashboard | BloodLink Admin{% endblock %}
 
-{% block main %}
-<div class="container-fluid">
-
-  {# HERO #}
-  <div class="row g-4">
+{% block body %}
+<div class="row g-4">
+    {# HERO SECTION #}
     <div class="col-12">
-      <div class="admin-glass p-4 p-md-5 rounded-4 admin-hero">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-          <div>
-            <div class="small mb-1" style="color:rgba(255,255,255,.65); letter-spacing:.14em;">
-              Espace d’administration
+        <div class="glass-card p-4 p-md-5 border-0 shadow-lg position-relative overflow-hidden" 
+             style="background: linear-gradient(135deg, rgba(230,57,57,0.1) 0%, rgba(255,255,255,0.02) 100%);">
+            
+            <div class="position-relative z-1">
+                <div class="small mb-1 text-uppercase fw-bold" style="color:var(--primary); letter-spacing:0.15em;">BloodLink Administration</div>
+                <h1 class="fw-black mb-1 text-white" style="letter-spacing:-1.5px; font-size: 2.5rem;">Bienvenue, Administrateur 👋</h1>
+                <p class="text-white-50 mb-4" style="max-width: 600px;">
+                    Vous êtes sur le centre de contrôle de BloodLink. Gérez les stocks, suivez les commandes et supervisez la communauté des donneurs en toute simplicité.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ path('app_user_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+                        <i class="fa fa-user-plus"></i> NOUVEL UTILISATEUR
+                    </a>
+                </div>
             </div>
-            <h2 class="mb-1 fw-black" style="letter-spacing:-.4px;">
-              Bienvenue 👋
-            </h2>
-            <div style="color:rgba(255,255,255,.65);">
-              Gère les clients, les dons et les dossiers médicaux depuis un tableau de bord clair.
-            </div>
-          </div>
 
-          <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-lg rounded-pill fw-bold admin-btn"
-               href="{{ ea_url().setController('App\\Controller\\Admin\\ClientCrudController').setAction('new') }}">
-              <i class="fa fa-user-plus me-2"></i> Nouveau client
-            </a>
-
-            <a class="btn btn-lg rounded-pill fw-bold admin-btn-outline"
-               href="{{ ea_url().setController('App\\Controller\\Admin\\DonCrudController').setAction('new') }}">
-              <i class="fa fa-plus me-2"></i> Nouveau don
-            </a>
-
-            <a class="btn btn-lg rounded-pill fw-bold admin-btn-success"
-               href="{{ ea_url().setController('App\\Controller\\Admin\\DossierMedCrudController').setAction('new') }}">
-              <i class="fa fa-notes-medical me-2"></i> Nouveau dossier
-            </a>
-          </div>
+            {# Decorative element #}
+            <i class="fas fa-droplet position-absolute" 
+               style="font-size: 15rem; color: var(--primary); opacity: 0.03; top: 0; right: -2rem; transform: rotate(15deg);"></i>
         </div>
-
-        <div class="mt-4 d-flex flex-wrap gap-2">
-          <span class="badge rounded-pill px-3 py-2 admin-pill">
-            <i class="fa fa-shield-heart me-2"></i> Admin sécurisé
-          </span>
-          <span class="badge rounded-pill px-3 py-2 admin-pill">
-            <i class="fa fa-magnifying-glass me-2"></i> Recherche & filtres
-          </span>
-          <span class="badge rounded-pill px-3 py-2 admin-pill">
-            <i class="fa fa-chart-line me-2"></i> Stats (à venir)
-          </span>
-        </div>
-      </div>
     </div>
 
-    {# SHORTCUT CARDS #}
+    {# QUICK STATS / SHORTCUTS #}
     <div class="col-12 col-md-6 col-xl-4">
-      <div class="admin-glass rounded-4 h-100 admin-card">
-        <div class="p-4">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="small" style="color:rgba(255,255,255,.65);">Raccourci</div>
-              <h5 class="mb-0 fw-black">Clients</h5>
+        <div class="glass-card p-4 h-100 transition-transform">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="admin-icon" style="color: var(--primary); background: rgba(230,57,57,0.1);">
+                    <i class="fa fa-users"></i>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-black text-white">Utilisateurs</div>
+                </div>
             </div>
-            <div class="admin-icon" style="background:rgba(59,130,246,.14); border:1px solid rgba(59,130,246,.25); color:#93c5fd;">
-              <i class="fa fa-user"></i>
-            </div>
-          </div>
-          <div class="mt-3" style="color:rgba(255,255,255,.65);">
-            Accès rapide à la liste et aux détails des clients.
-          </div>
-
-          <div class="mt-3">
-            <a class="btn btn-lg rounded-pill fw-bold w-100 admin-btn-outline"
-               href="{{ ea_url().setController('App\\Controller\\Admin\\ClientCrudController').setAction('index') }}">
-              Ouvrir
-            </a>
-          </div>
+            <p class="small text-white-50">Gérez les comptes, les rôles et accédez aux profils détaillés des donneurs et banques.</p>
+            <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-outline-light w-100 rounded-pill mt-3 py-2 fw-bold">Ouvrir la liste</a>
         </div>
-      </div>
     </div>
 
     <div class="col-12 col-md-6 col-xl-4">
-      <div class="admin-glass rounded-4 h-100 admin-card">
-        <div class="p-4">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="small" style="color:rgba(255,255,255,.65);">Raccourci</div>
-              <h5 class="mb-0 fw-black">Dons</h5>
+        <div class="glass-card p-4 h-100 transition-transform">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="admin-icon" style="color: var(--primary); background: rgba(230,57,57,0.1);">
+                    <i class="fa fa-shopping-cart"></i>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-black text-white">Commandes</div>
+                </div>
             </div>
-            <div class="admin-icon" style="background:rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:#fecaca;">
-              <i class="fa fa-hand-holding-heart"></i>
-            </div>
-          </div>
-          <div class="mt-3" style="color:rgba(255,255,255,.65);">
-            Suivi des dons, quantités et types de dons.
-          </div>
-
-          <div class="mt-3">
-            <a class="btn btn-lg rounded-pill fw-bold w-100 admin-btn"
-               href="{{ ea_url().setController('App\\Controller\\Admin\\DonCrudController').setAction('index') }}">
-              Ouvrir
-            </a>
-          </div>
+            <p class="small text-white-50">Surveillez l'état des demandes de sang et gérez les validations en temps réel.</p>
+            <a href="{{ path('back_commandes_index') }}" class="btn btn-sm btn-outline-light w-100 rounded-pill mt-3 py-2 fw-bold">Voir commandes</a>
         </div>
-      </div>
     </div>
 
-    {# ✅ FIXED CONTROLLER NAME HERE #}
     <div class="col-12 col-md-6 col-xl-4">
-      <div class="admin-glass rounded-4 h-100 admin-card">
-        <div class="p-4">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="small" style="color:rgba(255,255,255,.65);">Raccourci</div>
-              <h5 class="mb-0 fw-black">Dossiers médicaux</h5>
+        <div class="glass-card p-4 h-100 transition-transform">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="admin-icon" style="color: var(--primary); background: rgba(230,57,57,0.1);">
+                    <i class="fa fa-layer-group"></i>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-black text-white">Stocks</div>
+                </div>
             </div>
-            <div class="admin-icon" style="background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.25); color:#bbf7d0;">
-              <i class="fa fa-notes-medical"></i>
-            </div>
-          </div>
-          <div class="mt-3" style="color:rgba(255,255,255,.65);">
-            Accéder aux dossiers médicaux, suivi et historique.
-          </div>
-
-          <div class="mt-3">
-            <a class="btn btn-lg rounded-pill fw-bold w-100 admin-btn-success"
-               href="{{ ea_url().setController('App\\Controller\\Admin\\DossierMedCrudController').setAction('index') }}">
-              Ouvrir
-            </a>
-          </div>
+            <p class="small text-white-50">Vérifiez les niveaux de sang disponibles par type et par organisation.</p>
+            <a href="{{ path('back_stock_index') }}" class="btn btn-sm btn-outline-light w-100 rounded-pill mt-3 py-2 fw-bold">Gérer les stocks</a>
         </div>
-      </div>
     </div>
 
-    {# Workflow card #}
-    <div class="col-12 col-md-6 col-xl-4">
-      <div class="admin-glass rounded-4 h-100 admin-card">
-        <div class="p-4">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <div class="small" style="color:rgba(255,255,255,.65);">Astuce</div>
-              <h5 class="mb-0 fw-black">Workflow</h5>
-            </div>
-            <div class="admin-icon" style="background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10); color:#fff;">
-              <i class="fa fa-bolt"></i>
-            </div>
-          </div>
-
-          <ul class="mt-3 mb-0 small ps-3" style="color:rgba(255,255,255,.70);">
-            <li>Créer un client</li>
-            <li>Créer / mettre à jour un dossier médical</li>
-            <li>Créer un don lié au client</li>
-            <li>Utiliser recherche + filtres dans les index</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    {# Notes panel #}
     <div class="col-12">
-      <div class="admin-glass rounded-4 admin-card">
-        <div class="p-4">
-          <h6 class="mb-2 fw-black">Notes</h6>
-          <div style="color:rgba(255,255,255,.65);">
-            Si certaines pages plantent avec des champs date/heure, on peut les afficher en texte (format manuel)
-            ou activer l’extension PHP <strong>intl</strong> dans XAMPP.
-          </div>
+        <div class="glass-card p-4">
+            <h5 class="fw-black text-uppercase mb-4" style="font-size: 0.9rem; letter-spacing: 1px;">
+                <i class="fa-solid fa-list-check me-2" style="color: var(--primary);"></i> Actions Rapides
+            </h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-calendar-alt d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Rendez-vous</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-clipboard-list d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Questionnaires</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-hospital d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Banques</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-gear d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Paramètres</span>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
 
-{# Local CSS (works even without admin.css) #}
 <style>
-  .fw-black { font-weight: 900; }
-
-  .admin-glass{
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(255,255,255,.10);
-    box-shadow: 0 20px 60px rgba(0,0,0,.35);
-    backdrop-filter: blur(14px);
-  }
-  .admin-hero{
-    position: relative;
-    overflow: hidden;
-  }
-  .admin-hero:before{
-    content:"";
-    position:absolute;
-    inset:-140px -160px auto auto;
-    width:420px; height:420px;
-    background: rgba(230,57,57,.18);
-    filter: blur(90px);
-    border-radius: 999px;
-    pointer-events:none;
-  }
-  .admin-hero:after{
-    content:"";
-    position:absolute;
-    inset:auto auto -160px -170px;
-    width:440px; height:440px;
-    background: rgba(255,255,255,.06);
-    filter: blur(90px);
-    border-radius: 999px;
-    pointer-events:none;
-  }
-  .admin-card{ transition: transform .15s ease, box-shadow .15s ease; }
-  .admin-card:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 26px 70px rgba(0,0,0,.45);
-  }
-
-  .admin-icon{
-    width:46px; height:46px;
-    border-radius: 14px;
-    display:flex; align-items:center; justify-content:center;
-    font-size: 1.1rem;
-  }
-  .admin-pill{
-    background: rgba(255,255,255,.06) !important;
-    border: 1px solid rgba(255,255,255,.10) !important;
-    color:#fff !important;
-  }
-
-  .admin-btn{
-    background: #e63939;
-    border: 1px solid #e63939;
-    color: #fff;
-  }
-  .admin-btn:hover{ filter: brightness(1.05); color:#fff; }
-
-  .admin-btn-success{
-    background: rgba(34,197,94,.18);
-    border: 1px solid rgba(34,197,94,.30);
-    color:#fff;
-  }
-  .admin-btn-success:hover{ filter: brightness(1.05); color:#fff; }
-
-  .admin-btn-outline{
-    background: transparent;
-    border: 1px solid rgba(255,255,255,.12);
-    color:#fff;
-  }
-  .admin-btn-outline:hover{
-    background: rgba(255,255,255,.06);
-    color:#fff;
-  }
+    .transition-transform:hover {
+        transform: translateY(-5px);
+    }
+    .cursor-pointer { cursor: pointer; }
+    .transition-all { transition: all 0.2s ease; }
+    .hover-bg-opacity-10:hover { background-opacity: 0.1 !important; }
 </style>
 {% endblock %}

@@ -17,8 +17,8 @@ class EntiteCollecteController extends AbstractController
     #[Route('', name: 'back_entite_collecte_index', methods: ['GET'])]
     public function index(EntiteCollecteRepository $repository): Response
     {
-        return $this->render('Back/EntiteCollecte.html.twig', [
-            'entites' => $repository->findAll(),
+        return $this->render('back/EntiteCollecte.html.twig', [
+            'entite_collectes' => $repository->findAll(),
         ]);
     }
 
@@ -37,7 +37,7 @@ class EntiteCollecteController extends AbstractController
             return $this->redirectToRoute('back_entite_collecte_index');
         }
 
-        return $this->render('Back/AjoutEntiteCollecte.html.twig', [
+        return $this->render('back/AjoutEntiteCollecte.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -55,8 +55,8 @@ class EntiteCollecteController extends AbstractController
             return $this->redirectToRoute('back_entite_collecte_index');
         }
 
-        return $this->render('Back/editEntiteCollecte.html.twig', [
-            'entite' => $entite,
+        return $this->render('back/editEntiteCollecte.html.twig', [
+            'entite_collecte' => $entite,
             'form' => $form->createView(),
         ]);
     }

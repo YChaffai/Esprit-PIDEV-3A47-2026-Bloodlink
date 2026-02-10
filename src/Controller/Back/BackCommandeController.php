@@ -19,7 +19,7 @@ class BackCommandeController extends AbstractController
     {
         $commandes = $commandeRepository->findBy([], ['id' => 'DESC']);
 
-        return $this->render('Back/Commande.html.twig', [
+        return $this->render('back/Commande.html.twig', [
             'commandes' => $commandes,
         ]);
     }
@@ -36,7 +36,7 @@ class BackCommandeController extends AbstractController
             return $this->redirectToRoute('back_commandes_index');
         }
 
-        return $this->render('Back/editCommande.html.twig', [
+        return $this->render('back/editCommande.html.twig', [
             'commande' => $commande,
             'form' => $form->createView(),
         ]);

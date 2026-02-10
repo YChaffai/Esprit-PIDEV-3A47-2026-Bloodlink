@@ -1,136 +1,123 @@
-{% extends 'base_front.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block title %}Profil Utilisateur{% endblock %}
+{% block title %}Détails Utilisateur | BloodLink Admin{% endblock %}
 
 {% block body %}
-  <div class="row justify-content-center mt-4">
+<div class="row justify-content-center">
     <div class="col-lg-10 col-xl-9">
-
-      <div class="glass-card overflow-hidden">
-        {# En-tête #}
-        <div class="p-4 p-md-5 border-bottom" style="border-color: var(--border) !important;">
-          <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
-            <h2 class="m-0" style="font-weight: 900;">
-               <i class="fa-solid fa-address-card me-2" style="color: var(--primary);"></i>Détails du Profil
-            </h2>
-
-            <div class="d-flex gap-2 align-items-center">
-              <span class="badge rounded-pill px-3 py-2 d-flex align-items-center" 
-                    style="background: rgba(25, 135, 84, 0.1); border: 1px solid rgba(25, 135, 84, 0.3); color: #4ade80;">
-                <span class="rounded-circle me-2" style="width:8px; height:8px; background:#4ade80; display:inline-block;"></span>
-                ACTIF
-              </span>
-              
-              <span class="badge rounded-pill px-3 py-2"
-                    style="background: rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:#ffd1d1;">
-                {{ user.role|upper }}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="p-4 p-md-5">
-          {# Infos de base #}
-          <div class="d-flex align-items-center mb-5">
-            <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
-                 style="width:64px;height:64px;font-size:1.35rem;font-weight:900; background: rgba(230,57,57,.18); border:1px solid rgba(230,57,57,.35); color:var(--primary);">
-              {{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}
-            </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
             <div>
-              <h3 class="mb-1 fw-bold text-white">{{ user.prenom }} {{ user.nom }}</h3>
-              <p class="text-white mb-0">
-                <i class="fa-solid fa-envelope me-2"></i>{{ user.email }}
-              </p>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Profil Utilisateur</h1>
+                <p class="text-white-50 mb-0">Consultez les informations détaillées du compte #{{ user.id }}.</p>
             </div>
-          </div>
 
-          {# Section Spécifique au Rôle #}
-          {% if user.role == 'client' %}
-            <h5 class="text-uppercase small fw-bold mb-4" style="color: var(--primary); letter-spacing: 1px;">
-                <i class="fa-solid fa-droplet me-2"></i>Informations Donneur
-            </h5>
-            {% if user.client %}
-              <div class="row g-4 mb-4">
-                <div class="col-md-4">
-                  <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
-                    <div class="small text-white mb-1"><i class="fa-solid fa-droplet me-1 small"></i> Groupe Sanguin</div>
-                    <div class="fw-bold fs-5 text-white">{{ user.client.typeSang|default('N/A') }}</div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
-                    <div class="small text-white mb-1">Dernier Don</div>
-                    <div class="fw-bold text-white">{{ user.client.dernierDon ? user.client.dernierDon|date('d/m/Y') : 'Aucun' }}</div>
-                  </div>
-                </div>
-              </div>
-            {% else %}
-              <div class="p-4 rounded-3 d-flex align-items-center gap-3 flex-wrap"
-                   style="background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); color:#ffe7a3;">
-                <i class="fa-solid fa-circle-exclamation fs-4"></i>
-                <div>
-                  <strong>Profil Incomplet</strong><br>
-                  <span style="color: rgba(255,255,255,.75);" class="small">Cet utilisateur n'a pas encore complété ses informations de santé.</span>
-                </div>
-                <a href="{{ path('app_user_complete_client', {'id': user.id}) }}" class="btn btn-outline-light btn-sm ms-auto rounded-pill fw-bold text-uppercase">Compléter</a>
-              </div>
-            {% endif %}
-
-          {% elseif user.role == 'banque' %}
-            <h5 class="text-uppercase small fw-bold mb-4" style="color: var(--primary); letter-spacing: 1px;">
-                <i class="fa-solid fa-building-medical me-2"></i>Détails de la Banque de Sang
-            </h5>
-            {# FIX: Changed user.banqueDeSang to user.banque to match Entity definition #}
-            {% if user.banque %}
-              <div class="row g-4 mb-4">
-                <div class="col-md-6">
-                  <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
-                    <div class="small text-white mb-1">Nom de l'établissement</div>
-                    <div class="fw-bold text-white">{{ user.banque.nom }}</div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="p-3 rounded-3" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border);">
-                    <div class="small text-white mb-1">Téléphone</div>
-                    <div class="fw-bold text-white"><i class="fa-solid fa-phone me-2 small"></i>{{ user.banque.telephone }}</div>
-                  </div>
-                </div>
-              </div>
-            {% else %}
-              <div class="p-4 rounded-3 d-flex align-items-center gap-3 flex-wrap"
-                   style="background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); color:#ffe7a3;">
-                <i class="fa-solid fa-triangle-exclamation fs-4"></i>
-                <div>
-                  <strong>Profil Incomplet</strong><br>
-                  <span style="color: rgba(255,255,255,.75);" class="small">Cette banque n'a pas encore configuré ses coordonnées.</span>
-                </div>
-                <a href="{{ path('app_user_complete_banque', {'id': user.id}) }}" class="btn btn-outline-light btn-sm ms-auto rounded-pill fw-bold text-uppercase">Compléter</a>
-              </div>
-            {% endif %}
-          {% endif %}
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                    <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+                </a>
+                
+                {% if user.role == 'client' and user.client %}
+                    <a href="{{ path('app_user_edit_client', {'id': user.id}) }}" class="btn btn-premium rounded-pill px-4">
+                        <i class="fa-solid fa-user-pen me-2"></i> MODIFIER
+                    </a>
+                {% elseif user.role == 'banque' and user.banque %}
+                    <a href="{{ path('app_user_edit_banque', {'id': user.id}) }}" class="btn btn-premium rounded-pill px-4">
+                        <i class="fa-solid fa-user-pen me-2"></i> MODIFIER
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-premium rounded-pill px-4">
+                        <i class="fa-solid fa-user-pen me-2"></i> MODIFIER
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
-        {# Pied de page / Actions #}
-        <div class="px-4 pb-4 px-md-5 pb-md-5 d-flex justify-content-between align-items-center gap-3 flex-wrap">
-          <a href="{{ path('app_user_index') }}" class="btn btn-outline-light rounded-pill px-4">
-            <i class="fa-solid fa-arrow-left me-2"></i>Retour à la liste
-          </a>
-          {% if user.role == 'client' and user.client %}
-            <a href="{{ path('app_user_edit_client', {'id': user.id}) }}" class="btn btn-outline-light rounded-pill px-4">
-              <i class="fa-solid fa-user-pen me-2"></i>Modifier le profil
-            </a>
-          {% elseif user.role == 'banque' and user.banque %}
-             <a href="{{ path('app_user_edit_banque', {'id': user.id}) }}" class="btn btn-outline-light rounded-pill px-4">
-              <i class="fa-solid fa-user-pen me-2"></i>Modifier le profil
-            </a>
-          {% else %}
-             <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-outline-light rounded-pill px-4">
-              <i class="fa-solid fa-user-pen me-2"></i>Modifier le profil
-            </a>
-          {% endif %}
-        </div>
-      </div>
+        <div class="glass-card overflow-hidden" style="background: rgba(0, 0, 0, 0.4);">
+            {# Header #}
+            <div class="p-4 p-md-5 border-bottom border-secondary border-opacity-10 position-relative">
+                <div class="d-flex align-items-center gap-4 flex-wrap">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:80px; height:80px; font-size:1.8rem; font-weight:900; background: rgba(230,57,57,0.15); border:1px solid rgba(230,57,57,0.3); color:var(--primary);">
+                        {{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}
+                    </div>
+                    <div>
+                        <h2 class="fw-black mb-1 text-white">{{ user.prenom }} {{ user.nom }}</h2>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge text-uppercase" style="background: var(--primary);">{{ user.role }}</span>
+                            <span class="text-white-50 small"><i class="fa-solid fa-envelope me-2"></i>{{ user.email }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <div class="p-4 p-md-5">
+                {# Section Spécifique au Rôle #}
+                {% if user.role == 'client' %}
+                    <h5 class="text-uppercase small fw-bold mb-4" style="color: var(--primary); letter-spacing: 1px;">
+                        <i class="fa-solid fa-droplet me-2"></i>Informations Donneur
+                    </h5>
+                    {% if user.client %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                                    <div class="small text-white-50 mb-1 text-uppercase fw-bold" style="letter-spacing:1px;">Groupe Sanguin</div>
+                                    <div class="fw-black fs-3" style="color: var(--primary);">{{ user.client.typeSang|default('N/A') }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                                    <div class="small text-white-50 mb-1 text-uppercase fw-bold" style="letter-spacing:1px;">Dernier Don</div>
+                                    <div class="fw-bold fs-5 text-white">{{ user.client.dernierDon ? user.client.dernierDon|date('d/m/Y') : 'Aucun don enregistré' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="p-4 rounded-4 d-flex align-items-center gap-4 bg-black bg-opacity-30 border border-secondary border-opacity-10">
+                            <div class="admin-icon" style="color: #ffc107; background: rgba(255,193,7,0.1);">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-white">Profil Incomplet</div>
+                                <div class="text-white-50 small">Cet utilisateur n'a pas encore renseigné ses informations de santé.</div>
+                            </div>
+                            <a href="{{ path('app_user_complete_client', {'id': user.id}) }}" class="btn btn-outline-warning btn-sm rounded-pill px-4">COMPLÉTER</a>
+                        </div>
+                    {% endif %}
+
+                {% elseif user.role == 'banque' %}
+                    <h5 class="text-uppercase small fw-bold mb-4" style="color: var(--primary); letter-spacing: 1px;">
+                        <i class="fa-solid fa-building-medical me-2"></i>Détails de la Banque
+                    </h5>
+                    {% if user.banque %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                                    <div class="small text-white-50 mb-1 text-uppercase fw-bold" style="letter-spacing:1px;">Établissement</div>
+                                    <div class="fw-bold fs-5 text-white">{{ user.banque.nom }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                                    <div class="small text-white-50 mb-1 text-uppercase fw-bold" style="letter-spacing:1px;">Contact</div>
+                                    <div class="fw-bold fs-5 text-white"><i class="fa-solid fa-phone me-2 text-primary"></i>{{ user.banque.telephone }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="p-4 rounded-4 d-flex align-items-center gap-4 bg-black bg-opacity-30 border border-secondary border-opacity-10">
+                            <div class="admin-icon" style="color: #ffc107; background: rgba(255,193,7,0.1);">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-white">Action Requise</div>
+                                <div class="text-white-50 small">La banque doit configurer ses coordonnées pour activer les services.</div>
+                            </div>
+                            <a href="{{ path('app_user_complete_banque', {'id': user.id}) }}" class="btn btn-outline-warning btn-sm rounded-pill px-4">CONFIGURER</a>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 {% endblock %}

@@ -1,107 +1,65 @@
-{% extends 'base_front.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block title %}Compléter le profil de la banque de sang{% endblock %}
+{% block title %}Compléter profil Banque | BloodLink Admin{% endblock %}
 
 {% block body %}
-  <div class="row justify-content-center mt-4">
+<div class="row justify-content-center">
     <div class="col-lg-9 col-xl-8">
-
-      {# Stepper #}
-      <div class="position-relative mb-5">
-        <div class="position-absolute top-50 start-0 w-100 translate-middle-y"
-             style="height:1px; background: var(--border);"></div>
-
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex flex-column align-items-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width:42px;height:42px;background: rgba(25,135,84,.18); border:1px solid rgba(25,135,84,.35);">
-              <i class="fa-solid fa-check" style="color:#bff5d5;"></i>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Compléter Profil</h1>
+                <p class="text-white-50 mb-0">Détails de l'établissement pour le compte #{{ user.id }}.</p>
             </div>
-            <span class="small fw-bold mt-2" style="color:#bff5d5;">Compte Créé</span>
-          </div>
-
-          <div class="d-flex flex-column align-items-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width:52px;height:52px;background: rgba(230,57,57,.18); border:1px solid rgba(230,57,57,.35); position:relative; z-index:2;">
-              <i class="fa-solid fa-building" style="color:var(--primary);"></i>
-            </div>
-            <span class="small fw-bold mt-2" style="color:var(--primary);">Infos Banque</span>
-          </div>
-
-          <div class="d-flex flex-column align-items-center">
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width:42px;height:42px;background: #1a1a1a; border:1px solid var(--border);">
-              <i class="fa-solid fa-flag-checkered text-muted"></i>
-            </div>
-            <span class="small fw-bold mt-2 text-muted">Terminé</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="glass-card p-4 p-md-5">
-        <div class="mb-4">
-          <h2 class="m-0" style="font-weight:900;">
-            <i class="fa-solid fa-hospital me-2" style="color:var(--primary);"></i>Détails de l'Établissement
-          </h2>
-          <p style="color:var(--muted);">Dernière étape ! Dites-nous en plus sur votre banque de sang.</p>
         </div>
 
-        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
-          <div class="row g-4">
-            <div class="col-12">
-              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Nom de la Banque</label>
-              {{ form_widget(form.nom, { attr: { class: 'form-control form-control-lg input-dark' ~ (form.nom.vars.errors|length ? ' is-invalid' : '') } }) }}
-              {% for error in form.nom.vars.errors %}
-                <div class="mt-2 error-pill small"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
-              {% endfor %}
+        <div class="glass-card p-4 p-md-5" style="background: rgba(0, 0, 0, 0.4);">
+            <div class="mb-5">
+                <h2 class="fw-black text-uppercase mb-1" style="letter-spacing:-0.5px;">
+                    <i class="fa-solid fa-hospital me-2" style="color:var(--primary);"></i>Banque de Sang
+                </h2>
+                <p class="text-white-50">Configuration des coordonnées de l'établissement.</p>
             </div>
 
-            <div class="col-md-8">
-              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Adresse</label>
-              {{ form_widget(form.adresse, { attr: { class: 'form-control form-control-lg input-dark' ~ (form.adresse.vars.errors|length ? ' is-invalid' : '') } }) }}
-              {% for error in form.adresse.vars.errors %}
-                <div class="mt-2 error-pill small"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
-              {% endfor %}
-            </div>
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-uppercase" style="color:var(--muted); letter-spacing:1px;">Nom de la Banque</label>
+                        {{ form_widget(form.nom, { attr: { class: 'form-control form-control-premium border-0' ~ (form.nom.vars.errors|length ? ' is-invalid' : '') } }) }}
+                        {% for error in form.nom.vars.errors %}
+                            <div class="mt-2 d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
 
-            <div class="col-md-4">
-              <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">Téléphone</label>
-              {{ form_widget(form.telephone, { attr: { class: 'form-control form-control-lg input-dark' ~ (form.telephone.vars.errors|length ? ' is-invalid' : '') } }) }}
-              {% for error in form.telephone.vars.errors %}
-                <div class="mt-2 error-pill small"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
-              {% endfor %}
-              <div class="small mt-2" style="color:var(--muted);">Doit contenir exactement 8 chiffres.</div>
-            </div>
-          </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold small text-uppercase" style="color:var(--muted); letter-spacing:1px;">Adresse</label>
+                        {{ form_widget(form.adresse, { attr: { class: 'form-control form-control-premium border-0' ~ (form.adresse.vars.errors|length ? ' is-invalid' : '') } }) }}
+                        {% for error in form.adresse.vars.errors %}
+                            <div class="mt-2 d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
 
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
-            <button type="submit" class="btn btn-outline-light btn-lg rounded-pill px-5">
-              Confirmer
-            </button>
-          </div>
-        {{ form_end(form) }}
-      </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color:var(--muted); letter-spacing:1px;">Téléphone</label>
+                        {{ form_widget(form.telephone, { attr: { class: 'form-control form-control-premium border-0' ~ (form.telephone.vars.errors|length ? ' is-invalid' : '') } }) }}
+                        {% for error in form.telephone.vars.errors %}
+                            <div class="mt-2 d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
 
+                <div class="d-flex justify-content-end mt-5">
+                    <button type="submit" class="btn btn-premium px-5">
+                        CONFIRMER <i class="fa-solid fa-check ms-2"></i>
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
     </div>
-  </div>
-
-  <style>
-    .input-dark{
-      background: rgba(255,255,255,.06) !important;
-      border: 1px solid rgba(255,255,255,.10) !important;
-      color: #fff !important;
-      border-radius: 12px;
-    }
-    .input-dark::placeholder { color: rgba(255,255,255,.45) !important; }
-    .input-dark:focus{
-      box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
-      border-color: rgba(230,57,57,.5) !important;
-    }
-    .error-pill {
-      background: rgba(230,57,57,0.15);
-      color: #ff8e8e;
-      padding: 6px 12px;
-      border-radius: 8px;
-    }
-  </style>
+</div>
 {% endblock %}

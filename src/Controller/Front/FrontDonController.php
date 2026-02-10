@@ -3,7 +3,6 @@
 namespace App\Controller\Front;
 
 use App\Entity\Don;
-use App\Repository\ClientRepository;
 use App\Repository\DonRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,30 +12,49 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class FrontDonController extends AbstractController
 {
-    private function currentClient(ClientRepository $clientRepo)
+    private function currentClient()
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if (!$user) {
-            throw $this->createAccessDeniedException('You must be logged in.');
+            throw $this->createAccessDeniedException('Vous devez être connecté.');
         }
 
-        $client = $clientRepo->find($user->getId());
-        if (!$client) {
-            throw $this->createNotFoundException('Client profile not found for this user.');
-        }
-
-        return $client;
+        // Return client if user is a client, otherwise return null (Admins/Doctors)
+        return $user->getClient();
     }
 
-  #[Route('/front/don', name: 'front_don_index', methods: ['GET'])]
-    public function index(DonRepository $donRepo, ClientRepository $clientRepo, Request $request): Response
+    #[Route('/front/don/new', name: 'front_don_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
-        // 1. Get Current Client
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
+        $client = $this->currentClient();
+
+        $don = new Don();
+        $don->setClient($client);
+        $don->setDate(new \DateTime());
+
+        $form = $this->createForm(\App\Form\DonType::class, $don);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($don);
+            $em->flush();
+
+            $this->addFlash('success', 'Votre don a été enregistré avec succès.');
+            return $this->redirectToRoute('front_don_index');
         }
-        $client = $clientRepo->find($user->getId());
+
+        return $this->render('front/don/new.html.twig', [
+            'don' => $don,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/front/don', name: 'front_don_index', methods: ['GET'])]
+    public function index(DonRepository $donRepo, Request $request): Response
+    {
+        // 1. Get Current Client (Can be null for Admins)
+        $client = $this->currentClient();
 
         // 2. Get parameters from URL
         $search = $request->query->get('q');
@@ -54,19 +72,19 @@ class FrontDonController extends AbstractController
             'currentDir' => $direction
         ]);
     }
-    // ❌ NOTE: 'new' and 'edit' methods are intentionally removed to prevent client creation/modification of donation data.
 
     #[Route('/front/don/{id}/delete', name: 'front_don_delete', methods: ['POST'])]
-    public function delete(Don $don, Request $request, EntityManagerInterface $em, ClientRepository $clientRepo): Response
+    public function delete(Don $don, Request $request, EntityManagerInterface $em): Response
     {
-        $client = $this->currentClient($clientRepo);
+        $client = $this->currentClient();
 
-        // SECURITY: Check ownership
-        if ($don->getClient()?->getId() !== $client->getId()) {
-            throw $this->createAccessDeniedException('Not your donation.');
+        // SECURITY: Check ownership (Bypassed for Admins)
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        if (!$isAdmin && $don->getClient()?->getId() !== $client?->getId()) {
+            throw $this->createAccessDeniedException('Ce don ne vous appartient pas.');
         }
 
-        if ($this->isCsrfTokenValid('delete_don_'.$don->getId(), (string) $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete_don_' . $don->getId(), (string) $request->request->get('_token'))) {
             $em->remove($don);
             $em->flush();
             $this->addFlash('success', 'Don supprimé.');

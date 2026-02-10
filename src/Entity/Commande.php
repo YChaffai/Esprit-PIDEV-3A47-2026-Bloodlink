@@ -63,7 +63,7 @@ class Commande
     public function onPrePersist(): void
     {
         if (!$this->status) {
-            $this->status = 'Pending';
+            $this->status = 'En Attente';
         }
     }
 

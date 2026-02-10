@@ -62,6 +62,15 @@ class StockType extends AbstractType
             $data = $event->getData();
             $form = $event->getForm();
 
+            // Sync unmapped fields to mapped fields
+            if (isset($data['orgType'])) {
+                $data['type_org'] = $data['orgType'];
+            }
+            if (isset($data['orgId'])) {
+                $data['type_orgid'] = $data['orgId'];
+            }
+            $event->setData($data);
+
             if (isset($data['orgId']) && $data['orgId']) {
                 $form->add('orgId', ChoiceType::class, [
                     'mapped' => false,

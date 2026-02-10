@@ -77,6 +77,8 @@
       border-radius:18px;
       box-shadow:0 20px 60px rgba(0,0,0,.35);
     }
+    .hover-primary{ transition: color .2s ease; }
+    .hover-primary:hover{ color: var(--primary) !important; }
   </style>
 
   {% block stylesheets %}{% endblock %}
@@ -88,13 +90,33 @@
 {% set isLogged = app.user or fakeClientId %}
 
 <header class="header d-flex justify-content-between align-items-center">
-  <a href="{{ path('front_home') }}" class="nav-logo">
-    <i class="fas fa-droplet fa-lg"></i> BLOODLINK
-  </a>
+  <div class="d-flex align-items-center gap-4">
+    <a href="{{ path('front_home') }}" class="nav-logo">
+      <i class="fas fa-droplet fa-lg"></i> BLOODLINK
+    </a>
 
-  <button id="menu-toggle" class="menu-toggle-btn" aria-expanded="false">
-    MENU <span class="ms-1" style="font-size:1.2rem;">☰</span>
-  </button>
+    {# ✅ Desktop Horizontal Menu REMOVED FROM HERE #}
+  </div>
+
+  <div class="d-flex align-items-center gap-3">
+    {% if isLogged %}
+      {# ✅ Profile Icon / Hub #}
+      <div class="dropdown d-none d-md-block">
+        <a href="{{ path('front_profile_edit') }}" class="d-flex align-items-center gap-2 text-white text-decoration-none glass-card px-3 py-2 border-primary" style="border-radius:30px; border-color: var(--primary) !important;">
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px; background-color: var(--primary);">
+            <i class="fa-solid fa-user text-white" style="font-size:14px;"></i>
+          </div>
+          <span class="fw-bold small">
+            {% if app.user %}{{ app.user.nom }} {{ app.user.prenom }}{% else %}Client #{{ fakeClientId }}{% endif %}
+          </span>
+        </a>
+      </div>
+    {% endif %}
+
+    <button id="menu-toggle" class="menu-toggle-btn" aria-expanded="false">
+      <span class="d-none d-sm-inline">MENU</span> <span class="ms-1" style="font-size:1.2rem;">☰</span>
+    </button>
+  </div>
 </header>
 
 <div id="nav-container" class="nav-overlay" aria-hidden="true">
@@ -104,57 +126,56 @@
     <div class="reveal-panel" id="wipe1"></div>
     <div class="reveal-panel secondary" id="wipe2"></div>
 
-    {# ✅ MENU LINKS (works for app.user OR fake session) #}
+    {# ✅ MENU LINKS #}
     <ul class="menu-list">
       <li class="menu-item">
         <a href="{{ path('front_home') }}" class="menu-link"><span>Accueil</span></a>
       </li>
+      <li class="menu-item"><a href="{{ path('campagne_list') }}" class="menu-link"><span>Campagnes</span></a></li>
+      
+      {% if is_granted('ROLE_CLIENT') %}
+        <li class="menu-item"><a href="{{ path('front_don_index') }}" class="menu-link"><span>Dons</span></a></li>
+        <li class="menu-item"><a href="{{ path('front_commandes_index') }}" class="menu-link"><span>Commandes</span></a></li>
+      {% endif %}
+
+      {% if is_granted('ROLE_DOCTOR') %}
+        <li class="menu-item"><a href="{{ path('front_dossier_show') }}" class="menu-link"><span>Dossier Médical</span></a></li>
+      {% endif %}
 
       {% if isLogged %}
         <li class="menu-item">
-          <a href="{{ path('front_dossier_show') }}" class="menu-link"><span>Mon Dossier</span></a>
-        </li>
-        <li class="menu-item">
-          <a href="{{ path('front_don_index') }}" class="menu-link"><span>Mes Dons</span></a>
+          <a href="{{ path('front_profile_edit') }}" class="menu-link"><span style="color:var(--primary);">Mon Profil</span></a>
         </li>
       {% else %}
         <li class="menu-item">
-          <a href="{{ path('front_login') }}" class="menu-link"><span>Se connecter</span></a>
+          <a href="{{ path('app_login') }}" class="menu-link"><span>Se connecter</span></a>
         </li>
         <li class="menu-item">
-          <a href="{{ path('front_register') }}" class="menu-link"><span>Créer compte</span></a>
+          <a href="{{ path('app_register') }}" class="menu-link"><span>Créer compte</span></a>
         </li>
       {% endif %}
     </ul>
 
-    {# ✅ FOOTER CTA (supports both auth styles) #}
+    {# ✅ FOOTER CTA #}
     <div class="menu-footer">
       {% if isLogged %}
         <p class="mb-3">
-          Connecté:
+          Session: 
           <strong>
             {% if app.user %}
-              {{ app.user.userIdentifier }}
+              {{ app.user.email }}
             {% else %}
-              Client #{{ fakeClientId }}
+              ID #{{ fakeClientId }}
             {% endif %}
           </strong>
         </p>
 
-        {# If user is logged with Symfony security #}
-        {% if app.user %}
-          <a href="{{ path('app_logout') }}" class="btn btn-danger btn-lg w-100 rounded-pill">
-            <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
-          </a>
-        {% else %}
-          {# ✅ FakeAuth logout route (CHANGE THIS if your route name differs) #}
-          <a href="{{ path('front_logout') }}" class="btn btn-danger btn-lg w-100 rounded-pill">
-            <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
-          </a>
-        {% endif %}
+        <a href="{{ path('app_logout') }}" class="btn btn-danger btn-lg w-100 rounded-pill">
+          <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
+        </a>
       {% else %}
         <p class="mb-3">Rejoignez la communauté des sauveurs de vie.</p>
-        <a href="{{ path('front_login') }}" class="btn btn-outline-light btn-lg w-100 rounded-pill">
+        <a href="{{ path('app_login') }}" class="btn btn-outline-light btn-lg w-100 rounded-pill">
           <i class="fa-solid fa-right-to-bracket me-2"></i> Se connecter
         </a>
       {% endif %}

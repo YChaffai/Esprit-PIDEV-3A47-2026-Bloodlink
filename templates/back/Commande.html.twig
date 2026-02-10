@@ -1,0 +1,187 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Commandes | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Commandes de Sang</h1>
+        <p class="text-white-50 mb-0">Gérez les demandes de sang et suivez leur statut de validation.</p>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    {# Filters Bar #}
+    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between mb-4">
+        <div class="input-group" style="max-width:400px;">
+            <span class="input-group-text bg-transparent border-0 ps-3">
+                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+            </span>
+            <input id="cmd-search" type="text" class="form-control form-control-premium border-0" placeholder="Rechercher par référence, sang...">
+        </div>
+
+        <div class="d-flex gap-2">
+            <select id="cmd-status" class="form-select form-control-premium border-0" style="max-width:180px;">
+                <option value="">Tous statuts</option>
+                <option value="pending">En attente</option>
+                <option value="accepted">Acceptée</option>
+                <option value="rejected">Refusée</option>
+            </select>
+
+            <select id="cmd-priority" class="form-select form-control-premium border-0" style="max-width:160px;">
+                <option value="">Priorités</option>
+                <option value="urgent">Urgent</option>
+                <option value="high">Haute</option>
+                <option value="normal">Normale</option>
+                <option value="low">Basse</option>
+            </select>
+        </div>
+    </div>
+
+    {# Table #}
+    <div class="table-responsive">
+        <table class="table table-premium align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">Référence</th>
+                    <th scope="col">Type Sang</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Priorité</th>
+                    <th scope="col">Statut</th>
+                    <th class="text-end" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="cmd-rows">
+            {% for c in commandes %}
+                {% set ref = c.reference ?? c.id %}
+                {% set rawStatus = (c.status ?? 'pending')|lower %}
+                {% set rawPriority = (c.priorite ?? 'normal')|lower %}
+
+                {# Normalize for filter matching #}
+                {% set status = rawStatus %}
+                {% if rawStatus in ['accepted', 'valide', 'approved', 'confirmée'] %}{% set status = 'accepted' %}{% endif %}
+                {% if rawStatus in ['rejected', 'refuse', 'denied', 'annulée'] %}{% set status = 'rejected' %}{% endif %}
+                {% if rawStatus in ['pending', 'en attente'] %}{% set status = 'pending' %}{% endif %}
+
+                {% set priority = rawPriority %}
+
+                <tr class="cmd-row" 
+                    data-search="{{ (ref ~ ' ' ~ c.typeSang ~ ' ' ~ priority ~ ' ' ~ status)|lower }}"
+                    data-status="{{ status }}"
+                    data-priority="{{ priority }}">
+                    
+                    <td><span class="badge badge-premium">#{{ ref }}</span></td>
+                    
+                    <td>
+                        <span class="fw-bold" style="color: var(--primary); font-size: 1.1rem;">{{ c.typeSang ?? '-' }}</span>
+                    </td>
+
+                    <td class="fw-bold fs-5">{{ c.quantite ?? '-' }}</td>
+
+                    <td>
+                        {% if priority in ['urgent', 'high'] %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-triangle-exclamation me-1 small"></i> {{ priority|upper }}
+                            </span>
+                        {% elseif priority == 'low' %}
+                            <span class="badge bg-secondary bg-opacity-10 text-muted border border-white border-opacity-10 rounded-pill px-3">
+                                {{ priority|upper }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                {{ priority|upper }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if status == 'accepted' %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-check-circle me-1 small"></i> CONFIRMÉE
+                            </span>
+                        {% elseif status == 'rejected' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-xmark-circle me-1 small"></i> ANNULÉE
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-clock me-1 small"></i> EN ATTENTE
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ path('admin_commande_edit', {id: c.id}) }}" 
+                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
+                               style="font-size: 0.75rem; font-weight: 700;">
+                                <i class="fa-solid fa-pen me-1 small"></i> MODIFIER
+                            </a>
+                            <form method="post" action="{{ path('admin_commande_delete', {id: c.id}) }}" onsubmit="return confirm('Supprimer cette commande ?');" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ c.id) }}">
+                                <button class="btn btn-sm rounded-pill px-3 btn-outline-danger border-danger border-opacity-25" style="font-size: 0.75rem; font-weight: 700;">
+                                    <i class="fa-solid fa-trash me-1 small"></i> SUPPRIMER
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-shopping-cart fa-2x mb-3 d-block opacity-25"></i>
+                        Aucune commande trouvée.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-white-50 mt-4 small px-2" id="cmd-count"></div>
+</div>
+
+<script>
+    (function () {
+      const searchInput = document.getElementById('cmd-search');
+      const statusSelect = document.getElementById('cmd-status');
+      const prioritySelect = document.getElementById('cmd-priority');
+      const rows = Array.from(document.querySelectorAll('.cmd-row'));
+      const countEl = document.getElementById('cmd-count');
+
+      function applyFilters() {
+        const q = (searchInput.value || '').trim().toLowerCase();
+        const status = (statusSelect.value || '').trim().toLowerCase();
+        const priority = (prioritySelect.value || '').trim().toLowerCase();
+
+        let visible = 0;
+
+        rows.forEach(row => {
+          const hay = row.dataset.search || '';
+          const s = row.dataset.status || '';
+          const p = row.dataset.priority || '';
+
+          const matchQ = !q || hay.includes(q);
+          const matchS = !status || s === status;
+          const matchP = !priority || p === priority;
+
+          const show = matchQ && matchS && matchP;
+          row.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        if (countEl) {
+          countEl.textContent = `${visible} commande(s) affichée(s)`;
+        }
+      }
+
+      [searchInput, statusSelect, prioritySelect].forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', applyFilters);
+        el.addEventListener('change', applyFilters);
+      });
+
+      applyFilters();
+    })();
+</script>
+{% endblock %}

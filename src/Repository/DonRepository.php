@@ -20,15 +20,21 @@ class DonRepository extends ServiceEntityRepository
     /**
      * Search and Sort Dons for a specific client
      */
-    public function findByClientSearchAndSort(Client $client, ?string $search, string $sort, string $direction)
+    public function findByClientSearchAndSort(?Client $client, ?string $search, string $sort, string $direction)
     {
         $qb = $this->createQueryBuilder('d')
-            ->andWhere('d.client = :client')
-            ->setParameter('client', $client);
+            ->leftJoin('d.client', 'c')
+            ->leftJoin('c.user', 'u')
+            ->addSelect('c', 'u');
+
+        if ($client) {
+            $qb->andWhere('d.client = :client')
+               ->setParameter('client', $client);
+        }
 
         // --- SEARCH LOGIC ---
         if ($search) {
-            $qb->andWhere('d.typeDon LIKE :search OR d.id LIKE :search OR d.quantite LIKE :search')
+            $qb->andWhere('d.typeDon LIKE :search OR d.id LIKE :search OR d.quantite LIKE :search OR u.nom LIKE :search OR u.prenom LIKE :search')
                ->setParameter('search', '%' . $search . '%');
         }
 

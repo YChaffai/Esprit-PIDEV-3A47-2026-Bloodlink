@@ -39,9 +39,21 @@ class CommandeType extends AbstractType
         ],
         'placeholder' => 'Choisir un type de sang',
       ])
+      ->add('status', ChoiceType::class, [
+        'choices' => [
+          'En Attente' => 'En Attente',
+          'Confirmée' => 'Confirmée',
+          'Annulée' => 'Annulée',
+        ],
+        'label' => 'Statut de la commande',
+      ])
       ->add('banque', EntityType::class, [
         'class' => Banque::class,
         'choice_label' => 'nom',
+      ])
+      ->add('client', EntityType::class, [
+        'class' => Client::class,
+        'choice_label' => 'id',
       ])
     ;
   }

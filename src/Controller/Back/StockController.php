@@ -19,7 +19,7 @@ class StockController extends AbstractController
     {
         $stocks = $stockRepository->findBy([], ['id' => 'DESC']);
 
-        return $this->render('Back/Stock.html.twig', [
+        return $this->render('back/Stock.html.twig', [
             'stocks' => $stocks,
         ]);
     }
@@ -41,7 +41,7 @@ class StockController extends AbstractController
             return $this->redirectToRoute('back_stock_index');
         }
 
-        return $this->render('Back/AjoutStock.html.twig', [
+        return $this->render('back/AjoutStock.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -60,7 +60,7 @@ class StockController extends AbstractController
             return $this->redirectToRoute('back_stock_index');
         }
 
-        return $this->render('Back/editStock.html.twig', [
+        return $this->render('back/editStock.html.twig', [
             'stock' => $stock,
             'form' => $form->createView(),
         ]);
