@@ -14,7 +14,7 @@
             </h2>
 
             {# ===== BOUTON AJOUT ===== #}
-            <a href="{{ path('app_demande_new') }}"
+            <a href="{{ path('admin_demande_new') }}"
                class="btn btn-danger mb-3">
                 <i class="fas fa-plus me-1"></i> Ajouter Demande
             </a>
@@ -146,20 +146,20 @@
                         <td class="text-center">
 
                             {# ===== VOIR ===== #}
-                            <a href="{{ path('app_demande_show', {'id': demande.id}) }}"
+                            <a href="{{ path('admin_demande_show', {'id': demande.id}) }}"
                                class="btn btn-sm btn-outline-light">
                                 <i class="fas fa-eye"></i>
                             </a>
 
                             {# ===== MODIFIER ===== #}
-                            <a href="{{ path('app_demande_edit', {'id': demande.id}) }}"
+                            <a href="{{ path('admin_demande_edit', {'id': demande.id}) }}"
                                class="btn btn-sm btn-outline-warning">
                                 <i class="fas fa-edit"></i>
                             </a>
 
                             {# ===== SUPPRIMER ===== #}
                             <form method="post"
-                                  action="{{ path('app_demande_delete', {'id': demande.id}) }}"
+                                  action="{{ path('admin_demande_delete', {'id': demande.id}) }}"
                                   style="display:inline-block"
                                   onsubmit="return confirm('Supprimer cette demande ?');">
 

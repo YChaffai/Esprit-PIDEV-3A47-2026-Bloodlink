@@ -1,66 +1,91 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
-{% block title %}Transfert{% endblock %}
+{% block title %}Détails du Transfert{% endblock %}
 
 {% block body %}
-    <h1>Transfert</h1>
+<div class="main-container">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ transfert.id }}</td>
-            </tr>
-            <tr>
-                <th>FromOrgId</th>
-                <td>{{ transfert.fromOrgId }}</td>
-            </tr>
-            <tr>
-                <th>FromOrg</th>
-                <td>{{ transfert.fromOrg }}</td>
-            </tr>
-            <tr>
-                <th>ToOrgId</th>
-                <td>{{ transfert.toOrgId }}</td>
-            </tr>
-            <tr>
-                <th>ToOrg</th>
-                <td>{{ transfert.toOrg }}</td>
-            </tr>
-            <tr>
-                <th>DateEnvoie</th>
-                <td>{{ transfert.dateEnvoie ? transfert.dateEnvoie|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DateReception</th>
-                <td>{{ transfert.dateReception ? transfert.dateReception|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Quantite</th>
-                <td>{{ transfert.quantite }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ transfert.status }}</td>
-            </tr>
-            <tr>
-                <th>IdStock</th>
-                <td>{{ transfert.idStock }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ transfert.createdAt ? transfert.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ transfert.updatedAt ? transfert.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="glass-card p-4">
 
-    <a href="{{ path('back_transfert_index') }}">back to list</a>
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h2 class="text-white mb-0">
+                <i class="fas fa-exchange-alt me-2"></i>
+                Détails du Transfert #{{ transfert.id }}
+            </h2>
 
-    <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}">edit</a>
+            <div class="d-flex gap-2">
+                <a href="{{ path('back_transfert_index') }}"
+                   class="btn btn-outline-light btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Retour
+                </a>
 
-    {{ include('transfert/_delete_form.html.twig') }}
+                <a href="{{ path('back_transfert_edit', {'id': transfert.id}) }}"
+                   class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-edit me-1"></i> Modifier
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle text-white mb-0">
+                <tbody>
+                    <tr>
+                        <th>Organisation Source</th>
+                        <td>{{ transfert.fromOrg }}</td>
+                    </tr>
+                    <tr>
+                        <th>Organisation Destination</th>
+                        <td>{{ transfert.toOrg }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Envoi</th>
+                        <td>{{ transfert.dateEnvoie ? transfert.dateEnvoie|date('Y-m-d') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Réception</th>
+                        <td>{{ transfert.dateReception ? transfert.dateReception|date('Y-m-d') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Quantité</th>
+                        <td>{{ transfert.quantite }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            {% if transfert.status == 'EN_COURS' %}
+                                <span class="badge bg-warning text-dark">En cours</span>
+                            {% elseif transfert.status == 'RECU' %}
+                                <span class="badge bg-success">Reçu</span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ transfert.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Stock ID</th>
+                        <td>
+                            {{ transfert.stock ? transfert.stock.id : '-' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Créé le</th>
+                        <td>{{ transfert.createdAt ? transfert.createdAt|date('Y-m-d H:i') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Modifié le</th>
+                        <td>{{ transfert.updatedAt ? transfert.updatedAt|date('Y-m-d H:i') : '-' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4 text-end">
+            {{ include('transfert/_delete_form.html.twig') }}
+        </div>
+
+    </div>
+
+</div>
 {% endblock %}

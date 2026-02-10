@@ -132,7 +132,7 @@
                                 </td>
 
                                 <td class="text-center">
-                                    <a href="{{ path('front_transfert_show', {'id': transfert.id}) }}"
+                                    <a href="{{ path('back_transfert_show', {'id': transfert.id}) }}"
                                        class="btn btn-sm btn-outline-light">
                                         <i class="fas fa-eye"></i>
                                     </a>
@@ -180,20 +180,66 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    const map = L.map('map').setView([36.8065, 10.1585], 14);
+   const cnts = [36.8065, 10.1585]; // CNTS
+
+    const banques = [
+        { name: "Banque du sang Charles Nicolle", coords: [36.8101, 10.1416] },
+        { name: "Clinique Taoufik", coords: [36.8285, 10.1742] }
+    ];
+
+    const map = L.map('map').setView(cnts, 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    L.marker([36.8065, 10.1585])
-        .addTo(map)
-        .bindPopup("CNTS")
+    // Marker CNTS
+    L.marker(cnts).addTo(map)
+        .bindPopup("<b>CNTS</b>")
         .openPopup();
+
+    // Variable globale pour le routing
+    let routingControl = null;
+
+    // Fonction globale
+    window.tracerItineraire = function(lat, lng) {
+
+        if (routingControl) {
+            map.removeControl(routingControl);
+        }
+
+        routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(cnts[0], cnts[1]),
+                L.latLng(lat, lng)
+            ],
+            routeWhileDragging: false,
+            addWaypoints: false,
+            draggableWaypoints: false,
+            show: false
+        }).addTo(map);
+    };
+
+    // Ajouter banques
+    banques.forEach(b => {
+        L.marker(b.coords)
+            .addTo(map)
+            .bindPopup(`
+                <b>${b.name}</b><br><br>
+                <button 
+                    class="btn btn-sm btn-danger"
+                    onclick="tracerItineraire(${b.coords[0]}, ${b.coords[1]})">
+                    Tracer itinéraire
+                </button>
+            `);
+    });
+
 });
 </script>
 

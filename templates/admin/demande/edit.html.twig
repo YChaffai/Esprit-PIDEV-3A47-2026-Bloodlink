@@ -1,0 +1,72 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Modifier la Demande{% endblock %}
+
+{% block body %}
+<div class="main-container">
+
+    <div class="glass-card p-4 mt-5">
+
+        <h1 class="text-white mb-4">Modifier la demande de sang</h1>
+
+        {# Flash messages #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} border-0 bg-{{ label == 'success' ? 'success' : 'danger' }} bg-opacity-25 text-white mb-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(form, {
+            'attr': {
+                'class': 'needs-validation',
+                'novalidate': 'novalidate'
+            }
+        }) }}
+
+        <div class="mb-3">
+            {{ form_label(form.idBanque, 'ID Banque', {'label_attr': {'class': 'form-label text-white'}}) }}
+            {{ form_widget(form.idBanque, {
+                'attr': {'class': 'form-control bg-dark text-white'},
+                'required': false
+            }) }}
+            <div class="text-danger small">{{ form_errors(form.idBanque) }}</div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.typeSang, 'Type de sang', {'label_attr': {'class': 'form-label text-white'}}) }}
+            {{ form_widget(form.typeSang, {
+                'attr': {'class': 'form-select bg-dark text-white'},
+                'required': false
+            }) }}
+            <div class="text-danger small">{{ form_errors(form.typeSang) }}</div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.quantite, 'Quantité (unités)', {'label_attr': {'class': 'form-label text-white'}}) }}
+            {{ form_widget(form.quantite, {
+                'attr': {'class': 'form-control bg-dark text-white'},
+                'required': false
+            }) }}
+            <div class="text-danger small">{{ form_errors(form.quantite) }}</div>
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.urgence, 'Urgence', {'label_attr': {'class': 'form-label text-white'}}) }}
+            {{ form_widget(form.urgence, {
+                'attr': {'class': 'form-select bg-dark text-white'},
+                'required': false
+            }) }}
+            <div class="text-danger small">{{ form_errors(form.urgence) }}</div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-danger">Mettre à jour</button>
+            <a href="{{ path('back_demande_index') }}" class="btn btn-secondary">Retour</a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

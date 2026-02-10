@@ -134,4 +134,13 @@ class TransfertController extends AbstractController
             'transfert' => $transfert,
         ]);
     }
+     #[Route('/{id}', name: 'back_transfert_show', methods: ['GET'])]
+    public function show($id, TransfertRepository $repo): Response
+    {
+        $transfert = $repo->find($id);
+
+        return $this->render('transfert/show.html.twig', [
+            'transfert' => $transfert,
+        ]);
+    }
 }
