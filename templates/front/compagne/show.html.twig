@@ -1,60 +1,120 @@
-{% extends 'base.html.twig' %}
+{% extends 'front/base_front.html.twig' %}
 
 {% block title %}Détails de la Campagne{% endblock %}
 
 {% block body %}
-    <h1>Détails de la Campagne</h1>
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-start mb-5">
+            <div>
+                <a href="{{ path('app_compagne_index') }}" class="text-muted text-decoration-none small mb-2 d-block">
+                    <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                </a>
+                <h1 class="display-5 fw-bold text-white mb-2">{{ compagne.titre }}</h1>
+                <div class="badge-custom">Campagne active</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}" class="btn-action edit large"><i class="fas fa-edit me-2"></i> Modifier</a>
+                {{ include('front/compagne/_delete_form.html.twig') }}
+            </div>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ compagne.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ compagne.titre }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ compagne.description }}</td>
-            </tr>
-            <tr>
-                <th>Date Début</th>
-                <td>{{ compagne.dateDebut ? compagne.dateDebut|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Date Fin</th>
-                <td>{{ compagne.dateFin ? compagne.dateFin|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Créé le</th>
-                <td>{{ compagne.createdAt ? compagne.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Entités de collecte</th>
-                <td>
-                    {% if compagne.entites|length > 0 %}
-                        <ul>
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <div class="detail-section mb-5">
+                    <h3 class="h6 text-uppercase fw-bold text-muted mb-3 letter-spacing">Description</h3>
+                    <p class="lead text-light opacity-75">{{ compagne.description }}</p>
+                </div>
+
+                <div class="detail-section mb-5">
+                    <h3 class="h6 text-uppercase fw-bold text-muted mb-3 letter-spacing">Entités Organisatrices</h3>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if compagne.entites|length > 0 %}
                             {% for entite in compagne.entites %}
-                                <li>{{ entite.nom }}</li>
+                                <div class="entity-link-card">
+                                    <i class="fas fa-hospital-alt text-primary me-2"></i>
+                                    <span>{{ entite.nom }}</span>
+                                </div>
                             {% endfor %}
-                        </ul>
-                    {% else %}
-                        Aucune entité associée
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <th>Mis à jour le</th>
-                <td>{{ compagne.updatedAt ? compagne.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                        {% else %}
+                            <span class="text-muted">Aucune entité associée</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-    <a href="{{ path('app_compagne_index') }}">Retour à la liste</a>
+            <div class="col-lg-4">
+                <div class="info-sidebar p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    <div class="mb-4">
+                        <div class="small text-muted mb-1 text-uppercase fw-bold">Période</div>
+                        <div class="text-white fs-5">
+                            <i class="far fa-calendar-alt text-primary me-2"></i>
+                            {{ compagne.dateDebut|date('d M Y') }} — {{ compagne.dateFin|date('d M Y') }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="small text-muted mb-1 text-uppercase fw-bold">Créée le</div>
+                        <div class="text-light small">
+                            {{ compagne.createdAt|date('d/m/Y à H:i') }}
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}">Modifier</a>
+                    <div class="mb-0">
+                        <div class="small text-muted mb-1 text-uppercase fw-bold">Dernière mise à jour</div>
+                        <div class="text-light small">
+                            {{ compagne.updatedAt|date('d/m/Y à H:i') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {{ include('front/compagne/_delete_form.html.twig') }}
+    <style>
+        .letter-spacing { letter-spacing: 2px; }
+        
+        .badge-custom {
+            display: inline-block;
+            background: rgba(46, 213, 115, 0.1);
+            color: #2ed573;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .entity-link-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 12px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action.large {
+            width: auto;
+            padding: 0 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-action.edit:hover { background: rgba(255, 193, 7, 0.2); color: #ffc107; border-color: #ffc107; }
+
+        .btn-delete-custom {
+            background: rgba(230, 57, 57, 0.1);
+            border: 1px solid rgba(230, 57, 57, 0.2);
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-delete-custom:hover {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
 {% endblock %}

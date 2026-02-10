@@ -1,48 +1,93 @@
-{% extends 'base.html.twig' %}
+{% extends 'front/base_front.html.twig' %}
 
 {% block title %}Détails de l'Entité de Collecte{% endblock %}
 
 {% block body %}
-    <h1>Détails de l'Entité de Collecte</h1>
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-start mb-5">
+            <div>
+                <a href="{{ path('app_entitecollecte_index') }}" class="text-muted text-decoration-none small mb-2 d-block">
+                    <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                </a>
+                <h1 class="display-5 fw-bold text-white mb-2">{{ entitecollecte.nom }}</h1>
+                <div class="text-muted mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ entitecollecte.localisation }}</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}" class="btn-action edit large"><i class="fas fa-edit me-2"></i> Modifier</a>
+                {{ include('front/entitecollecte/_delete_form.html.twig') }}
+            </div>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ entitecollecte.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ entitecollecte.nom }}</td>
-            </tr>
-            <tr>
-                <th>Localisation</th>
-                <td>{{ entitecollecte.localisation }}</td>
-            </tr>
-            <tr>
-                <th>Téléphone</th>
-                <td>{{ entitecollecte.telephone }}</td>
-            </tr>
-            <tr>
-                <th>Campagnes associées</th>
-                <td>
-                    {% if entitecollecte.campagnes|length > 0 %}
-                        <ul>
+        <div class="row g-5">
+            <div class="col-lg-7">
+                <div class="detail-section mb-5">
+                    <h3 class="h6 text-uppercase fw-bold text-muted mb-4 letter-spacing">Campagnes Associées</h3>
+                    <div class="campaign-list">
+                        {% if entitecollecte.campagnes|length > 0 %}
                             {% for campagne in entitecollecte.campagnes %}
-                                <li><a href="{{ path('app_compagne_show', {'id': campagne.id}) }}">{{ campagne.titre }}</a></li>
+                                <a href="{{ path('app_compagne_show', {'id': campagne.id}) }}" class="campaign-item-link">
+                                    <div class="d-flex align-items-center justify-content-between p-4 mb-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-10 hover-lift">
+                                        <div>
+                                            <div class="fw-bold text-white">{{ campagne.titre }}</div>
+                                            <div class="small text-muted">{{ campagne.dateDebut|date('d/m/Y') }} — {{ campagne.dateFin|date('d/m/Y') }}</div>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-muted"></i>
+                                    </div>
+                                </a>
                             {% endfor %}
-                        </ul>
-                    {% else %}
-                        <span class="text-muted">Aucune campagne associée</span>
-                    {% endif %}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                        {% else %}
+                            <div class="p-5 text-center rounded-4 border border-dashed border-white border-opacity-10 text-muted">
+                                <i class="fas fa-calendar-times mb-3 fa-2x"></i>
+                                <p class="mb-0">Aucune campagne associée à cette entité</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-    <a href="{{ path('app_entitecollecte_index') }}">Retour à la liste</a>
+            <div class="col-lg-5">
+                <div class="info-sidebar p-4 rounded-4 shadow-lg" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    <h4 class="h6 text-uppercase fw-bold text-muted mb-4">Informations de contact</h4>
+                    
+                    <div class="contact-info-item mb-4 d-flex align-items-center">
+                        <div class="icon-box me-3"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <div class="small text-muted mb-0 fw-bold">Téléphone</div>
+                            <div class="text-white fs-5">{{ entitecollecte.telephone }}</div>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}">Modifier</a>
+                    <div class="contact-info-item mb-0 d-flex align-items-center">
+                        <div class="icon-box me-3"><i class="fas fa-id-card"></i></div>
+                        <div>
+                            <div class="small text-muted mb-0 fw-bold">ID Système</div>
+                            <div class="text-white">#{{ entitecollecte.id }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    {{ include('front/entitecollecte/_delete_form.html.twig') }}
+    <style>
+        .letter-spacing { letter-spacing: 2px; }
+        .hover-lift { transition: all 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08) !important; }
+        .campaign-item-link { text-decoration: none; display: block; }
+        
+        .icon-box {
+            width: 45px; height: 45px;
+            background: rgba(230, 57, 57, 0.1);
+            color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+
+        .btn-action.large {
+            width: auto; padding: 0 20px;
+            font-size: 0.9rem; font-weight: 600;
+        }
+        .btn-action.edit:hover { background: rgba(255, 193, 7, 0.2); color: #ffc107; border-color: #ffc107; }
+    </style>
 {% endblock %}
