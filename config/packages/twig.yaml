@@ -1,6 +1,17 @@
+<<<<<<< HEAD
 twig:
     file_name_pattern: '*.twig'
+=======
+
+>>>>>>> origin/gestion-don
 
 when@test:
     twig:
         strict_variables: true
+<<<<<<< HEAD
+=======
+twig:
+    file_name_pattern: '*.twig'
+    # Ajoute cette ligne pour activer Bootstrap 5 partout :
+    form_themes: ['bootstrap_5_layout.html.twig']
+>>>>>>> origin/gestion-don

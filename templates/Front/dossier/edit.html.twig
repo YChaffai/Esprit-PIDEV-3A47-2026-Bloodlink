@@ -1,0 +1,201 @@
+{% extends 'base_front.html.twig' %}
+{% block title %}Modifier Dossier | BloodLink{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5" style="max-width: 980px; margin: 0 auto;">
+
+  {# --- PAGE HEADER --- #}
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+      <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+        <i class="fa-solid fa-file-medical-alt me-2" style="color:var(--primary);"></i>
+        Mise à jour Dossier
+      </h1>
+      <div style="color:var(--muted);">Mettez à jour vos constantes vitales.</div>
+    </div>
+    
+    <a href="{{ path('front_dossier_show') }}"
+       class="btn btn-lg rounded-pill fw-bold"
+       style="background:transparent; color:white; border:1px solid var(--border); padding:.85rem 1.1rem;">
+      <i class="fa-solid fa-arrow-left me-2"></i> Retour
+    </a>
+  </div>
+
+  <div class="row g-4">
+    
+    {# --- LEFT COLUMN: FIXED IDENTITY (Digital Card Style) --- #}
+    <div class="col-12 col-lg-4">
+        <div class="glass-card h-100 p-4" style="background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" 
+                     style="width:80px; height:80px; background:rgba(230,57,57,.15); border:1px solid rgba(230,57,57,.3); color:white; font-size:1.5rem; font-weight:900;">
+                    {{ dossier.typeSang }}
+                </div>
+                <h4 class="fw-bold mb-1">{{ dossier.prenom }} {{ dossier.nom }}</h4>
+                <div class="badge rounded-pill px-3 py-2 mt-2" style="background:rgba(255,255,255,.1); border:1px solid var(--border);">
+                    <i class="fa-solid fa-id-card me-2"></i> Donneur
+                </div>
+            </div>
+
+            <hr style="border-color:var(--border); opacity:0.5;">
+
+            <div class="d-flex flex-column gap-3 mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color:var(--muted);"><i class="fa-solid fa-venus-mars me-2"></i>Sexe</span>
+                    <span class="fw-bold">{{ dossier.sexe }}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <span style="color:var(--muted);"><i class="fa-solid fa-hand-holding-droplet me-2"></i>Don lié</span>
+                    <span class="fw-bold text-end">#{{ dossier.don.id }}<br><small style="color:var(--muted);">{{ dossier.don.date|date('d/m/Y') }}</small></span>
+                </div>
+            </div>
+
+            <div class="alert mt-4 mb-0 small" style="background:rgba(230,57,57,.1); border:1px solid rgba(230,57,57,.2); color:#ffcccc;">
+                <i class="fa-solid fa-lock me-2"></i> Ces informations sont certifiées et ne peuvent pas être modifiées.
+            </div>
+        </div>
+    </div>
+
+    {# --- RIGHT COLUMN: EDITABLE FORM --- #}
+    <div class="col-12 col-lg-8">
+        <div class="glass-card p-4 p-md-5">
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+            {# Global Errors #}
+            {% if form.vars.errors|length > 0 %}
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card d-flex align-items-center">
+                   <i class="fa-solid fa-triangle-exclamation me-3 fs-4"></i>
+                   <div>
+                       <strong>Erreur de validation</strong><br>
+                       {{ form_errors(form) }}
+                   </div>
+                </div>
+            {% endif %}
+
+            <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px;">
+                Données Médicales
+            </h5>
+
+            <div class="row g-4">
+                
+                {# AGE #}
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" style="color:var(--muted);">
+                        <i class="fa-solid fa-cake-candles me-2"></i>Âge
+                    </label>
+                    <div class="input-group">
+                        {{ form_widget(form.age, {'attr': {'class': 'form-control bg-transparent text-white border-end-0'}}) }}
+                        <span class="input-group-text bg-transparent text-white border-start-0" style="border-color:var(--border);">
+                            ans
+                        </span>
+                    </div>
+                    <div class="text-danger small mt-1">{{ form_errors(form.age) }}</div>
+                </div>
+
+                {# CONTACT #}
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" style="color:var(--muted);">
+                        <i class="fa-solid fa-phone-medical me-2"></i>Contact Urgence
+                    </label>
+                    {{ form_widget(form.contactUrgence, {'attr': {'class': 'form-control bg-transparent text-white', 'placeholder': 'Ex: 99123456'}}) }}
+                    <div class="text-danger small mt-1">{{ form_errors(form.contactUrgence) }}</div>
+                </div>
+
+                <div class="col-12"><hr style="border-color:var(--border); opacity:0.3;"></div>
+
+                {# POIDS #}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold" style="color:var(--muted);">Poids</label>
+                    <div class="input-group">
+                        {{ form_widget(form.poid, {'attr': {'class': 'form-control bg-transparent text-white border-end-0', 'placeholder': '0.0'}}) }}
+                        <span class="input-group-text bg-transparent text-white border-start-0" style="border-color:var(--border);">
+                            kg
+                        </span>
+                    </div>
+                    <div class="text-danger small mt-1">{{ form_errors(form.poid) }}</div>
+                </div>
+
+                {# TAILLE #}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold" style="color:var(--muted);">Taille</label>
+                    <div class="input-group">
+                        {{ form_widget(form.taille, {'attr': {'class': 'form-control bg-transparent text-white border-end-0', 'placeholder': '0'}}) }}
+                        <span class="input-group-text bg-transparent text-white border-start-0" style="border-color:var(--border);">
+                            cm
+                        </span>
+                    </div>
+                    <div class="text-danger small mt-1">{{ form_errors(form.taille) }}</div>
+                </div>
+
+                {# TEMP #}
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold" style="color:var(--muted);">Température</label>
+                    <div class="input-group">
+                        {{ form_widget(form.temperature, {'attr': {'class': 'form-control bg-transparent text-white border-end-0', 'placeholder': '37.0'}}) }}
+                        <span class="input-group-text bg-transparent text-white border-start-0" style="border-color:var(--border);">
+                            °C
+                        </span>
+                    </div>
+                    <div class="text-danger small mt-1">{{ form_errors(form.temperature) }}</div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-3 mt-5">
+                <button type="submit" class="btn btn-lg rounded-pill fw-bold flex-fill"
+                        style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem; transition: transform 0.2s;">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> Enregistrer les constantes
+                </button>
+                
+                <a href="{{ path('front_dossier_show') }}" class="btn btn-lg rounded-pill fw-bold"
+                   style="background:rgba(255,255,255,0.05); color:white; border:1px solid var(--border); padding:.95rem 1.5rem;">
+                   Annuler
+                </a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+  </div>
+</div>
+
+{# --- CUSTOM CSS FOR INPUT GROUPS --- #}
+<style>
+  .input-group .form-control {
+    border: 1px solid var(--border) !important;
+    border-right: none !important;
+    border-radius: 14px 0 0 14px !important;
+    padding: .85rem 1rem !important;
+  }
+  .input-group .input-group-text {
+    border: 1px solid var(--border) !important;
+    border-left: none !important;
+    border-radius: 0 14px 14px 0 !important;
+    color: var(--muted) !important;
+    font-weight: 600;
+  }
+  
+  /* Focus States */
+  .input-group .form-control:focus {
+    box-shadow: none !important;
+    border-color: var(--primary) !important;
+  }
+  .input-group .form-control:focus + .input-group-text {
+    border-color: var(--primary) !important;
+  }
+
+  /* Standard Inputs (without groups) */
+  .glass-card input:not(.input-group input) {
+    background: transparent !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    padding: .85rem 1rem !important;
+  }
+  .glass-card input:not(.input-group input):focus {
+    box-shadow: 0 0 0 .2rem rgba(230,57,57,.20) !important;
+    border-color: var(--primary) !important;
+  }
+</style>
+{% endblock %}

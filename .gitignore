@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /.env
+=======
+
+###> symfony/framework-bundle ###
+>>>>>>> origin/gestion-don
 /.env.local
 /.env.local.php
 /.env.*.local
@@ -17,6 +22,7 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+<<<<<<< HEAD
 migrations/.gitignore
 src/Controller/.gitignore
 
@@ -29,3 +35,5 @@ src/Controller/.gitignore
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+=======
+>>>>>>> origin/gestion-don

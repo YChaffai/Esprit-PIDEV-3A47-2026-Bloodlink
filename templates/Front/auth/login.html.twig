@@ -1,0 +1,87 @@
+{# templates/front/login.html.twig #}
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Connexion | BloodLink{% endblock %}
+
+{% block body %}
+  <div class="row justify-content-center align-items-center" style="min-height:70vh;">
+    <div class="col-12 col-md-9 col-lg-6 col-xl-5">
+
+      <div class="p-4 p-md-5 glass-card">
+        <div class="text-center mb-4">
+          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+               style="width:72px;height:72px;background:rgba(230,57,57,.12);border:1px solid rgba(230,57,57,.25);">
+            <i class="fa-solid fa-droplet" style="font-size:28px;color:var(--primary);"></i>
+          </div>
+
+          <h1 class="fw-black mb-2" style="letter-spacing:-.6px;">Connexion</h1>
+          <p class="mb-0" style="color:var(--muted);">
+            Accédez à votre espace BloodLink.
+          </p>
+        </div>
+
+        <form method="post" class="needs-validation" novalidate>
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="color:var(--muted);">Email</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-transparent text-white border-0"
+                    style="border:1px solid var(--border) !important; border-right:0 !important; border-radius:14px 0 0 14px;">
+                <i class="fa-solid fa-envelope"></i>
+              </span>
+              <input
+                type="email"
+                name="_username"
+                required
+                class="form-control bg-transparent text-white border-0"
+                placeholder="ex: you@example.com"
+                style="border:1px solid var(--border) !important; border-left:0 !important; border-radius:0 14px 14px 0;"
+              >
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold" style="color:var(--muted);">Mot de passe</label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-transparent text-white border-0"
+                    style="border:1px solid var(--border) !important; border-right:0 !important; border-radius:14px 0 0 14px;">
+                <i class="fa-solid fa-lock"></i>
+              </span>
+              <input
+                type="password"
+                name="_password"
+                required
+                class="form-control bg-transparent text-white border-0"
+                placeholder="••••••••"
+                style="border:1px solid var(--border) !important; border-left:0 !important; border-radius:0 14px 14px 0;"
+              >
+            </div>
+          </div>
+
+          <button type="submit"
+                  class="btn btn-lg w-100 rounded-pill fw-bold"
+                  style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+            <i class="fa-solid fa-right-to-bracket me-2"></i> Login
+          </button>
+
+          <div class="text-center mt-4" style="color:var(--muted);">
+            <small>
+              Pas encore de compte ?
+              <a href="{{ path('front_register') }}" class="text-decoration-none fw-semibold" style="color:white;">
+                Créer compte
+              </a>
+            </small>
+          </div>
+        </form>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{{ path('front_home') }}" class="text-decoration-none" style="color:var(--muted);">
+          <i class="fa-solid fa-arrow-left me-2"></i> Retour à l’accueil
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

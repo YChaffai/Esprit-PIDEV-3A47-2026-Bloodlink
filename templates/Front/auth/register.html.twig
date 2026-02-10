@@ -1,0 +1,125 @@
+{% extends 'base_front.html.twig' %}
+{% block title %}Créer un compte | BloodLink{% endblock %}
+
+{% block body %}
+  <div class="row justify-content-center align-items-center" style="min-height:70vh;">
+    <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+
+      <div class="p-4 p-md-5 glass-card">
+        <div class="text-center mb-4">
+          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+               style="width:72px;height:72px;background:rgba(230,57,57,.12);border:1px solid rgba(230,57,57,.25);">
+            <i class="fa-solid fa-user-plus" style="font-size:26px;color:var(--primary);"></i>
+          </div>
+
+          <h1 class="fw-black mb-2" style="letter-spacing:-.6px;">Créer un compte</h1>
+          <p class="mb-0" style="color:var(--muted);">
+            Rejoignez BloodLink et participez à sauver des vies.
+          </p>
+        </div>
+
+        <form method="post">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold" style="color:var(--muted);">Nom</label>
+              <input
+                name="nom"
+                required
+                class="form-control form-control-lg bg-transparent text-white"
+                placeholder="Votre nom"
+                style="border:1px solid var(--border); border-radius:14px; padding:.95rem 1rem;"
+              >
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold" style="color:var(--muted);">Prénom</label>
+              <input
+                name="prenom"
+                required
+                class="form-control form-control-lg bg-transparent text-white"
+                placeholder="Votre prénom"
+                style="border:1px solid var(--border); border-radius:14px; padding:.95rem 1rem;"
+              >
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold" style="color:var(--muted);">Email</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-transparent text-white border-0"
+                      style="border:1px solid var(--border) !important; border-right:0 !important; border-radius:14px 0 0 14px;">
+                  <i class="fa-solid fa-envelope"></i>
+                </span>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  class="form-control bg-transparent text-white border-0"
+                  placeholder="ex: you@example.com"
+                  style="border:1px solid var(--border) !important; border-left:0 !important; border-radius:0 14px 14px 0;"
+                >
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold" style="color:var(--muted);">Mot de passe</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-transparent text-white border-0"
+                      style="border:1px solid var(--border) !important; border-right:0 !important; border-radius:14px 0 0 14px;">
+                  <i class="fa-solid fa-lock"></i>
+                </span>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  class="form-control bg-transparent text-white border-0"
+                  placeholder="••••••••"
+                  style="border:1px solid var(--border) !important; border-left:0 !important; border-radius:0 14px 14px 0;"
+                >
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold" style="color:var(--muted);">Groupe sanguin</label>
+              <select
+                name="typeSang"
+                required
+                class="form-select form-select-lg bg-transparent text-white"
+                style="border:1px solid var(--border); border-radius:14px; padding:.95rem 1rem;"
+              >
+                <option value="" style="background:#111;color:#fff;">-- choisir --</option>
+                {% for g in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
+                  <option value="{{ g }}" style="background:#111;color:#fff;">{{ g }}</option>
+                {% endfor %}
+              </select>
+
+              <small class="d-block mt-2" style="color:var(--muted);">
+                Assurez-vous de choisir le bon groupe sanguin.
+              </small>
+            </div>
+          </div>
+
+          <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+            <button type="submit"
+                    class="btn btn-lg rounded-pill fw-bold flex-fill"
+                    style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem;">
+              <i class="fa-solid fa-user-check me-2"></i> Créer le compte
+            </button>
+
+            <a href="{{ path('front_login') }}"
+               class="btn btn-lg rounded-pill fw-bold flex-fill"
+               style="background:transparent; color:white; border:1px solid var(--border); padding:.95rem 1.2rem;">
+              <i class="fa-solid fa-arrow-left me-2"></i> Retour login
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="{{ path('front_home') }}" class="text-decoration-none" style="color:var(--muted);">
+          <i class="fa-solid fa-house me-2"></i> Retour à l’accueil
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
