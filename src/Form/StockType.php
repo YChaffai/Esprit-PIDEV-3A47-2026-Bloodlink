@@ -34,8 +34,8 @@ class StockType extends AbstractType
             ])
 
             // Real DB fields (hidden, will be set by JS)
-            ->add('type_org', HiddenType::class)
-            ->add('type_orgid', HiddenType::class)
+            ->add('type_org', HiddenType::class, ['error_bubbling' => false])
+            ->add('type_orgid', HiddenType::class, ['error_bubbling' => false])
 
             // Type de sang dropdown
             ->add('type_sang', ChoiceType::class, [
@@ -57,6 +57,20 @@ class StockType extends AbstractType
                 'label' => 'Quantité',
             ])
         ;
+
+        $builder->addEventListener(\Symfony\Component\Form\FormEvents::PRE_SUBMIT, function (\Symfony\Component\Form\FormEvent $event) {
+            $data = $event->getData();
+            $form = $event->getForm();
+
+            if (isset($data['orgId']) && $data['orgId']) {
+                $form->add('orgId', ChoiceType::class, [
+                    'mapped' => false,
+                    'label' => 'Organisation',
+                    'choices' => [$data['orgId'] => $data['orgId']], // Allow the submitted value
+                    'placeholder' => 'Sélectionnez un type d\'abord',
+                ]);
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

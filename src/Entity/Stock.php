@@ -18,20 +18,20 @@ class Stock
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'type_orgid est obligatoire.')]
-    #[Assert\Positive(message: 'type_orgid doit être un entier positif.')]
+    #[Assert\NotBlank(message: 'L\'organisation est obligatoire.')]
+    #[Assert\Positive(message: 'L\'organisation doit être valide.')]
     private ?int $type_orgid = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'type_org est obligatoire.')]
+    #[Assert\NotBlank(message: 'Le type d\'organisation est obligatoire.')]
     #[Assert\Choice(
         choices: ['banque', 'entitecollecte', 'crts', 'cnts'],
-        message: 'type_org invalide.'
+        message: 'Type d\'organisation invalide.'
     )]
     private ?string $type_org = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'type_sang est obligatoire.')]
+    #[Assert\NotBlank(message: 'Le type de sang est obligatoire.')]
     #[Assert\Choice(
         choices: ['A+','A-','B+','B-','AB+','AB-','O+','O-'],
         message: 'Type de sang invalide.'
@@ -78,7 +78,7 @@ class Stock
         return $this->type_orgid;
     }
 
-    public function setTypeOrgid(int $type_orgid): static
+    public function setTypeOrgid(?int $type_orgid): static
     {
         $this->type_orgid = $type_orgid;
 
@@ -90,7 +90,7 @@ class Stock
         return $this->type_org;
     }
 
-    public function setTypeOrg(string $type_org): static
+    public function setTypeOrg(?string $type_org): static
     {
         $this->type_org = $type_org;
 
@@ -102,7 +102,7 @@ class Stock
         return $this->type_sang;
     }
 
-    public function setTypeSang(string $type_sang): static
+    public function setTypeSang(?string $type_sang): static
     {
         $this->type_sang = $type_sang;
 
@@ -114,7 +114,7 @@ class Stock
         return $this->quantite;
     }
 
-    public function setQuantite(int $quantite): static
+    public function setQuantite(?int $quantite): static
     {
         $this->quantite = $quantite;
 

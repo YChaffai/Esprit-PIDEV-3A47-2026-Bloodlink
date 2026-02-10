@@ -30,36 +30,67 @@ class CommandeController extends AbstractController
 
     #[Route('/front/new', name: 'front_commande_new', methods: ['GET', 'POST'])]
     public function new(
-        Request $request,
-        EntityManagerInterface $em,
-        StockAlloc $alloc,
-    ): Response {
-        $commande = new Commande();
-        $commande->setStatus('En Attente');
+    Request $request,
+    EntityManagerInterface $em,
+    StockAlloc $alloc,
+    MailerInterface $mailer,
+): Response {
+    $commande = new Commande();
+    $commande->setStatus('En Attente');
 
-        $form = $this->createForm(CommandeType::class, $commande);
-        $form->handleRequest($request);
+    $form = $this->createForm(CommandeType::class, $commande);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            try {
-                $alloc->assignStockOrThrow($commande);
-            } catch (\RuntimeException $e) {
-                $form->addError(new FormError($e->getMessage()));
+    if ($form->isSubmitted()) {
+        try {
+            $alloc->assignStockOrThrow($commande);
+        } catch (\RuntimeException $e) {
+            $errorMsg = $e->getMessage();
+            // Attach to banque if mentioned, otherwise to quantite
+            if (str_contains(strtolower($errorMsg), 'banque')) {
+                $form->get('banque')->addError(new FormError($errorMsg));
+            } else {
+                $form->get('quantite')->addError(new FormError($errorMsg));
             }
         }
+    }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $client = $commande->getClient(); // adjust
-            $toEmail = $client?->getMail();
-            $em->persist($commande);
-            $em->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Save first
+        $em->persist($commande);
+        $em->flush();
 
-            $this->addFlash('success', 'Commande Créée.');
+        // Get recipient safely
+        $client = $commande->getClient();
+        $toEmail = $client?->getUser()?->getEmail();
+
+        if (!$toEmail) {
+            $this->addFlash('danger', 'Commande created but no email found for this client.');
             return $this->redirectToRoute('front_commandes_index');
         }
 
-        return $this->render('Front/AjoutCommande.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        $email = (new TemplatedEmail())
+            ->from(new Address('yassinechaffai4@gmail.com', 'Pidev'))
+            ->to($toEmail)
+            ->subject('Votre commande a été créée #' . $commande->getId())
+            ->htmlTemplate('Email/commande.html.twig')
+            ->context([
+                'commande' => $commande,
+                'clientName' => $client?->getUser()?->getNom(),
+            ]);
+
+        try {
+            $mailer->send($email);
+            $this->addFlash('success', 'Commande Créée + Email sent.');
+        } catch (\Throwable $e) {
+            $this->addFlash('warning', 'Commande Créée but email failed: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('front_commandes_index');
     }
+
+    return $this->render('Front/AjoutCommande.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
 }

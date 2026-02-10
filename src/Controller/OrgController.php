@@ -20,15 +20,23 @@ class OrgController extends AbstractController
 
         $items = [];
 
+        error_log("OrgController: Request received for type: " . $type);
+        
         if ($type === 'banque') {
-            foreach ($banqueRepo->findAll() as $b) {
+            $banques = $banqueRepo->findAll();
+            error_log("OrgController: Found " . count($banques) . " banques.");
+            foreach ($banques as $b) {
                 $items[] = ['id' => $b->getId(), 'label' => $b->getNom()];
             }
         } elseif ($type === 'entitecollecte') {
-            foreach ($entiteRepo->findAll() as $e) {
+            $entites = $entiteRepo->findAll();
+            error_log("OrgController: Found " . count($entites) . " entites.");
+            foreach ($entites as $e) {
                 $items[] = ['id' => $e->getId(), 'label' => $e->getNom()];
             }
         }
+
+        error_log("OrgController: Returning " . count($items) . " items.");
 
         return $this->json($items);
     }

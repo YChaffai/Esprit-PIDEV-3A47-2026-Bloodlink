@@ -47,6 +47,8 @@
     select.bl-control{ appearance: none; background-image: linear-gradient(45deg, transparent 50%, rgba(255,255,255,.65) 50%), linear-gradient(135deg, rgba(255,255,255,.65) 50%, transparent 50%); background-position: calc(100% - 22px) calc(50% - 3px), calc(100% - 16px) calc(50% - 3px); background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; padding-right: 44px !important; }
     select.bl-control option, select.bl-control optgroup{ background: #111; color: #fff; }
     .bl-error{ margin-top: 8px; color: rgba(230,57,57,.95); font-size: .9rem; font-weight: 600; }
+    .bl-error ul{ list-style: none; margin: 0; padding: 0; }
+    .bl-error li{ margin-bottom: 4px; }
     .btn-pill{ border-radius: 999px !important; padding: 12px 18px !important; font-weight: 800 !important; }
     .btn-soft-danger{ background: rgba(230,57,57,.15) !important; border: 1px solid rgba(230,57,57,.45) !important; color: #fff !important; }
     .btn-soft-danger:hover{ background: rgba(230,57,57,.25) !important; border-color: rgba(230,57,57,.7) !important; }
@@ -75,13 +77,7 @@
     <div class="glass-card bl-form-card">
 
       {# Display global form errors #}
-      {% if form.vars.errors|length > 0 %}
-        <div class="alert alert-danger rounded-3 mb-3">
-          {% for error in form.vars.errors %}
-            <div><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
+      {# Global form errors removed as per request to only show inline errors #}
 
       {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
 
@@ -90,13 +86,19 @@
         <div>
           {{ form_label(form.orgType, 'TYPE ORGANISATION', { label_attr: { class: 'bl-label' } }) }}
           {{ form_widget(form.orgType, { attr: { class: 'bl-control js-choices' } }) }}
-          <div class="bl-error">{{ form_errors(form.orgType) }}</div>
+          <div class="bl-error">
+            {{ form_errors(form.orgType) }}
+            {{ form_errors(form.type_org) }}
+          </div>
         </div>
 
         <div>
           {{ form_label(form.orgId, 'ORGANISATION', { label_attr: { class: 'bl-label' } }) }}
           {{ form_widget(form.orgId, { attr: { class: 'bl-control js-choices' } }) }}
-          <div class="bl-error">{{ form_errors(form.orgId) }}</div>
+          <div class="bl-error">
+            {{ form_errors(form.orgId) }}
+            {{ form_errors(form.type_orgid) }}
+          </div>
         </div>
 
         <div>
@@ -107,7 +109,7 @@
 
         <div>
           {{ form_label(form.quantite, 'QUANTITE', { label_attr: { class: 'bl-label' } }) }}
-          {{ form_widget(form.quantite, { attr: { class: 'bl-control' } }) }}
+          {{ form_widget(form.quantite, { attr: { class: 'bl-control', type: 'text' } }) }}
           <div class="bl-error">{{ form_errors(form.quantite) }}</div>
         </div>
 
@@ -136,12 +138,133 @@
   {{ parent() }}
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
   <script>
-    document.querySelectorAll('.js-choices').forEach((el) => {
-      new Choices(el, {
-        searchEnabled: false,
-        shouldSort: false,
-        itemSelectText: '',
-      });
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Edit Stock Script Loaded');
+
+        const orgTypeSelect = document.getElementById('stock_orgType');
+        const orgIdSelect = document.getElementById('stock_orgId');
+        
+        // Initial values from server-side
+        const initialType = '{{ stock.typeOrg|default('') }}';
+        const initialOrgId = '{{ stock.typeOrgid|default('') }}';
+
+        console.log('Initial Type:', initialType, 'Initial OrgID:', initialOrgId);
+
+        if (!orgTypeSelect || !orgIdSelect) {
+            console.error('Stock form elements not found in DOM.');
+            return;
+        }
+
+        // Hidden fields
+        const typeOrgHidden = document.getElementById('stock_type_org');
+        const typeOrgIdHidden = document.getElementById('stock_type_orgid');
+
+        let choicesOrgType, choicesOrgId;
+
+        try {
+            // Initialize Choices.js
+            choicesOrgType = new Choices(orgTypeSelect, {
+                searchEnabled: false,
+                shouldSort: false,
+                itemSelectText: '',
+            });
+
+            choicesOrgId = new Choices(orgIdSelect, {
+                searchEnabled: true,
+                shouldSort: true,
+                itemSelectText: '',
+                placeholder: true,
+                placeholderValue: 'Sélectionnez un type d\'abord',
+            });
+
+            // Set initial type if exists
+            if (initialType) {
+                choicesOrgType.setChoiceByValue(initialType);
+                // Also ensure hidden field matches (it should already via symfony mapping but good to be safe)
+                if(typeOrgHidden) typeOrgHidden.value = initialType;
+            }
+
+        } catch (e) {
+            console.error('Error initializing Choices.js:', e);
+        }
+
+        // Function to update hidden fields
+        function updateHidden() {
+            if(typeOrgHidden) typeOrgHidden.value = orgTypeSelect.value;
+            if(typeOrgIdHidden) typeOrgIdHidden.value = orgIdSelect.value;
+        }
+
+        // Function to fetching orgs
+        function fetchOrgs(type, preSelectId = null) {
+            if (!type) {
+                choicesOrgId.clearStore();
+                choicesOrgId.setChoices([{ value: '', label: 'Sélectionnez un type d\'abord', disabled: true }], 'value', 'label', true);
+                return;
+            }
+
+            const fetchUrl = `{{ path('ajax_orgs') }}?type=${type}`;
+            console.log('Fetching:', fetchUrl);
+
+            // Show loading state
+            choicesOrgId.clearStore();
+            choicesOrgId.setChoices([{ value: '', label: 'Chargement...', disabled: true }], 'value', 'label', true);
+
+            fetch(fetchUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response: ' + response.statusText);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data:', data);
+                    
+                    choicesOrgId.clearStore();
+                    if (data.length === 0) {
+                         choicesOrgId.setChoices([{ value: '', label: 'Aucune organisation trouvée', disabled: true }], 'value', 'label', true);
+                    } else {
+                        const choices = data.map(item => ({
+                            value: item.id.toString(), // ensure string for comparison
+                            label: item.label
+                        }));
+                        choicesOrgId.setChoices(choices, 'value', 'label', true);
+
+                        // Pre-select if we have an ID
+                        if (preSelectId) {
+                            console.log('Setting choice to:', preSelectId);
+                            choicesOrgId.setChoiceByValue(preSelectId.toString());
+                            // Update hidden field
+                            if(typeOrgIdHidden) typeOrgIdHidden.value = preSelectId;
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching orgs:', err);
+                    choicesOrgId.clearStore();
+                    choicesOrgId.setChoices([{ value: '', label: 'Erreur: ' + err.message, disabled: true }], 'value', 'label', true);
+                });
+        }
+
+        // Listen for changes on orgType
+        orgTypeSelect.addEventListener('change', function(e) {
+            const type = e.target.value;
+            console.log('Type Changed to:', type);
+            updateHidden();
+            
+            // Fetch new orgs, no preselection
+            fetchOrgs(type, null);
+            
+            // Clear hidden ID
+            if(typeOrgIdHidden) typeOrgIdHidden.value = '';
+        });
+
+        // Listen for changes on orgId
+        orgIdSelect.addEventListener('change', function(e) {
+             updateHidden();
+        });
+        
+        // Initial Fetch if we have a type
+        if (initialType) {
+            fetchOrgs(initialType, initialOrgId);
+        }
     });
   </script>
 {% endblock %}

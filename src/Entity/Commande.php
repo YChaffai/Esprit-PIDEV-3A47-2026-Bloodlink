@@ -97,16 +97,16 @@ class Commande
     
     public function getId(): ?int { return $this->id; }
     public function getReference(): ?int { return $this->reference; }
-    public function setReference(int $reference): static { $this->reference = $reference; return $this; }
+    public function setReference(?int $reference): static { $this->reference = $reference; return $this; }
 
     public function getQuantite(): ?int { return $this->quantite; }
-    public function setQuantite(int $quantite): static { $this->quantite = $quantite; return $this; }
+    public function setQuantite(?int $quantite): static { $this->quantite = $quantite; return $this; }
 
     public function getPriorite(): ?string { return $this->priorite; }
-    public function setPriorite(string $priorite): static { $this->priorite = $priorite; return $this; }
+    public function setPriorite(?string $priorite): static { $this->priorite = $priorite; return $this; }
 
     public function getTypeSang(): ?string { return $this->type_sang; }
-    public function setTypeSang(string $type_sang): static { $this->type_sang = $type_sang; return $this; }
+    public function setTypeSang(?string $type_sang): static { $this->type_sang = $type_sang; return $this; }
 
     public function getBanque(): ?Banque { return $this->banque; }
     public function setBanque(?Banque $banque): static { $this->banque = $banque; return $this; }

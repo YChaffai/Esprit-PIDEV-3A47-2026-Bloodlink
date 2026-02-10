@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\EntitecollecteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EntitecollecteRepository::class)]
 class Entitecollecte
@@ -14,12 +15,15 @@ class Entitecollecte
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La localisation est obligatoire.')]
     private ?string $localisation = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le téléphone est obligatoire.')]
     private ?string $telephone = null;
 
     public function getId(): ?int

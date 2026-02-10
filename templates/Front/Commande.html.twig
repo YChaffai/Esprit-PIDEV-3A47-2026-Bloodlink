@@ -11,10 +11,9 @@
       </div>
 
       <div class="d-flex gap-2">
-        {# Optional: create button (if you have the route) #}
-        {# <a href="{{ path('front_commande_new') }}" class="btn btn-danger rounded-pill px-4">
+        <a href="{{ path('front_commande_new') }}" class="btn btn-danger rounded-pill px-4">
           <i class="fa-solid fa-plus me-2"></i> Nouvelle commande
-        </a> #}
+        </a> 
       </div>
     </div>
 
@@ -100,9 +99,11 @@
 
                 <td>
                   {% set p = priority|lower %}
-                  {% if p in ['Urgente','Urgente'] %}
+                  {% if p in ['urgente', 'urgent'] %}
+                    <span class="badge rounded-pill bg-danger text-white border" style="border-color: rgba(220,53,69,.5)!important;">{{ priority }}</span>
+                  {% elseif p in ['high', 'élevée', 'elevee', 'haute'] %}
                     <span class="badge rounded-pill bg-warning text-dark">{{ priority }}</span>
-                  {% elseif p in ['Faible'] %}
+                  {% elseif p in ['faible', 'low'] %}
                     <span class="badge rounded-pill bg-secondary">{{ priority }}</span>
                   {% else %}
                     <span class="badge rounded-pill bg-info text-dark">{{ priority }}</span>

@@ -82,6 +82,8 @@
       font-size: .9rem;
       font-weight: 600;
     }
+    .bl-error ul{ list-style: none; margin: 0; padding: 0; }
+    .bl-error li{ margin-bottom: 4px; }
 
     /* Buttons */
     .btn-pill{
@@ -151,13 +153,13 @@
 
         <div>
           {{ form_label(form.reference, 'REFERENCE', { label_attr: { class: 'bl-label' } }) }}
-          {{ form_widget(form.reference, { attr: { class: 'bl-control', placeholder: 'Ex: 2026-001' } }) }}
+          {{ form_widget(form.reference, { attr: { class: 'bl-control', placeholder: 'Ex: 2026-001', type: 'text' } }) }}
           <div class="bl-error">{{ form_errors(form.reference) }}</div>
         </div>
 
         <div>
           {{ form_label(form.quantite, 'QUANTITE', { label_attr: { class: 'bl-label' } }) }}
-          {{ form_widget(form.quantite, { attr: { class: 'bl-control', placeholder: 'Ex: 3' } }) }}
+          {{ form_widget(form.quantite, { attr: { class: 'bl-control', placeholder: 'Ex: 3', type: 'text' } }) }}
           <div class="bl-error">{{ form_errors(form.quantite) }}</div>
         </div>
 
