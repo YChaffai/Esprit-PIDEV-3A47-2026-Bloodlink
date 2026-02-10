@@ -21,9 +21,13 @@ class Compagne{
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Entitecollecte::class, inversedBy: 'campagnes')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Entitecollecte $entite = null;
+    #[ORM\ManyToMany(targetEntity: Entitecollecte::class, inversedBy: 'campagnes')]
+    private Collection $entites;
+
+    public function __construct()
+    {
+        $this->entites = new ArrayCollection();
+    }
 
 
     #[ORM\Column(length: 255)]
@@ -68,14 +72,26 @@ class Compagne{
     // --- Getters & Setters ---
     public function getId(): ?int { return $this->id; }
 
-    public function getEntite(): ?Entitecollecte
+    /**
+     * @return Collection<int, Entitecollecte>
+     */
+    public function getEntites(): Collection
     {
-        return $this->entite;
+        return $this->entites;
     }
 
-    public function setEntite(?Entitecollecte $entite): self
+    public function addEntite(Entitecollecte $entite): self
     {
-        $this->entite = $entite;
+        if (!$this->entites->contains($entite)) {
+            $this->entites->add($entite);
+        }
+
+        return $this;
+    }
+
+    public function removeEntite(Entitecollecte $entite): self
+    {
+        $this->entites->removeElement($entite);
 
         return $this;
     }

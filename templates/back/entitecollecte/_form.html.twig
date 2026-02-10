@@ -1,0 +1,21 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="mb-3">
+        {{ form_label(form.nom) }}
+        {{ form_widget(form.nom) }}
+        {{ form_errors(form.nom) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.localisation) }}
+        {{ form_widget(form.localisation) }}
+        {{ form_errors(form.localisation) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.telephone) }}
+        {{ form_widget(form.telephone) }}
+        {{ form_errors(form.telephone) }}
+    </div>
+
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

@@ -23,6 +23,20 @@
                 <th>Téléphone</th>
                 <td>{{ entitecollecte.telephone }}</td>
             </tr>
+            <tr>
+                <th>Campagnes associées</th>
+                <td>
+                    {% if entitecollecte.campagnes|length > 0 %}
+                        <ul>
+                            {% for campagne in entitecollecte.campagnes %}
+                                <li><a href="{{ path('app_compagne_show', {'id': campagne.id}) }}">{{ campagne.titre }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">Aucune campagne associée</span>
+                    {% endif %}
+                </td>
+            </tr>
         </tbody>
     </table>
 
@@ -30,5 +44,5 @@
 
     <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}">Modifier</a>
 
-    {{ include('entitecollecte/_delete_form.html.twig') }}
+    {{ include('front/entitecollecte/_delete_form.html.twig') }}
 {% endblock %}

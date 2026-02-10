@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\frontController;
 
 use App\Entity\Entitecollecte;
 use App\Form\EntitecollecteType;
@@ -11,8 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/entitecollecte')]
-final class EntitecollecteController extends AbstractController
+#[Route('front/entitecollecte')]
+final class EntitecollecteFrontController extends AbstractController
 {
     // Afficher la liste des entités de collecte
     #[Route('/', name: 'app_entitecollecte_index', methods: ['GET'])]
@@ -22,7 +22,7 @@ final class EntitecollecteController extends AbstractController
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'ASC');
 
-        return $this->render('entitecollecte/index.html.twig', [
+        return $this->render('front/entitecollecte/index.html.twig', [
             'entitecollectes' => $entitecollecteRepository->findBySearchAndSort($search, $sort, $direction),
             'currentSearch' => $search,
             'currentSort' => $sort,
@@ -40,17 +40,14 @@ final class EntitecollecteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persist l'entité dans la base de données
             $entityManager->persist($entitecollecte);
             $entityManager->flush();
 
-            // Rediriger vers la liste des entités de collecte après ajout
             $this->addFlash('success', 'L\'entité de collecte a été ajoutée avec succès.');
             return $this->redirectToRoute('app_entitecollecte_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        // Afficher le formulaire
-        return $this->render('entitecollecte/new.html.twig', [
+        return $this->render('front/entitecollecte/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -59,7 +56,7 @@ final class EntitecollecteController extends AbstractController
     #[Route('/{id}', name: 'app_entitecollecte_show', methods: ['GET'])]
     public function show(Entitecollecte $entitecollecte): Response
     {
-        return $this->render('entitecollecte/show.html.twig', [
+        return $this->render('front/entitecollecte/show.html.twig', [
             'entitecollecte' => $entitecollecte,
         ]);
     }
@@ -72,15 +69,13 @@ final class EntitecollecteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Mettre à jour l'entité
             $entityManager->flush();
 
-            // Rediriger vers la liste des entités de collecte
             $this->addFlash('success', 'L\'entité de collecte a été modifiée avec succès.');
             return $this->redirectToRoute('app_entitecollecte_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('entitecollecte/edit.html.twig', [
+        return $this->render('front/entitecollecte/edit.html.twig', [
             'entitecollecte' => $entitecollecte,
             'form' => $form->createView(),
         ]);

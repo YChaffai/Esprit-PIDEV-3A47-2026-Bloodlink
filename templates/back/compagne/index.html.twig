@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Liste des Campagnes{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Backoffice - Gestion des Campagnes</h1>
+
+        <table class="table table-striped table-hover mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Entité</th>
+                    <th>Description</th>
+                    <th>Date Début</th>
+                    <th>Date Fin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for compagne in compagnes %}
+                <tr>
+                    <td>{{ compagne.id }}</td>
+                    <td>{{ compagne.titre }}</td>
+                    <td>
+                        {% for entite in compagne.entites %}
+                            <span class="badge bg-secondary">{{ entite.nom }}</span>
+                        {% else %}
+                            Aucune
+                        {% endfor %}
+                    </td>
+                    <td>{{ compagne.description|slice(0, 50) }}...</td>
+                    <td>{{ compagne.dateDebut ? compagne.dateDebut|date('Y-m-d') : '' }}</td>
+                    <td>{{ compagne.dateFin ? compagne.dateFin|date('Y-m-d') : '' }}</td>
+                    <td>
+                        <a href="{{ path('back_compagne_edit', {'id': compagne.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

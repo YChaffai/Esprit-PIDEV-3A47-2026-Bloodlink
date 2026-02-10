@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Modifier Entité{% endblock %}
+
+{% block body %}
+    <h1>Modifier l'Entité (Backoffice)</h1>
+
+    {{ include('back/entitecollecte/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+
+    <a href="{{ path('back_entitecollecte_index') }}">Retour à la liste</a>
+
+    {{ include('back/entitecollecte/_delete_form.html.twig') }}
+{% endblock %}

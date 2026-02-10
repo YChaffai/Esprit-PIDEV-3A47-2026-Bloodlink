@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Liste des Entités{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Backoffice - Gestion des Entités de Collecte</h1>
+
+        <table class="table table-striped table-hover mt-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Localisation</th>
+                    <th>Téléphone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entitecollecte in entitecollectes %}
+                <tr>
+                    <td>{{ entitecollecte.id }}</td>
+                    <td>{{ entitecollecte.nom }}</td>
+                    <td>{{ entitecollecte.localisation }}</td>
+                    <td>{{ entitecollecte.telephone }}</td>
+                    <td>
+                        <a href="{{ path('back_entitecollecte_edit', {'id': entitecollecte.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

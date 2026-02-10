@@ -40,7 +40,7 @@ class Entitecollecte
     )]
     private ?string $telephone = null;
 
-    #[ORM\OneToMany(mappedBy: 'entite', targetEntity: Compagne::class)]
+    #[ORM\ManyToMany(targetEntity: Compagne::class, mappedBy: 'entites')]
     private Collection $campagnes;
 
     public function __construct()
@@ -98,7 +98,7 @@ class Entitecollecte
     {
         if (!$this->campagnes->contains($compagne)) {
             $this->campagnes->add($compagne);
-            $compagne->setEntite($this);
+            $compagne->addEntite($this);
         }
 
         return $this;
@@ -107,10 +107,7 @@ class Entitecollecte
     public function removeCampagne(Compagne $compagne): self
     {
         if ($this->campagnes->removeElement($compagne)) {
-            // set the owning side to null (unless already changed)
-            if ($compagne->getEntite() === $this) {
-                $compagne->setEntite(null);
-            }
+            $compagne->removeEntite($this);
         }
 
         return $this;

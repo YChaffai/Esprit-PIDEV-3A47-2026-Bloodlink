@@ -27,8 +27,6 @@
                         <option value="updated_at" {% if currentSort == 'updated_at' %}selected{% endif %}>Tri par Mis à jour le</option>
                     </select>
                 </div>
-
-                <!-- Ordre de tri supprimé par l'utilisateur -->
             </div>
         </form>
     </div>
@@ -69,8 +67,10 @@
                     <td><strong>{{ compagne.id }}</strong></td>
                     <td>{{ compagne.titre }}</td>
                     <td>
-                        {% if compagne.entite %}
-                            <span class="badge" style="background-color: var(--primary-color); font-weight: 500; border-radius: 9999px; padding: 0.35em 0.65em; font-size: 0.75em;">{{ compagne.entite.nom }}</span>
+                        {% if compagne.entites|length > 0 %}
+                            {% for entite in compagne.entites %}
+                                <span class="badge" style="background-color: var(--primary-color); margin-right: 2px;">{{ entite.nom }}</span>
+                            {% endfor %}
                         {% else %}
                             <span style="color: #6c757d; font-style: italic;">Aucune</span>
                         {% endif %}

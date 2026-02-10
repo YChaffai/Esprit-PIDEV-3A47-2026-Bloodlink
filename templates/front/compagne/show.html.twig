@@ -32,10 +32,14 @@
                 <td>{{ compagne.createdAt ? compagne.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>Entité de collecte</th>
+                <th>Entités de collecte</th>
                 <td>
-                    {% if compagne.entite %}
-                        {{ compagne.entite.nom }}
+                    {% if compagne.entites|length > 0 %}
+                        <ul>
+                            {% for entite in compagne.entites %}
+                                <li>{{ entite.nom }}</li>
+                            {% endfor %}
+                        </ul>
                     {% else %}
                         Aucune entité associée
                     {% endif %}
@@ -52,5 +56,5 @@
 
     <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}">Modifier</a>
 
-    {{ include('compagne/_delete_form.html.twig') }}
+    {{ include('front/compagne/_delete_form.html.twig') }}
 {% endblock %}

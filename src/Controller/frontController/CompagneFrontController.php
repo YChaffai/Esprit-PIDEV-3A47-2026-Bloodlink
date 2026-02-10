@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\frontController;
 
 use App\Entity\Compagne;
 use App\Form\CompagneType;
@@ -11,8 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/compagne')]
-final class CompagneController extends AbstractController
+#[Route('front/compagne')]
+final class CompagneFrontController extends AbstractController
 {
     #[Route(name: 'app_compagne_index', methods: ['GET'])]
     public function index(Request $request, CompagneRepository $compagneRepository): Response
@@ -21,7 +21,7 @@ final class CompagneController extends AbstractController
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'ASC');
 
-        return $this->render('compagne/index.html.twig', [
+        return $this->render('front/compagne/index.html.twig', [
             'compagnes' => $compagneRepository->findBySearchAndSort($search, $sort, $direction),
             'currentSearch' => $search,
             'currentSort' => $sort,
@@ -45,7 +45,7 @@ final class CompagneController extends AbstractController
             return $this->redirectToRoute('app_compagne_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('compagne/new.html.twig', [
+        return $this->render('front/compagne/new.html.twig', [
             'compagne' => $compagne,
             'form' => $form,
         ]);
@@ -54,7 +54,7 @@ final class CompagneController extends AbstractController
     #[Route('/{id}', name: 'app_compagne_show', methods: ['GET'])]
     public function show(Compagne $compagne): Response
     {
-        return $this->render('compagne/show.html.twig', [
+        return $this->render('front/compagne/show.html.twig', [
             'compagne' => $compagne,
         ]);
     }
@@ -73,7 +73,7 @@ final class CompagneController extends AbstractController
             return $this->redirectToRoute('app_compagne_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('compagne/edit.html.twig', [
+        return $this->render('front/compagne/edit.html.twig', [
             'compagne' => $compagne,
             'form' => $form,
         ]);

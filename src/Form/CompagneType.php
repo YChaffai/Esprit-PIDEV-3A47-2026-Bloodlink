@@ -35,16 +35,16 @@ class CompagneType extends AbstractType
                 'widget' => 'single_text',
                 'help' => 'Quand se termine la campagne ?',
             ])
-            ->add('entite', EntityType::class, [
+            ->add('entites', EntityType::class, [
                 'class' => Entitecollecte::class,
                 'choice_label' => 'nom',
-                'label' => 'Entité de collecte',
-                'placeholder' => 'Sélectionner une entité...',
+                'label' => 'Entités de collecte',
+                'placeholder' => 'Sélectionner des entités...',
                 'required' => false,
-                'multiple' => false,
+                'multiple' => true,
                 'expanded' => false,
-                'attr' => ['class' => 'form-select'], // Standard Bootstrap select, or 'select-entite' if I want TomSelect on single too? TomSelect works on single too.
-                'help' => 'Sélectionnez l\'entité organisatrice.',
+                'attr' => ['class' => 'form-select select-entites'],
+                'help' => 'Sélectionnez les entités organisatrices.',
             ])
         ;
     }

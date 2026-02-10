@@ -1,0 +1,34 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {# Reuse existing form fields logic, simplified or same #}
+    <div class="mb-3">
+        {{ form_label(form.titre) }}
+        {{ form_widget(form.titre) }}
+        {{ form_errors(form.titre) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.date_debut) }}
+        {{ form_widget(form.date_debut) }}
+        {{ form_errors(form.date_debut) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.date_fin) }}
+        {{ form_widget(form.date_fin) }}
+        {{ form_errors(form.date_fin) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.entites) }}
+        {{ form_widget(form.entites) }}
+        {{ form_errors(form.entites) }}
+    </div>
+
+    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

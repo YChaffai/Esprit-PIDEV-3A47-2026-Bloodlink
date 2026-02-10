@@ -5,9 +5,9 @@
 {% block body %}
     <h1>Modifier l'Entité de Collecte</h1>
 
-    {{ include('entitecollecte/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+    {{ include('front/entitecollecte/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
 
     <a href="{{ path('app_entitecollecte_index') }}">Retour à la liste</a>
 
-    {{ include('entitecollecte/_delete_form.html.twig') }}
+    {{ include('front/entitecollecte/_delete_form.html.twig') }}
 {% endblock %}
