@@ -175,16 +175,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   public function getRoles(): array
   {
     $roles = [];
+    $role = strtolower(trim($this->role));
 
-    if ($this->role === 'admin') {
+    if ($role === 'admin') {
       $roles[] = 'ROLE_ADMIN';
-    } elseif ($this->role === 'client') {
+    } elseif ($role === 'client') {
       $roles[] = 'ROLE_CLIENT';
-    } elseif ($this->role === 'doctor') {
+    } elseif ($role === 'doctor') {
       $roles[] = 'ROLE_DOCTOR';
-    } elseif ($this->role === 'banque') {
+    } elseif ($role === 'banque') {
       $roles[] = 'ROLE_BANQUE';
-    } elseif ($this->role === 'cnts') {
+    } elseif ($role === 'cnts') {
       $roles[] = 'ROLE_CNTS';
     }
 
@@ -192,6 +193,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     return array_unique($roles);
   }
+
   public function eraseCredentials(): void
   {
     $this->plainPassword = null;

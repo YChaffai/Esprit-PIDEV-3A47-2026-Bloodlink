@@ -37,36 +37,62 @@
     .menu-toggle-btn{
       background:none; border:none; color:white; font-weight:800; text-transform:uppercase;
       letter-spacing:1px; display:flex; align-items:center; gap:10px;
-      cursor:pointer; font-size:.9rem;
+      cursor:pointer; font-size:.9rem; z-index: 1001; position: relative;
     }
     .menu-toggle-btn:hover{ color:var(--primary); }
 
-    .nav-overlay{ position:fixed; inset:0; z-index:999; display:none; }
-    .nav-backdrop{ position:absolute; inset:0; background:var(--overlay-color); opacity:0; }
-
-    .nav-menu-panel{
-      position:absolute; top:0; right:0; bottom:0;
-      width:100%; max-width:520px; background:var(--surface);
-      display:flex; flex-direction:column; justify-content:center; padding:44px;
-      transform:translateX(100%);
-      border-left:1px solid var(--border);
+    /* CSS-only Menu State */
+    .nav-overlay {
+        position: fixed; inset: 0; z-index: 999;
+        visibility: hidden; transition: visibility 0s linear 0.6s;
+    }
+    .nav-overlay.active {
+        visibility: visible; transition-delay: 0s;
     }
 
-    .reveal-panel{ position:absolute; inset:0; background:var(--primary); z-index:3; transform:scaleY(0); transform-origin:bottom; }
-    .reveal-panel.secondary{ background:#1a1a1a; z-index:2; }
-
-    .menu-list{ list-style:none; padding:0; margin:0; }
-    .menu-item{ overflow:hidden; margin-bottom:14px; }
-
-    .menu-link{
-      display:block; font-size:2.6rem; font-weight:900;
-      color:white; text-decoration:none; text-transform:uppercase; line-height:1.08;
-      transform:translateY(100%);
+    .nav-backdrop {
+        position: absolute; inset: 0; background: var(--overlay-color);
+        opacity: 0; transition: opacity 0.4s ease;
     }
-    .menu-link:hover{ color:var(--primary); -webkit-text-stroke:1px var(--primary); }
+    .nav-overlay.active .nav-backdrop { opacity: 1; }
 
-    .menu-footer{ margin-top:44px; opacity:0; }
-    .menu-footer p{ color:var(--muted); }
+    .nav-menu-panel {
+        position: absolute; top: 0; right: 0; bottom: 0;
+        width: 100%; max-width: 450px; background: var(--surface);
+        display: flex; flex-direction: column; justify-content: center;
+        padding: 50px; transform: translateX(100%);
+        border-left: 1px solid var(--border);
+        transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .nav-overlay.active .nav-menu-panel { transform: translateX(0); }
+
+    .menu-list { list-style:none; padding:0; margin:0; }
+    .menu-item { margin-bottom:20px; overflow:hidden; }
+
+    .menu-link {
+        display: block; font-size: 2.2rem; font-weight: 900;
+        color: white; text-decoration: none; text-transform: uppercase;
+        transform: translateY(30px); opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+    .menu-link:hover { color:#e63939; }
+
+    /* Staggered animation for links */
+    .nav-overlay.active .menu-link { transform: translateY(0); opacity: 1; }
+    .nav-overlay.active .menu-item:nth-child(1) .menu-link { transition-delay: 0.2s; }
+    .nav-overlay.active .menu-item:nth-child(2) .menu-link { transition-delay: 0.25s; }
+    .nav-overlay.active .menu-item:nth-child(3) .menu-link { transition-delay: 0.3s; }
+    .nav-overlay.active .menu-item:nth-child(4) .menu-link { transition-delay: 0.35s; }
+    .nav-overlay.active .menu-item:nth-child(5) .menu-link { transition-delay: 0.4s; }
+
+    .menu-footer {
+        margin-top: 40px; opacity: 0; transform: translateY(20px);
+        transition: all 0.5s ease;
+    }
+    .nav-overlay.active .menu-footer { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+    .menu-footer p { color:var(--muted); }
+
+    .reveal-panel { display: none; } /* Disable the JS reveal panels for simplicity/reliability */
 
     .main-container{ margin-top:96px; min-height:80vh; padding:0 5%; }
 
@@ -96,14 +122,28 @@
   <div class="nav-backdrop" id="backdrop"></div>
 
   <div class="nav-menu-panel" id="menu-panel" role="dialog" aria-modal="true">
-    <div class="reveal-panel" id="wipe1"></div>
-    <div class="reveal-panel secondary" id="wipe2"></div>
-
     <ul class="menu-list">
       {% if app.user %}
+        {% if is_granted('ROLE_CLIENT') and app.user.client %}
+          <li class="menu-item">
+            <a href="{{ path('campagne_list') }}" class="menu-link"><span>Campagnes</span></a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ path('rendezvous_list', {'client_id': app.user.client.user.id}) }}" class="menu-link"><span>Mes Dossiers</span></a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ path('questionnaire_list', {'client_id': app.user.client.user.id}) }}" class="menu-link"><span>Questionnaires</span></a>
+          </li>
+        {% endif %}
         {% if is_granted('ROLE_ADMIN') %}
           <li class="menu-item">
-            <a href="{{ path('app_user_index') }}" class="menu-link"><span>Admin</span></a>
+            <a href="{{ path('app_user_index') }}" class="menu-link"><span>Utilisateurs</span></a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ path('questionnaireback_list') }}" class="menu-link"><span>Questionnaires</span></a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ path('rendezvousback_list') }}" class="menu-link"><span>Rendez-vous</span></a>
           </li>
         {% endif %}
       {% endif %}
@@ -141,73 +181,46 @@
   {% block body %}{% endblock %}
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
 <script>
-  gsap.registerPlugin(CustomEase);
-  CustomEase.create("osmo", "0.65, 0.01, 0.05, 0.99");
-
+  // Simple CSS-based Menu Toggle
   const navContainer = document.getElementById('nav-container');
-  const backdrop = document.getElementById('backdrop');
-  const menuPanel = document.getElementById('menu-panel');
-  const wipe1 = document.getElementById('wipe1');
-  const wipe2 = document.getElementById('wipe2');
-  const links = document.querySelectorAll('.menu-link');
-  const footer = document.querySelector('.menu-footer');
   const toggleBtn = document.getElementById('menu-toggle');
-
+  const backdrop = document.getElementById('backdrop');
   let isOpen = false;
 
-  function lockScroll(lock){ document.body.style.overflow = lock ? 'hidden' : ''; }
-
-  function openMenu() {
-    navContainer.style.display = 'block';
-    navContainer.setAttribute('aria-hidden','false');
-    toggleBtn.setAttribute('aria-expanded','true');
-    lockScroll(true);
-
-    gsap.set(menuPanel, { x: '0%' });
-    gsap.set([wipe1, wipe2], { scaleY: 1 });
-    gsap.set(links, { y: '100%' });
-    gsap.set(footer, { opacity: 0, y: 20 });
-    gsap.set(backdrop, { opacity: 0 });
-
-    const tl = gsap.timeline();
-    tl.to(backdrop, { opacity: 1, duration: 0.5 });
-    tl.fromTo(wipe1, { scaleY: 1 }, { scaleY: 0, duration: 0.8, ease: "osmo" }, "<");
-    tl.fromTo(wipe2, { scaleY: 1 }, { scaleY: 0, duration: 0.9, ease: "osmo" }, "-=0.4");
-    tl.fromTo(links, { y: '100%' }, { y: '0%', duration: 1, stagger: 0.08, ease: "osmo" }, "-=0.6");
-    tl.fromTo(footer, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5 }, "-=0.5");
-
-    toggleBtn.innerHTML = 'FERMER <span class="ms-1" style="font-size:1.2rem;">✕</span>';
-    isOpen = true;
+  function toggleMenu() {
+    isOpen = !isOpen;
+    if (isOpen) {
+      navContainer.classList.add('active');
+      navContainer.setAttribute('aria-hidden', 'false');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      toggleBtn.innerHTML = 'FERMER <span class="ms-1" style="font-size:1.2rem;">✕</span>';
+      toggleBtn.style.color = '#e63939';
+      document.body.style.overflow = 'hidden';
+    } else {
+      navContainer.classList.remove('active');
+      navContainer.setAttribute('aria-hidden', 'true');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.innerHTML = 'MENU <span class="ms-1" style="font-size:1.2rem;">☰</span>';
+      toggleBtn.style.color = 'white';
+      document.body.style.overflow = '';
+    }
   }
 
-  function closeMenu() {
-    const tl = gsap.timeline({
-      onComplete: () => {
-        navContainer.style.display = 'none';
-        navContainer.setAttribute('aria-hidden','true');
-        toggleBtn.setAttribute('aria-expanded','false');
-        gsap.set([wipe1, wipe2], { scaleY: 0 });
-        lockScroll(false);
-      }
-    });
+  toggleBtn.addEventListener('click', toggleMenu);
+  backdrop.addEventListener('click', () => { if(isOpen) toggleMenu(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) toggleMenu(); });
 
-    tl.to(links, { y: '-100%', duration: 0.45, stagger: 0.04, ease: "power2.in" });
-    tl.to(footer, { opacity: 0 }, "<");
-    tl.to(backdrop, { opacity: 0, duration: 0.45 }, "-=0.2");
-    tl.to(menuPanel, { x: '100%', duration: 0.6, ease: "osmo" }, "<");
-
-    toggleBtn.innerHTML = 'MENU <span class="ms-1" style="font-size:1.2rem;">☰</span>';
-    isOpen = false;
-  }
-
-  toggleBtn.addEventListener('click', () => isOpen ? closeMenu() : openMenu());
-  backdrop.addEventListener('click', closeMenu);
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) closeMenu(); });
+  // Reset menu on page restore (bfcache)
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && isOpen) {
+      isOpen = true; // toggleMenu will flip it to false
+      toggleMenu();
+    }
+  });
 </script>
 
 {% block javascripts %}{% endblock %}
 </body>
 </html>
+

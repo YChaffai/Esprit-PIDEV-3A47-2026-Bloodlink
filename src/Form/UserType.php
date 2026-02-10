@@ -19,6 +19,7 @@ class UserType extends AbstractType
   public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $isNew = $options['is_new'];
+    $isRegistration = $options['is_registration'];
 
     $builder
       ->add('nom', TextType::class, [
@@ -64,8 +65,11 @@ class UserType extends AbstractType
             : 'Laisser vide pour conserver le mot de passe actuel',
           'class' => 'form-control'
         ]
-      ])
-      ->add('role', ChoiceType::class, [
+      ]);
+
+    // Only show role selector in admin panel, not on public registration
+    if (!$isRegistration) {
+      $builder->add('role', ChoiceType::class, [
         'choices' => [
           'Admin' => 'admin',
           'Client' => 'client',
@@ -77,6 +81,7 @@ class UserType extends AbstractType
         'required' => true,
         'attr' => ['class' => 'form-control']
       ]);
+    }
   }
 
   public function configureOptions(OptionsResolver $resolver): void
@@ -84,6 +89,7 @@ class UserType extends AbstractType
     $resolver->setDefaults([
       'data_class' => User::class,
       'is_new' => false,
+      'is_registration' => false,
     ]);
   }
 }

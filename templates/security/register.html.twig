@@ -111,14 +111,6 @@
         {% endfor %}
       </div>
 
-      {# Role #}
-      <div class="form-floating mb-4">
-        {{ form_widget(form.role, {'attr': {'class':'form-select'}}) }}
-        <label for="{{ form.role.vars.id }}">Rôle</label>
-        {% for error in form.role.vars.errors %}
-          <span class="text-danger">{{ error.message }}</span>
-        {% endfor %}
-      </div>
 
       <button type="submit" class="btn btn-submit w-100">
         <i class="fas fa-user-plus me-2"></i> S'inscrire

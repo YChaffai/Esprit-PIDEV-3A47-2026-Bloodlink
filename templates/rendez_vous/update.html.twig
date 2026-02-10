@@ -1,0 +1,64 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Update rendez vous{% endblock %}
+{% block body %}
+<div class="example-wrapper">
+    <h1> Update rendez vous </h1>
+    <div>
+    {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    </div>
+    
+</div>
+{% endblock %} #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le rendez-vous{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width: 650px;">
+    <h1>Modifier le rendez-vous</h1>
+
+    <div class="glass-card p-4">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            
+            {# Style minimaliste cohérent avec le reste de la plateforme #}
+            {% set s = 'height: 48px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 100%; margin-bottom: 20px;' %}
+
+            <div class="mb-3">
+                <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">DATE ET HEURE</label>
+                {{ form_widget(form.date_don, {'attr': {'style': s}}) }}
+                <div class="text-danger small">{{ form_errors(form.date_don) }}</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">ENTITÉ DE COLLECTE</label>
+                {{ form_widget(form.entite, {'attr': {'style': s, 'class': 'form-select'}}) }}
+                <div class="text-danger small">{{ form_errors(form.entite) }}</div>
+            </div>
+
+            {# Optionnel : Afficher le statut si présent dans le formulaire #}
+            {% if form.status is defined %}
+                <div class="mb-3">
+                    <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">STATUT</label>
+                    {{ form_widget(form.status, {'attr': {'style': s, 'class': 'form-select'}}) }}
+                </div>
+            {% endif %}
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary flex-grow-1 rounded-pill" style="height: 50px; font-weight: 800;">
+                    ENREGISTRER
+                </button>
+                
+                {# Lien de retour vers la liste des rendez-vous du client #}
+                <a href="{{ path('rendezvous_list', { 'client_id': form.vars.data.questionnaire.client.id }) }}" 
+                   class="btn btn-outline-light rounded-pill d-flex align-items-center px-4" 
+                   style="height: 50px;">
+                    ANNULER
+                </a>
+            </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

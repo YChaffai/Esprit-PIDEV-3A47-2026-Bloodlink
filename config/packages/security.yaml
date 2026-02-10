@@ -10,18 +10,39 @@ security:
                 property: email
 
     firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
         main:
             pattern: ^/
             provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                username_parameter: email
-                password_parameter: password
-                default_target_path: /user
+            lazy: true
+
+            custom_authenticator:
+                - App\Security\UserAuthenticator
+
             logout:
                 path: app_logout
                 target: app_login
 
     access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/password-reset, roles: PUBLIC_ACCESS }
         - { path: ^/user, roles: ROLE_ADMIN }
+        - { path: ^/backoffice, roles: ROLE_ADMIN }
+        - { path: ^/campagne, roles: ROLE_CLIENT }
+        - { path: ^/questionnaire/new, roles: ROLE_CLIENT }
+        - { path: ^/questionnaire/list, roles: ROLE_CLIENT }
+        - { path: ^/questionnaire/update, roles: ROLE_CLIENT }
+        - { path: ^/questionnaire/delete, roles: ROLE_CLIENT }
+        - { path: ^/questionnaire/details, roles: ROLE_CLIENT }
+        - { path: ^/rendez_vous, roles: ROLE_CLIENT }
+
+when@test:
+    security:
+        password_hashers:
+            App\Entity\User:
+                algorithm: auto
+                cost: 4

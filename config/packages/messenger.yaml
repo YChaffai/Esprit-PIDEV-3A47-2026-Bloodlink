@@ -17,6 +17,12 @@ framework:
             messenger.bus.default: []
 
         routing:
+            # Mailer messages should be synchronous for immediate sending
             Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
+            # Chat messages can be async
             Symfony\Component\Notifier\Message\ChatMessage: async
-            Symfony\Component\Notifier\Message\SmsMessage: async
+            # SMS messages can be synchronous
+            Symfony\Component\Notifier\Message\SmsMessage: sync
+
+            # Route your app-specific messages
+            # 'App\Message\YourMessage': async

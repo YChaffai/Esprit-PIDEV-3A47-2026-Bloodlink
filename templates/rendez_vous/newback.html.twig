@@ -1,0 +1,68 @@
+{# templates/rendezvous/new.html.twig
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre un rendez-vous{% endblock %}
+
+{% block body %}
+<h1>Prendre un rendez-vous</h1>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <table>
+        <tr>
+            <td>{{ form_label(form.date_don, "Date et heure du rendez-vous") }}</td>
+            <td>{{ form_widget(form.date_don) }}</td>
+            <td>{{ form_errors(form.date_don) }}</td>
+            
+        </tr>
+        <tr>
+            <td>{{ form_label(form.entite) }}</td>
+            <td>{{ form_widget(form.entite) }}</td>
+            <td>{{ form_errors(form.entite) }}</td>
+        </tr>
+    </table>
+    {{ form_widget(form.submit) }}
+
+{{ form_end(form) }}
+{% endblock %} #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre un rendez-vous{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width: 600px;">
+    <h1>Prendre un rendez-vous</h1>
+
+    <div class="glass-card p-4">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            
+            {# Style cohérent avec les autres formulaires #}
+            {% set inputStyle = 'height: 48px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 100%; margin-bottom: 5px;' %}
+
+            <div class="mb-4">
+                <label class="form-label text-white small fw-bold">DATE ET HEURE DU RENDEZ-VOUS</label>
+                {{ form_widget(form.date_don, {'attr': {'style': inputStyle}}) }}
+                <div class="text-danger small">{{ form_errors(form.date_don) }}</div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-white small fw-bold">ENTITÉ DE COLLECTE</label>
+                {{ form_widget(form.entite, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
+                <div class="text-danger small">{{ form_errors(form.entite) }}</div>
+            </div>
+
+            <div class="mt-4">
+                {{ form_widget(form.submit, {
+                    'label': 'CONFIRMER LE RENDEZ-VOUS',
+                    'attr': {
+                        'class': 'btn btn-primary w-100 rounded-pill',
+                        'style': 'height: 50px; font-weight: 800; letter-spacing: 1px;'
+                    }
+                }) }}
+            </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

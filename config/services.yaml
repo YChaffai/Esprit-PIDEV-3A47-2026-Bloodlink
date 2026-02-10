@@ -1,3 +1,5 @@
+# config/services.yaml
+
 parameters:
     env(RECAPTCHA_SITE_KEY): ''
     env(RECAPTCHA_SECRET_KEY): ''
@@ -7,6 +9,8 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    # Makes classes in src/ available to be used as services
+    # This creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
         exclude:
@@ -14,7 +18,11 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    # Explicit service for PasswordResetController with Recaptcha keys
     App\Controller\PasswordResetController:
         arguments:
             $recaptchaSiteKey: '%env(RECAPTCHA_SITE_KEY)%'
             $recaptchaSecretKey: '%env(RECAPTCHA_SECRET_KEY)%'
+
+    # Add more service definitions when explicit configuration is needed
+    # Please note that last definitions always *replace* previous ones

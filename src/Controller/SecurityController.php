@@ -4,6 +4,7 @@ namespace App\Controller;
 
 
 use App\Entity\User;
+use App\Entity\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,8 +19,12 @@ class SecurityController extends AbstractController
   #[Route(path: '/login', name: 'app_login')]
   public function login(AuthenticationUtils $authenticationUtils): Response
   {
-    if ($this->getUser()) {
-      return $this->redirectToRoute('app_user_index');
+    if ($user = $this->getUser()) {
+      if (in_array('ROLE_ADMIN', $user->getRoles())) {
+        return $this->redirectToRoute('app_user_index');
+      } elseif (in_array('ROLE_CLIENT', $user->getRoles())) {
+        return $this->redirectToRoute('campagne_list');
+      }
     }
 
     $error = $authenticationUtils->getLastAuthenticationError();
@@ -41,14 +46,27 @@ class SecurityController extends AbstractController
   public function register(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
   {
     $user = new User();
-    $form = $this->createForm(UserType::class, $user, ['is_new' => true]);
+    $user->setRole('client');
+    $form = $this->createForm(UserType::class, $user, [
+      'is_new' => true,
+      'is_registration' => true,
+    ]);
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+      // Force client role — prevent privilege escalation
+      $user->setRole('client');
       $user->setPassword($passwordHasher->hashPassword($user, $user->getPlainPassword()));
 
+      // Create the associated Client entity with defaults
+      $client = new Client();
+      $client->setUser($user);
+      $client->setTypeSang('O+');
+      $client->setDernierDon(new \DateTime('2000-01-01'));
+
       $em->persist($user);
+      $em->persist($client);
       $em->flush();
 
       $this->addFlash('success', 'Votre compte a été créé avec succès.');
@@ -61,3 +79,4 @@ class SecurityController extends AbstractController
     ]);
   }
 }
+

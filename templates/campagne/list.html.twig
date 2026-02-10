@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des campagnes{% endblock %}
+
+{% block body %}
+<div class="mb-5">
+    <h1 class="text-red">Campagnes de Don de Sang</h1>
+    <p class="text-muted" style="color: white !important">
+        Sélectionnez une campagne pour commencer votre questionnaire d'éligibilité.
+    </p>
+</div>
+
+<div class="row">
+    {% for camp in campagne %}
+        <div class="col-md-4 mb-4">
+            <div class="glass-card h-100 d-flex flex-column justify-content-between" style="padding: 25px;">
+                <div>
+                    <h3 class="h5 fw-bold text-white mb-3" style="letter-spacing: 0.5px;">{{ camp.titre }}</h3>
+                    <div class="mb-4" style="height: 2px; width: 40px; background: var(--primary);"></div>
+                    <p class="text-white-50 small">
+                        Participez à cette campagne de collecte. Votre contribution est essentielle pour sauver des vies.
+                    </p>
+                </div>
+
+                <div class="mt-4">
+                    <a href="{{ path('questionnaire_new', { id : camp.id, client_id: client.user.id }) }}" 
+                       class="btn btn-primary w-100 rounded-pill d-flex align-items-center justify-content-center" 
+                       style="height: 48px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                       PARTICIPER
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="glass-card">
+                <p class="text-white opacity-50 mb-0">Aucune campagne disponible pour le moment.</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

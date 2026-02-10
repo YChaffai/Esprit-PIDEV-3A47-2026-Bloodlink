@@ -5,8 +5,8 @@
 {% block body %}
 <div class="glass-card p-4 p-md-5">
 
-    {# --- Top Navigation Bar --- #}
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    {# Top Navigation Bar #}
+    <div class="d-flex justify-content-between align-items-center mb-5">
         <div class="d-flex align-items-center gap-3">
             <a href="{{ path('app_user_new') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">
                 <i class="fa-solid fa-user-plus me-2"></i> AJOUTER UTILISATEUR
@@ -14,41 +14,12 @@
         </div>
     </div>
 
-    {# --- Search Bar + Sort Button --- #}
-    <div class="d-flex flex-column flex-md-row gap-3 mb-4 align-items-md-center justify-content-between">
-
-        {# Search Bar - Enhanced White Styling #}
-        <div class="input-group" style="max-width: 320px;">
-            <span class="input-group-text bg-transparent border-white text-white">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </span>
-            <input
-                type="text"
-                id="userSearch"
-                class="form-control bg-transparent border-white text-white custom-placeholder"
-                placeholder="Rechercher utilisateur..."
-                style="border-left: none;"
-            >
-        </div>
-
-        {# Sort Button - Refined to match UI #}
-        <button
-            id="sortByIdBtn"
-            class="btn btn-outline-light rounded-pill px-4 fw-bold d-flex align-items-center"
-            data-direction="asc"
-            style="border-width: 1px; text-transform: uppercase; letter-spacing: 1px;"
-        >
-            <span class="me-2">Trier par ID</span>
-            <i id="sortIcon" class="fa-solid fa-arrow-up"></i>
-        </button>
-
-    </div>
-
-    {# --- Table --- #}
+    {# Table #}
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead>
-                <tr class="small text-uppercase" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <tr class="small text-uppercase" style="border-bottom: 1px solid var(--border);">
+                    {# User Icon added here in the header text #}
                     <th class="py-3 ps-3 text-white" scope="col">
                         <i class="fa-solid fa-users me-2 text-white-50"></i>UTILISATEUR
                     </th>
@@ -58,26 +29,25 @@
                 </tr>
             </thead>
             <tbody>
+
             {% for user in users %}
-                <tr
-                    data-id="{{ user.id }}"
-                    data-name="{{ (user.prenom ~ ' ' ~ user.nom)|lower }}"
-                    data-email="{{ user.email|lower }}"
-                    style="border-bottom: 1px solid rgba(255,255,255,0.05);"
-                >
+                <tr style="border-bottom: 1px solid var(--border);">
                     <td class="py-3 ps-3">
                         <div class="d-flex align-items-center">
+                            {# Avatar Circle #}
                             <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
-                                 style="width:40px;height:40px; font-weight:800; background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,0.1); color: white;">
+                                 style="width:40px;height:40px; font-weight:800; background: rgba(255,255,255,.05); border:1px solid var(--border); color: white;">
                                 {{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}
                             </div>
                             <div>
                                 <div class="fw-bold text-white">{{ user.prenom }} {{ user.nom }}</div>
-                                <small class="text-white-50">#{{ user.id }}</small>
+                                <small style="color: var(--muted);">#{{ user.id }}</small>
                             </div>
                         </div>
                     </td>
+
                     <td class="py-3 text-white-50">{{ user.email }}</td>
+
                     <td class="py-3">
                         {% if 'ADMIN' in user.role|upper %}
                             <span class="badge rounded-pill px-3 py-2"
@@ -86,11 +56,12 @@
                             </span>
                         {% else %}
                             <span class="badge rounded-pill px-3 py-2"
-                                  style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff;">
+                                  style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #ccc;">
                                 {{ user.role|upper }}
                             </span>
                         {% endif %}
                     </td>
+
                     <td class="text-end py-3 pe-3">
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-outline-light rounded-pill px-3">AFFICHER</a>
@@ -100,62 +71,29 @@
                     </td>
                 </tr>
             {% endfor %}
+
             </tbody>
         </table>
     </div>
 </div>
 
 <style>
-    /* Custom White Search Input Styling */
-    .custom-placeholder::placeholder {
-        color: rgba(255, 255, 255, 0.7) !important;
+    /* Inputs: Black Background, White Text */
+    .input-dark, .select-dark, .form-control, .form-select {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        border: 1px solid var(--border);
     }
 
-    /* Remove focus glow for a cleaner look */
-    .form-control:focus {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        color: #fff !important;
-        border-color: #fff !important;
-        box-shadow: 0 0 0 0.25 margin-right: rgba(255, 255, 255, 0.1);
+    .select-dark option {
+        background-color: #000000 !important;
+        color: #ffffff !important;
     }
 
+    /* Table Hover Styling */
     .table { --bs-table-bg: transparent; --bs-table-hover-bg: rgba(255, 255, 255, 0.02); }
+    
+    /* Ensure all text in table respects the white theme */
     .table thead th { border: none; }
 </style>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('userSearch');
-    const sortBtn = document.getElementById('sortByIdBtn');
-    const sortIcon = document.getElementById('sortIcon');
-    const tbody = document.querySelector('tbody');
-    let rows = Array.from(tbody.querySelectorAll('tr'));
-
-    /* 🔍 LIVE SEARCH */
-    searchInput.addEventListener('input', () => {
-        const query = searchInput.value.toLowerCase();
-        rows.forEach(row => {
-            const name = row.dataset.name;
-            const email = row.dataset.email;
-            row.style.display = name.includes(query) || email.includes(query) ? '' : 'none';
-        });
-    });
-
-    /* 🔃 SORT BY ID */
-    sortBtn.addEventListener('click', () => {
-        const direction = sortBtn.dataset.direction;
-        rows.sort((a, b) => {
-            const idA = parseInt(a.dataset.id);
-            const idB = parseInt(b.dataset.id);
-            return direction === 'asc' ? idA - idB : idB - idA;
-        });
-
-        sortBtn.dataset.direction = direction === 'asc' ? 'desc' : 'asc';
-        sortIcon.className = direction === 'asc' ? 'fa-solid fa-arrow-down' : 'fa-solid fa-arrow-up';
-        rows.forEach(row => tbody.appendChild(row));
-    });
-});
-</script>
 {% endblock %}

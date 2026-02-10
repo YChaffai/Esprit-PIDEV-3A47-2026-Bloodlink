@@ -1,0 +1,136 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Liste des rendez vous{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des rendez vous</h1>
+    <hr>
+<div class="card p-3 mb-4 shadow-sm bg-light">
+   {{ form_start(filterForm, {
+    'action': path('rendezvous_list', {'client_id': client_id}),
+    'method': 'GET',
+    'attr': {'id': 'rv-filter-form'}
+}) }}
+    <div class="row g-2">
+        <div class="col-md-2">{{ form_widget(filterForm.campagne) }}</div> #}
+        {# <div class="col-md-3">{{ form_widget(filterForm.date) }}</div> #}
+        {# <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
+        <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
+        <div class="col-md-3">{{ form_widget(filterForm.statusClient) }}</div>
+        <div class="col-md-3">{{ form_widget(filterForm.tri_date) }}</div>
+
+        <div class="col-md-2">
+            <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}" class="btn btn-secondary w-100">Reset</a>
+        </div>
+    </div>
+{{ form_end(filterForm, {'render_rest': false}) }}
+</div>
+    {% for r in rendezvous %}
+        <div class="mb-4">
+            <p><b>date rendez vous : </b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
+            <p><b>status : </b> {{ r.status }} </p>
+            <p><b>campagne : </b> {{ r.questionnaire.campagne.titre }} </p>
+            <p><b>entite de collecte : </b> {{ r.entite.nom }} </p> #}
+
+
+            
+            {# <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>#}
+            {# <a  href="{{ path('rendezvous_update', { id : r.id })}}">Update</a>
+            <a  href="{{ path('rendezvous_delete', { id : r.id })}}">Delete</a> 
+
+         </div>
+        <hr>
+    {% else %}
+        <p>Aucun questionnaire trouvé.</p>
+    {% endfor %}
+
+   <script>
+    const rvForm = document.getElementById('rv-filter-form');
+    if (rvForm) {
+        // On cible tous les éléments interactifs : input (date, time, text) et select
+        rvForm.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                // On ne soumet que si l'élément a une valeur (évite les recherches vides)
+                if (element.value !== "") {
+                    rvForm.submit();
+                }
+            });
+        });
+    }
+</script>
+</div>
+{% endblock %} #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des rendez vous{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des rendez vous</h1>
+    <hr>
+    
+    {# Section Filtre : Conversion du fond en Glass-card sombre #}
+    <div class="glass-card p-3 mb-4 shadow-sm" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px;">
+       {{ form_start(filterForm, {
+        'action': path('rendezvous_list', {'client_id': client_id}),
+        'method': 'GET',
+        'attr': {'id': 'rv-filter-form'}
+    }) }}
+        {# Utilisation de g-1 pour réduire l'espace entre les champs #}
+        <div class="row g-1 align-items-center">
+            {% set s = 'height: 38px; background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;' %}
+            
+            <div class="col-md-2">{{ form_widget(filterForm.campagne, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_date, {'attr': {'style': s}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_time, {'attr': {'style': s}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.statusClient, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.tri_date, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+
+            <div class="col-md-2">
+                <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}" 
+                   class="btn btn-danger w-100 d-flex align-items-center justify-content-center" 
+                   style="height: 38px; font-weight: bold; font-size: 0.8rem;">RESET</a>
+            </div>
+        </div>
+    {{ form_end(filterForm, {'render_rest': false}) }}
+    </div>
+
+    {# Liste des items stylisée en cartes sombres #}
+    {% for r in rendezvous %}
+        <div class="glass-card mb-4 p-3" style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; border-left: 4px solid var(--primary);">
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <p class="mb-1" style="color: white;"><b>Date :</b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
+                    <p class="mb-1" style="color: white;"><b>Status :</b> <span class="badge bg-danger">{{ r.status }}</span> </p>
+                    <p class="mb-1" style="color: white;"><b>Campagne :</b> {{ r.questionnaire.campagne.titre }} </p>
+                    <p class="mb-0" style="color: white;"><b>Entité :</b> {{ r.entite.nom }} </p>
+                </div>
+                <div class="col-md-3 text-end">
+                    <a href="{{ path('rendezvous_update', { id : r.id })}}" class="btn btn-outline-light btn-sm rounded-pill px-3">Update</a>
+                    <a href="{{ path('rendezvous_delete', { id : r.id })}}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Delete</a> 
+                </div>
+            </div>
+         </div>
+    {% else %}
+        <p class="text-white">Aucun rendez-vous trouvé.</p>
+    {% endfor %}
+
+    <script>
+       const rvForm = document.getElementById('rv-filter-form');
+    if (rvForm) {
+        // On cible tous les éléments interactifs : input (date, time, text) et select
+        rvForm.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', () => {
+                // On ne soumet que si l'élément a une valeur (évite les recherches vides)
+                if (element.value !== "") {
+                    rvForm.submit();
+                }
+            });
+        });
+    }
+    </script>
+</div>
+
+{% endblock %}
