@@ -1,4 +1,4 @@
-{% extends 'baseFront.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block stylesheets %}
   {{ parent() }}
@@ -136,18 +136,7 @@
 
   
 
-  <div class="col-md-4">
-    <div class="mb-1 text-uppercase fw-bold text-white-50" style="font-size:.75rem;letter-spacing:.08em;">
-      {{ form_label(form.client) }}
-    </div>
-    {{ form_widget(form.client, {
-      attr: {
-        class: 'form-select form-select-lg js-choices',
-        style: 'background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text);border-radius:16px;'
-      }
-    }) }}
-    <div class="bl-error">{{ form_errors(form.client) }}</div>
-  </div>
+
 
 </div>
 
@@ -157,7 +146,7 @@
     Cancel
   </a>
 
-  <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">
+  <button type="submit" class="btn btn-primary btn-lg rounded-pill px-4">
     <i class="fa-solid fa-floppy-disk me-2"></i> Save
   </button>
 </div>

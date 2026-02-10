@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Repository\BanqueRepository;
-use App\Repository\EntitecollecteRepository;
+use App\Repository\EntiteCollecteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ class OrgController extends AbstractController
     public function orgs(
         Request $request,
         BanqueRepository $banqueRepo,
-        EntitecollecteRepository $entiteRepo
+        EntiteCollecteRepository $entiteRepo
     ): JsonResponse {
         $type = $request->query->get('type');
 

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BanqueRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -42,9 +44,22 @@ class Banque
   )]
   private ?string $telephone = null;
 
+  #[ORM\OneToMany(mappedBy: 'banque', targetEntity: Commande::class)]
+  private Collection $commandes;
+
+  public function __construct()
+  {
+      $this->commandes = new ArrayCollection();
+  }
+
   public function getUser(): ?User
   {
     return $this->user;
+  }
+
+  public function getId(): ?int
+  {
+      return $this->user?->getId();
   }
 
   public function setUser(User $user): static
@@ -87,5 +102,35 @@ class Banque
   {
     $this->telephone = $telephone;
     return $this;
+  }
+
+  /**
+   * @return Collection<int, Commande>
+   */
+  public function getCommandes(): Collection
+  {
+      return $this->commandes;
+  }
+
+  public function addCommande(Commande $commande): static
+  {
+      if (!$this->commandes->contains($commande)) {
+          $this->commandes->add($commande);
+          $commande->setBanque($this);
+      }
+
+      return $this;
+  }
+
+  public function removeCommande(Commande $commande): static
+  {
+      if ($this->commandes->removeElement($commande)) {
+          // set the owning side to null (unless already changed)
+          if ($commande->getBanque() === $this) {
+              $commande->setBanque(null);
+          }
+      }
+
+      return $this;
   }
 }

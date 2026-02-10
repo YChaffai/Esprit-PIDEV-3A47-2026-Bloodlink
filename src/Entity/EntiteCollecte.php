@@ -16,13 +16,16 @@ class EntiteCollecte
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La localisation est obligatoire.')]
     private ?string $localisation = null;
 
-    #[ORM\Column]
-    private ?int $telephone = null;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le téléphone est obligatoire.')]
+    private ?string $telephone = null;
 
     /**
      * @var Collection<int, Campagne>
@@ -64,12 +67,12 @@ class EntiteCollecte
         return $this;
     }
 
-    public function getTelephone(): ?int
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
-    public function setTelephone(int $telephone): static
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
 

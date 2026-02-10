@@ -13,47 +13,43 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CommandeType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('reference')
-            ->add('quantite')
-            ->add('priorite', ChoiceType::class, [
-                'choices' => [
-                    'Faible' => 'Faible',
-                    'Élevée' => 'Élevée',
-                    'Urgente' => 'Urgente',
-                ],
-                'placeholder' => 'Choisir une priorité',
-            ])
-            ->add('typeSang', ChoiceType::class, [
-                'choices' => [
-                    'A+' => 'A+',
-                    'A-' => 'A-',
-                    'B+' => 'B+',
-                    'B-' => 'B-',
-                    'AB+' => 'AB+',
-                    'AB-' => 'AB-',
-                    'O+' => 'O+',
-                    'O-' => 'O-',
-                ],
-                'placeholder' => 'Choisir un type de sang',
-            ])
-            ->add('banque', EntityType::class, [
-                'class' => Banque::class,
-                'choice_label' => 'nom',
-            ])
-            ->add('client', EntityType::class, [
-                'class' => Client::class,
-                'choice_label' => 'user',
-            ])
-        ;
-    }
+  public function buildForm(FormBuilderInterface $builder, array $options): void
+  {
+    $builder
+      ->add('reference')
+      ->add('quantite')
+      ->add('priorite', ChoiceType::class, [
+        'choices' => [
+          'Faible' => 'Faible',
+          'Élevée' => 'Élevée',
+          'Urgente' => 'Urgente',
+        ],
+        'placeholder' => 'Choisir une priorité',
+      ])
+      ->add('typeSang', ChoiceType::class, [
+        'choices' => [
+          'A+' => 'A+',
+          'A-' => 'A-',
+          'B+' => 'B+',
+          'B-' => 'B-',
+          'AB+' => 'AB+',
+          'AB-' => 'AB-',
+          'O+' => 'O+',
+          'O-' => 'O-',
+        ],
+        'placeholder' => 'Choisir un type de sang',
+      ])
+      ->add('banque', EntityType::class, [
+        'class' => Banque::class,
+        'choice_label' => 'nom',
+      ])
+    ;
+  }
 
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => Commande::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver): void
+  {
+    $resolver->setDefaults([
+      'data_class' => Commande::class,
+    ]);
+  }
 }

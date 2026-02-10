@@ -17,7 +17,7 @@ class Client
   #[ORM\Column]
   private ?int $id = null;
 
-  #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+  #[ORM\OneToOne(inversedBy: 'client', cascade: ['persist', 'remove'])]
   #[ORM\JoinColumn(nullable: false)]
   private ?User $user = null;
 
@@ -38,11 +38,15 @@ class Client
   private ?\DateTimeInterface $dernierDon = null;
 
   #[ORM\OneToMany(mappedBy: 'client', targetEntity: Commande::class)]
-  private Collection $Commandes;
+  private Collection $commandes;
+
+  #[ORM\OneToMany(mappedBy: 'client', targetEntity: Questionnaire::class)]
+  private Collection $questionnaires;
 
   public function __construct()
   {
-    $this->Commandes = new ArrayCollection();
+    $this->commandes = new ArrayCollection();
+    $this->questionnaires = new ArrayCollection();
   }
 
   public function __toString(): string
@@ -93,13 +97,13 @@ class Client
    */
   public function getCommandes(): Collection
   {
-      return $this->Commandes;
+      return $this->commandes;
   }
 
   public function addCommande(Commande $commande): static
   {
-      if (!$this->Commandes->contains($commande)) {
-          $this->Commandes->add($commande);
+      if (!$this->commandes->contains($commande)) {
+          $this->commandes->add($commande);
           $commande->setClient($this);
       }
 
@@ -108,10 +112,40 @@ class Client
 
   public function removeCommande(Commande $commande): static
   {
-      if ($this->Commandes->removeElement($commande)) {
+      if ($this->commandes->removeElement($commande)) {
           // set the owning side to null (unless already changed)
           if ($commande->getClient() === $this) {
               $commande->setClient(null);
+          }
+      }
+
+      return $this;
+  }
+
+  /**
+   * @return Collection<int, Questionnaire>
+   */
+  public function getQuestionnaires(): Collection
+  {
+      return $this->questionnaires;
+  }
+
+  public function addQuestionnaire(Questionnaire $questionnaire): static
+  {
+      if (!$this->questionnaires->contains($questionnaire)) {
+          $this->questionnaires->add($questionnaire);
+          $questionnaire->setClient($this);
+      }
+
+      return $this;
+  }
+
+  public function removeQuestionnaire(Questionnaire $questionnaire): static
+  {
+      if ($this->questionnaires->removeElement($questionnaire)) {
+          // set the owning side to null (unless already changed)
+          if ($questionnaire->getClient() === $this) {
+              $questionnaire->setClient(null);
           }
       }
 

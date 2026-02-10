@@ -32,7 +32,9 @@ security:
         - { path: ^/password-reset, roles: PUBLIC_ACCESS }
         - { path: ^/user, roles: ROLE_ADMIN }
         - { path: ^/backoffice, roles: ROLE_ADMIN }
+        - { path: ^/back, roles: ROLE_ADMIN }  # Covers all back routes
         - { path: ^/campagne, roles: ROLE_CLIENT }
+        - { path: ^/front/commande, roles: ROLE_CLIENT } # New Client Route
         - { path: ^/questionnaire/new, roles: ROLE_CLIENT }
         - { path: ^/questionnaire/list, roles: ROLE_CLIENT }
         - { path: ^/questionnaire/update, roles: ROLE_CLIENT }

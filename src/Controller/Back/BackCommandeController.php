@@ -11,9 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/back/commande')]
 class BackCommandeController extends AbstractController
 {
-    #[Route('/back/commande', name: 'back_commandes_index', methods: ['GET'])]
+    #[Route('/', name: 'back_commandes_index', methods: ['GET'])]
     public function index(CommandeRepository $commandeRepository): Response
     {
         $commandes = $commandeRepository->findBy([], ['id' => 'DESC']);
@@ -52,6 +53,4 @@ class BackCommandeController extends AbstractController
 
         return $this->redirectToRoute('back_commandes_index');
     }
-
-    
 }

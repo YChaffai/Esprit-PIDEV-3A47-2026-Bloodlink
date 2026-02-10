@@ -126,9 +126,12 @@
     <div class="menu-footer">
       {% if app.user %}
         <p class="mb-3">Connecté: <strong>{{ app.user.userIdentifier }}</strong></p>
-        <a href="" class="btn btn-outline-light btn-lg w-100 rounded-pill">
-          <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-        </a>
+        <form action="{{ path('app_logout') }}" method="post" class="d-inline">
+            <input type="hidden" name="_token" value="{{ csrf_token('logout') }}">
+            <button type="submit" class="btn btn-outline-light btn-lg w-100 rounded-pill">
+              <i class="fa-solid fa-right-from-bracket me-2"></i> Se Deconnecter
+            </button>
+        </form>
       {% else %}
         <p class="mb-3">Rejoignez la communauté des sauveurs de vie.</p>
         <a href="" class="btn btn-outline-light btn-lg w-100 rounded-pill">

@@ -97,7 +97,7 @@ class PasswordResetController extends AbstractController
             ], UrlGeneratorInterface::ABSOLUTE_URL);
 
             $emailMessage = (new TemplatedEmail())
-              ->from(new Address('noreply@bloodlink.com', 'BloodLink'))
+              ->from(new Address('khalilboujemaa2@gmail.com', 'BloodLink'))
               ->to(new Address($user->getEmail(), $user->getPrenom() . ' ' . $user->getNom()))
               ->subject('Password Reset Request - BloodLink')
               ->htmlTemplate('password_reset/email.html.twig')

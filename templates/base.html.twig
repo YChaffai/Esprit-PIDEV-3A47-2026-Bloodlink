@@ -189,9 +189,13 @@
                     <li class="menu-item"><a href="{{ path('campagne_list') }}" class="menu-link">Campagnes</a></li>
                     <li class="menu-item"><a href="{{ path('rendezvous_list', {'client_id': app.user.client.user.id}) }}" class="menu-link">Mes Dossiers</a></li>
                     <li class="menu-item"><a href="{{ path('questionnaire_list', {'client_id': app.user.client.user.id}) }}" class="menu-link">Questionnaires</a></li>
+                    <li class="menu-item"><a href="{{ path('front_commandes_index') }}" class="menu-link">Mes Commandes</a></li>
                   {% endif %}
                   {% if is_granted('ROLE_ADMIN') %}
                     <li class="menu-item"><a href="{{ path('app_user_index') }}" class="menu-link">Utilisateurs</a></li>
+                    <li class="menu-item"><a href="{{ path('back_stock_index') }}" class="menu-link">Stocks</a></li>
+                    <li class="menu-item"><a href="{{ path('back_commandes_index') }}" class="menu-link">Commandes</a></li>
+                    <li class="menu-item"><a href="{{ path('back_entite_collecte_index') }}" class="menu-link">Entités Collecte</a></li>
                     <li class="menu-item"><a href="{{ path('questionnaireback_list') }}" class="menu-link">Questionnaires</a></li>
                     <li class="menu-item"><a href="{{ path('rendezvousback_list') }}" class="menu-link">Rendez-vous</a></li>
                   {% endif %}
@@ -200,9 +204,12 @@
             <div class="menu-footer" style="margin-top:40px;">
               {% if app.user %}
                 <p style="color:var(--muted); margin-bottom:10px;">Connecté: <strong>{{ app.user.userIdentifier }}</strong></p>
-                <a href="{{ path('app_logout') }}" class="btn btn-outline-light btn-lg w-100 rounded-pill" style="font-weight:700; text-transform:uppercase; letter-spacing:1px;">
-                  <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
-                </a>
+                <form action="{{ path('app_logout') }}" method="post" class="d-inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('logout') }}">
+                    <button type="submit" class="btn btn-outline-light btn-lg w-100 rounded-pill" style="font-weight:700; text-transform:uppercase; letter-spacing:1px;">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Déconnexion
+                    </button>
+                </form>
               {% else %}
                 <a href="{{ path('app_login') }}" class="btn btn-outline-light btn-lg w-100 rounded-pill" style="font-weight:700; text-transform:uppercase; letter-spacing:1px;">
                   <i class="fa-solid fa-right-to-bracket me-2"></i> Se connecter
