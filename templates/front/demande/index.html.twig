@@ -1,0 +1,242 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mes Demandes | BloodLink{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-file-medical me-2" style="color:var(--primary);"></i>
+                Mes Demandes
+            </h1>
+            <div style="color:var(--muted);">
+                Consultez et gérez vos demandes de sang.
+            </div>
+        </div>
+        <div>
+            <a href="{{ path('front_demande_new') }}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2" style="height:48px; background-color: var(--primary); border-color: var(--primary);">
+                <i class="fa-solid fa-plus-circle"></i>
+                Nouvelle demande
+            </a>
+        </div>
+    </div>
+
+    {# --- SEARCH & FILTER BAR --- #}
+    <div class="glass-card p-3 mb-4">
+        <div class="row g-3 align-items-center">
+            <div class="col-12 col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-secondary text-muted" style="border-right:0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input id="dem-search" type="text"
+                           class="form-control bg-transparent text-white border-secondary border-start-0"
+                           placeholder="Type sanguin, statut..."
+                           style="box-shadow:none; color: white !important;">
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-3">
+                <select id="dem-urgence" class="form-select bg-transparent text-white border-secondary" style="box-shadow:none;">
+                    <option value="" class="text-dark">Toutes urgences</option>
+                    <option value="normale" class="text-dark">🟢 Normale</option>
+                    <option value="urgente" class="text-dark">🚨 Urgente</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-4">
+                <select id="dem-status" class="form-select bg-transparent text-white border-secondary" style="box-shadow:none;">
+                    <option value="" class="text-dark">Tous les statuts</option>
+                    <option value="en_attente" class="text-dark">⏳ En Attente</option>
+                    <option value="en_cours" class="text-dark">🔄 En Cours</option>
+                    <option value="validee" class="text-dark">✅ Validée</option>
+                    <option value="refusee" class="text-dark">❌ Refusée</option>
+                    <option value="satisfaite" class="text-dark">🎉 Satisfaite</option>
+                    <option value="annulee" class="text-dark">🚫 Annulée</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if demandes is not empty %}
+        <div class="glass-card overflow-hidden">
+            <div class="p-4 d-flex justify-content-between align-items-center"
+                 style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+                <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">Liste des Demandes</div>
+                <div id="dem-count-top" class="small fw-bold text-white">{{ demandes|length }} demandes</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark mb-0 align-middle"
+                       style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
+                    <thead>
+                        <tr style="color:var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
+                            <th class="py-3 ps-4">ID</th>
+                            <th class="py-3">Banque</th>
+                            <th class="py-3">Type Sang</th>
+                            <th class="py-3">Quantité</th>
+                            <th class="py-3">Urgence</th>
+                            <th class="py-3">Statut</th>
+                            <th class="py-3 pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dem-rows">
+                        {% for d in demandes %}
+                            <tr class="dem-row transition-all"
+                                style="border-top:1px solid var(--border);"
+                                data-search="{{ (d.id ~ ' ' ~ d.typeSang ~ ' ' ~ d.urgence ~ ' ' ~ d.status)|lower }}"
+                                data-urgence="{{ d.urgence|lower }}"
+                                data-status="{{ d.status|lower }}">
+
+                                <td class="py-4 ps-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 px-2"
+                                         style="min-width:44px; height:34px; width: fit-content;">
+                                        <span class="small fw-black text-white" style="font-size: 0.75rem; letter-spacing: 0.5px;">#{{ d.id }}</span>
+                                    </div>
+                                </td>
+
+                                <td class="py-4">
+                                    <span class="small text-white"><i class="fa-solid fa-building-columns me-1 text-muted"></i>ID: {{ d.idBanque }}</span>
+                                </td>
+
+                                <td class="py-4">
+                                    <span class="badge rounded-pill bg-danger bg-opacity-20 text-white border border-danger border-opacity-25 px-3 py-2">
+                                        {{ d.typeSang }}
+                                    </span>
+                                </td>
+
+                                <td class="py-4">
+                                    <div class="fw-bold text-white">{{ d.quantite }}</div>
+                                </td>
+
+                                <td class="py-4">
+                                    {% if d.urgence|lower == 'urgente' %}
+                                        <span class="badge rounded-pill bg-danger d-inline-flex align-items-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> Urgente</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-secondary">Normale</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="py-4">
+                                    {% set s = d.status|lower %}
+                                    {% if s in ['validee', 'satisfaite'] %}
+                                        <div class="d-flex align-items-center gap-2 text-success small">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            <span class="fw-bold">{{ d.status }}</span>
+                                        </div>
+                                    {% elseif s in ['refusee', 'annulee'] %}
+                                        <div class="d-flex align-items-center gap-2 text-danger small">
+                                            <i class="fa-solid fa-circle-xmark"></i>
+                                            <span class="fw-bold">{{ d.status }}</span>
+                                        </div>
+                                    {% elseif s == 'en_cours' %}
+                                        <div class="d-flex align-items-center gap-2 text-info small">
+                                            <i class="fa-solid fa-spinner"></i>
+                                            <span class="fw-bold">EN COURS</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="d-flex align-items-center gap-2 text-warning small">
+                                            <i class="fa-solid fa-clock"></i>
+                                            <span class="fw-bold">EN ATTENTE</span>
+                                        </div>
+                                    {% endif %}
+                                </td>
+
+                                <td class="py-4 pe-4 text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ path('front_demande_show', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
+                                            <i class="fa-solid fa-eye me-1"></i> Détails
+                                        </a>
+                                        {% if d.status == 'EN_ATTENTE' %}
+                                            <a href="{{ path('front_demande_edit', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-light border-opacity-25 px-3">
+                                                <i class="fa-solid fa-pen me-1"></i> Modifier
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card p-5 text-center">
+            <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:76px;height:76px;background: rgba(255,255,255,.05); border: 1px solid var(--border);">
+                <i class="fa-solid fa-file-medical fs-2" style="color:var(--muted);"></i>
+            </div>
+            <h4 class="fw-black mb-2">Aucune demande</h4>
+            <p class="mb-0" style="color:var(--muted);">Vous n'avez pas encore de demande ou aucune ne correspond à vos filtres.</p>
+            <a href="{{ path('front_demande_new') }}" class="btn btn-primary rounded-pill mt-4 px-4 py-2 fw-bold">
+                Créer ma première demande
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="text-end text-white-50 mt-3 small" id="dem-count-bottom"></div>
+</div>
+
+<style>
+    .dem-row:hover {
+        background: rgba(255,255,255,0.03) !important;
+    }
+    .form-select option {
+        background: #111;
+        color: #fff;
+    }
+    #dem-search::placeholder {
+        color: rgba(255,255,255,0.7) !important;
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    (function () {
+        const searchInput = document.getElementById('dem-search');
+        const urgenceSelect = document.getElementById('dem-urgence');
+        const statusSelect = document.getElementById('dem-status');
+        const rows = Array.from(document.querySelectorAll('.dem-row'));
+        const countTop = document.getElementById('dem-count-top');
+        const countBottom = document.getElementById('dem-count-bottom');
+
+        function applyFilters() {
+            const q = (searchInput.value || '').trim().toLowerCase();
+            const urgence = (urgenceSelect.value || '').trim().toLowerCase();
+            const status = (statusSelect.value || '').trim().toLowerCase();
+
+            let visible = 0;
+
+            rows.forEach(row => {
+                const hay = row.dataset.search || '';
+                const u = row.dataset.urgence || '';
+                const s = row.dataset.status || '';
+
+                const matchQ = !q || hay.includes(q);
+                const matchU = !urgence || u === urgence;
+                const matchS = !status || s === status;
+
+                const show = matchQ && matchU && matchS;
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            if (countTop) countTop.textContent = `${visible} demande(s)`;
+            if (countBottom) countBottom.textContent = `${visible} demande(s) affichée(s)`;
+        }
+
+        [searchInput, urgenceSelect, statusSelect].forEach(el => {
+            if (!el) return;
+            el.addEventListener('input', applyFilters);
+            el.addEventListener('change', applyFilters);
+        });
+
+        applyFilters();
+    })();
+</script>
+{% endblock %}

@@ -136,6 +136,8 @@
       {% if is_granted('ROLE_CLIENT') %}
         <li class="menu-item"><a href="{{ path('front_don_index') }}" class="menu-link"><span>Dons</span></a></li>
         <li class="menu-item"><a href="{{ path('front_commandes_index') }}" class="menu-link"><span>Commandes</span></a></li>
+        <li class="menu-item"><a href="{{ path('front_demande_index') }}" class="menu-link"><span>Demandes</span></a></li>
+        <li class="menu-item"><a href="{{ path('front_transfert_index') }}" class="menu-link"><span>Transferts</span></a></li>
       {% endif %}
 
       {% if is_granted('ROLE_DOCTOR') %}

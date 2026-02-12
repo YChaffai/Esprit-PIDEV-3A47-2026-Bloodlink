@@ -56,9 +56,16 @@ class Stock
     #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'stock')]
     private Collection $commandes;
 
+    /**
+     * @var Collection<int, Transfert>
+     */
+    #[ORM\OneToMany(targetEntity: Transfert::class, mappedBy: 'stock')]
+    private Collection $transferts;
+
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
+        $this->transferts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -174,6 +181,33 @@ class Stock
 
         return $this;
     }
+    /**
+     * @return Collection<int, Transfert>
+     */
+    public function getTransferts(): Collection
+    {
+        return $this->transferts;
+    }
+
+    public function addTransfert(Transfert $transfert): static
+    {
+        if (!$this->transferts->contains($transfert)) {
+            $this->transferts->add($transfert);
+            $transfert->setStock($this);
+        }
+        return $this;
+    }
+
+    public function removeTransfert(Transfert $transfert): static
+    {
+        if ($this->transferts->removeElement($transfert)) {
+            if ($transfert->getStock() === $this) {
+                $transfert->setStock(null);
+            }
+        }
+        return $this;
+    }
+
     public function __toString(): string
     {
         return $this->getTypeSang().' - '.$this->getTypeOrg().' ('.$this->getQuantite().')';

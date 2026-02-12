@@ -1,64 +1,87 @@
-{# {% extends 'base.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block title %}Update rendez vous{% endblock %}
-{% block body %}
-<div class="example-wrapper">
-    <h1> Update rendez vous </h1>
-    <div>
-    {{ form(form, {'attr': {'novalidate': 'novalidate'}}) }}
-    </div>
-    
-</div>
-{% endblock %} #}
-
-{% extends 'base.html.twig' %}
-
-{% block title %}Modifier le rendez-vous{% endblock %}
+{% block title %}Modifier le rendez-vous | BloodLink Admin{% endblock %}
 
 {% block body %}
-<div class="container" style="max-width: 650px;">
-    <h1>Modifier le rendez-vous</h1>
-
-    <div class="glass-card p-4">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
-            {# Style minimaliste cohérent avec le reste de la plateforme #}
-            {% set s = 'height: 48px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 100%; margin-bottom: 20px;' %}
-
-            <div class="mb-3">
-                <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">DATE ET HEURE</label>
-                {{ form_widget(form.date_don, {'attr': {'style': s}}) }}
-                <div class="text-danger small">{{ form_errors(form.date_don) }}</div>
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Modifier Rendez-vous</h1>
+                <p class="text-white-50 mb-0">Modifiez les détails du rendez-vous.</p>
             </div>
+            <a href="{{ path('rendezvous_list', { 'client_id': form.vars.data.questionnaire.client.id }) }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+            </a>
+        </div>
 
-            <div class="mb-3">
-                <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">ENTITÉ DE COLLECTE</label>
-                {{ form_widget(form.entite, {'attr': {'style': s, 'class': 'form-select'}}) }}
-                <div class="text-danger small">{{ form_errors(form.entite) }}</div>
-            </div>
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
-            {# Optionnel : Afficher le statut si présent dans le formulaire #}
-            {% if form.status is defined %}
-                <div class="mb-3">
-                    <label class="form-label text-white small fw-bold" style="letter-spacing: 1px;">STATUT</label>
-                    {{ form_widget(form.status, {'attr': {'style': s, 'class': 'form-select'}}) }}
+        <div class="glass-card overflow-hidden" style="background: rgba(0, 0, 0, 0.4);">
+            <div class="p-4 p-md-5">
+                <h4 class="fw-black text-uppercase mb-4" style="color: var(--primary); letter-spacing: 1px;">
+                    Détails du Rendez-vous
+                </h4>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date et Heure</label>
+                        {{ form_widget(form.date_don, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.date_don.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.date_don.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Entité de Collecte</label>
+                        {{ form_widget(form.entite, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.entite.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.entite.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.status is defined %}
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Statut</label>
+                            {{ form_widget(form.status, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
 
-            <div class="d-flex gap-2 mt-4">
-                <button type="submit" class="btn btn-primary flex-grow-1 rounded-pill" style="height: 50px; font-weight: 800;">
-                    ENREGISTRER
-                </button>
-                
-                {# Lien de retour vers la liste des rendez-vous du client #}
-                <a href="{{ path('rendezvous_list', { 'client_id': form.vars.data.questionnaire.client.id }) }}" 
-                   class="btn btn-outline-light rounded-pill d-flex align-items-center px-4" 
-                   style="height: 50px;">
+            <div class="px-4 pb-4 px-md-5 pb-md-5 d-flex justify-content-end align-items-center gap-3">
+                <a href="{{ path('rendezvous_list', { 'client_id': form.vars.data.questionnaire.client.id }) }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
                     ANNULER
                 </a>
+                <button type="submit" class="btn btn-premium px-5">
+                    <i class="fa-solid fa-check me-2"></i>ENREGISTRER
+                </button>
             </div>
+        </div>
 
         {{ form_end(form) }}
     </div>
 </div>
+
+<style>
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 {% endblock %}

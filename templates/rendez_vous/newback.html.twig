@@ -1,42 +1,80 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block content_title %}Prendre un rendez-vous{% endblock %}
+{% block title %}Nouveau Rendez-vous | BloodLink Admin{% endblock %}
 
-{% block main %}
+{% block body %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <h1>Prendre un rendez-vous</h1>
-    <h1>Prendre un rendez-vous</h1>
+    <div class="col-lg-9 col-xl-8">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Planifier un Rendez-vous</h1>
+                <p class="text-white-50 mb-0">Finaliser la procédure pour le donneur.</p>
+            </div>
+            <a href="{{ path('rendezvousback_list') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+            </a>
+        </div>
 
-    <div class="glass-card p-4">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
-            {# Style cohérent avec les autres formulaires #}
-            {% set inputStyle = 'height: 48px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 100%; margin-bottom: 5px;' %}
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
-            <div class="mb-4">
-                <label class="form-label text-white small fw-bold">DATE ET HEURE DU RENDEZ-VOUS</label>
-                {{ form_widget(form.date_don, {'attr': {'style': inputStyle}}) }}
-                <div class="text-danger small">{{ form_errors(form.date_don) }}</div>
+        <div class="glass-card overflow-hidden" style="background: rgba(0, 0, 0, 0.4);">
+            <div class="p-4 p-md-5">
+                <h4 class="fw-black text-uppercase mb-4" style="color: var(--primary); letter-spacing: 1px;">
+                    Détails du Rendez-vous
+                </h4>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date et Heure</label>
+                        {{ form_widget(form.date_don, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.date_don.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.date_don.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Entité de Collecte</label>
+                        {{ form_widget(form.entite, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.entite.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.entite.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label class="form-label text-white small fw-bold">ENTITÉ DE COLLECTE</label>
-                {{ form_widget(form.entite, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
-                <div class="text-danger small">{{ form_errors(form.entite) }}</div>
+            <div class="px-4 pb-4 px-md-5 pb-md-5 d-flex justify-content-end align-items-center gap-3">
+                <a href="{{ path('rendezvousback_list') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                    ANNULER
+                </a>
+                <button type="submit" class="btn btn-premium px-5">
+                    <i class="fa-solid fa-calendar-check me-2"></i>CONFIRMER LE RENDEZ-VOUS
+                </button>
             </div>
-
-            <div class="mt-4">
-                {{ form_widget(form.submit, {
-                    'label': 'CONFIRMER LE RENDEZ-VOUS',
-                    'attr': {
-                        'class': 'btn btn-primary w-100 rounded-pill',
-                        'style': 'height: 50px; font-weight: 800; letter-spacing: 1px;'
-                    }
-                }) }}
-            </div>
+        </div>
 
         {{ form_end(form) }}
     </div>
 </div>
+
+<style>
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 {% endblock %}

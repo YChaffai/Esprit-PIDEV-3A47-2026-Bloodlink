@@ -185,6 +185,26 @@
           <i class="fa fa-map-marker-alt"></i> Collectes
         </a>
       </li>
+      <li>
+        <a href="{{ path('back_demande_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_demande' %}active{% endif %}">
+          <i class="fa fa-file-medical"></i> Demandes
+        </a>
+      </li>
+      <li>
+        <a href="{{ path('back_transfert_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_transfert' %}active{% endif %}">
+          <i class="fa fa-truck-medical"></i> Transferts
+        </a>
+      </li>
+      <li>
+        <a href="{{ path('questionnaireback_list') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'questionnaireback' %}active{% endif %}">
+          <i class="fa fa-clipboard-list"></i> Questionnaires
+        </a>
+      </li>
+      <li>
+        <a href="{{ path('rendezvousback_list') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'rendezvousback' %}active{% endif %}">
+          <i class="fa fa-calendar-check"></i> Rendez-vous
+        </a>
+      </li>
     </ul>
 
     <div class="nav-group-label">Système</div>

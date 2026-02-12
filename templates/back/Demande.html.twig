@@ -1,0 +1,213 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Demandes | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Demandes de Sang</h1>
+        <p class="text-white-50 mb-0">Gérez les demandes de sang et validez ou refusez les requêtes.</p>
+    </div>
+    <a href="{{ path('back_demande_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+        <i class="fa-solid fa-plus"></i> NOUVELLE DEMANDE
+    </a>
+</div>
+
+<div class="glass-card p-4">
+    {# Filters Bar #}
+    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between mb-4">
+        <div class="input-group" style="max-width:400px;">
+            <span class="input-group-text bg-transparent border-0 ps-3">
+                <i class="fa-solid fa-magnifying-glass text-muted"></i>
+            </span>
+            <input id="dem-search" type="text" class="form-control form-control-premium border-0" placeholder="Rechercher par type sanguin, statut...">
+        </div>
+
+        <div class="d-flex gap-2">
+            <select id="dem-urgence" class="form-select form-control-premium border-0" style="max-width:180px;">
+                <option value="">Toutes urgences</option>
+                <option value="normale">Normale</option>
+                <option value="urgente">Urgente</option>
+            </select>
+
+            <select id="dem-status" class="form-select form-control-premium border-0" style="max-width:180px;">
+                <option value="">Tous statuts</option>
+                <option value="en_attente">En attente</option>
+                <option value="en_cours">En cours</option>
+                <option value="validee">Validée</option>
+                <option value="refusee">Refusée</option>
+                <option value="satisfaite">Satisfaite</option>
+                <option value="annulee">Annulée</option>
+            </select>
+        </div>
+    </div>
+
+    {# Table #}
+    <div class="table-responsive">
+        <table class="table table-premium align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Banque</th>
+                    <th scope="col">Type Sang</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Urgence</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Date</th>
+                    <th class="text-end" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="dem-rows">
+            {% for d in demandes %}
+                <tr class="dem-row"
+                    data-search="{{ (d.id ~ ' ' ~ d.typeSang ~ ' ' ~ d.urgence ~ ' ' ~ d.status)|lower }}"
+                    data-urgence="{{ d.urgence|lower }}"
+                    data-status="{{ d.status|lower }}">
+
+                    <td><span class="badge badge-premium">#{{ d.id }}</span></td>
+
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-white bg-opacity-10 d-flex align-items-center justify-content-center"
+                                     style="width:32px; height:32px;">
+                                    <i class="fa-solid fa-building-columns text-white-50 small"></i>
+                                </div>
+                                <span class="fw-medium text-white">{{ d.banque.nom }}</span>
+                            </div>
+                        </td>
+
+                    <td>
+                        <span class="fw-bold" style="color: var(--primary); font-size: 1.1rem;">{{ d.typeSang }}</span>
+                    </td>
+
+                    <td class="fw-bold fs-5">{{ d.quantite }} <small class="text-muted fw-normal" style="font-size: 0.7rem;">UNITÉS</small></td>
+
+                    <td>
+                        {% if d.urgence|lower == 'urgente' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-triangle-exclamation me-1 small"></i> URGENTE
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                NORMALE
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% set s = d.status|lower %}
+                        {% if s == 'validee' or s == 'satisfaite' %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-check-circle me-1 small"></i> {{ d.status }}
+                            </span>
+                        {% elseif s == 'refusee' or s == 'annulee' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-xmark me-1 small"></i> {{ d.status }}
+                            </span>
+                        {% elseif s == 'en_cours' %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-spinner me-1 small"></i> EN COURS
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-clock me-1 small"></i> EN ATTENTE
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-white-50 small">
+                        {{ d.createdAt ? d.createdAt|date('d/m/Y') : '-' }}
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            {% if d.status == 'EN_ATTENTE' or d.status == 'EN_COURS' %}
+                                <a href="{{ path('back_demande_valider', {id: d.id}) }}"
+                                   class="btn btn-sm rounded-pill px-3 btn-outline-success border-success border-opacity-25"
+                                   style="font-size: 0.75rem; font-weight: 700;"
+                                   onclick="return confirm('Valider cette demande ?');"
+                                    title="Valider">
+                                    <i class="fa-solid fa-check"></i>
+                                </a>
+                                <a href="{{ path('back_demande_refuser', {id: d.id}) }}"
+                                   class="btn btn-sm rounded-pill px-3 btn-outline-danger border-danger border-opacity-25"
+                                   style="font-size: 0.75rem; font-weight: 700;"
+                                   onclick="return confirm('Refuser cette demande ?');"
+                                    title="Refuser">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </a>
+                            {% endif %}
+                            <a href="{{ path('back_demande_edit', {id: d.id}) }}" 
+                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
+                               title="Modifier">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            
+                            <form method="post" action="{{ path('back_demande_delete', {'id': d.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette demande ?');" style="display: inline-block;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ d.id) }}">
+                                <button class="btn btn-sm btn-outline-danger rounded-pill px-3 border-secondary border-opacity-25">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-file-medical fa-2x mb-3 d-block opacity-25"></i>
+                        Aucune demande trouvée.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-white-50 mt-4 small px-2" id="dem-count"></div>
+</div>
+
+<script>
+    (function () {
+      const searchInput = document.getElementById('dem-search');
+      const urgenceSelect = document.getElementById('dem-urgence');
+      const statusSelect = document.getElementById('dem-status');
+      const rows = Array.from(document.querySelectorAll('.dem-row'));
+      const countEl = document.getElementById('dem-count');
+
+      function applyFilters() {
+        const q = (searchInput.value || '').trim().toLowerCase();
+        const urgence = (urgenceSelect.value || '').trim().toLowerCase();
+        const status = (statusSelect.value || '').trim().toLowerCase();
+
+        let visible = 0;
+
+        rows.forEach(row => {
+          const hay = row.dataset.search || '';
+          const u = row.dataset.urgence || '';
+          const s = row.dataset.status || '';
+
+          const matchQ = !q || hay.includes(q);
+          const matchU = !urgence || u === urgence;
+          const matchS = !status || s === status;
+
+          const show = matchQ && matchU && matchS;
+          row.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+
+        if (countEl) {
+          countEl.textContent = `${visible} demande(s) affichée(s)`;
+        }
+      }
+
+      [searchInput, urgenceSelect, statusSelect].forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', applyFilters);
+        el.addEventListener('change', applyFilters);
+      });
+
+      applyFilters();
+    })();
+</script>
+{% endblock %}

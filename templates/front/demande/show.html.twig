@@ -1,0 +1,125 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Demande #{{ demande.id }} | BloodLink{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-file-medical me-2" style="color:var(--primary);"></i>
+                Demande #{{ demande.id }}
+            </h1>
+            <div style="color:var(--muted);">
+                Détails de votre demande de sang.
+            </div>
+        </div>
+        <a href="{{ path('front_demande_index') }}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold transition-all" style="height:48px; border-color:var(--border);">
+            <i class="fa-solid fa-arrow-left me-2"></i> Retour
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="glass-card p-4 p-md-5">
+
+                {# Detail Header #}
+                <div class="d-flex align-items-center gap-3 mb-5">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:52px; height:52px; background:rgba(230,57,57,0.1); border:1px solid rgba(230,57,57,0.2);">
+                        <i class="fa-solid fa-file-lines fs-4" style="color: var(--primary) !important;"></i>
+                    </div>
+                    <div>
+                        <h2 class="h5 fw-black text-white mb-0 text-uppercase" style="letter-spacing:1px;">Informations de la Demande</h2>
+                        <span class="text-white small">Créée le {{ demande.createdAt ? demande.createdAt|date('d/m/Y à H:i') : '-' }}</span>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                            <div class="small text-uppercase fw-black mb-1" style="color:var(--muted); letter-spacing:.08em;">Type de Sang</div>
+                            <div class="fs-3 fw-black" style="color:var(--primary);">{{ demande.typeSang }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                            <div class="small text-uppercase fw-black mb-1" style="color:var(--muted); letter-spacing:.08em;">Quantité</div>
+                            <div class="fs-3 fw-black text-white">{{ demande.quantite }} <span class="fs-6 text-muted fw-normal">unités</span></div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                            <div class="small text-uppercase fw-black mb-1" style="color:var(--muted); letter-spacing:.08em;">Banque</div>
+                            <div class="text-white fw-bold">ID: {{ demande.idBanque }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                            <div class="small text-uppercase fw-black mb-1" style="color:var(--muted); letter-spacing:.08em;">Urgence</div>
+                            {% if demande.urgence|lower == 'urgente' %}
+                                <span class="badge rounded-pill bg-danger d-inline-flex align-items-center gap-1 px-3 py-2">
+                                    <i class="fa-solid fa-circle-exclamation"></i> Urgente
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-secondary px-3 py-2">Normale</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                            <div class="small text-uppercase fw-black mb-1" style="color:var(--muted); letter-spacing:.08em;">Statut</div>
+                            {% set s = demande.status|lower %}
+                            {% if s in ['validee', 'satisfaite'] %}
+                                <div class="d-flex align-items-center gap-2 text-success">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span class="fw-bold">{{ demande.status }}</span>
+                                </div>
+                            {% elseif s in ['refusee', 'annulee'] %}
+                                <div class="d-flex align-items-center gap-2 text-danger">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                    <span class="fw-bold">{{ demande.status }}</span>
+                                </div>
+                            {% elseif s == 'en_cours' %}
+                                <div class="d-flex align-items-center gap-2 text-info">
+                                    <i class="fa-solid fa-spinner"></i>
+                                    <span class="fw-bold">EN COURS</span>
+                                </div>
+                            {% else %}
+                                <div class="d-flex align-items-center gap-2 text-warning">
+                                    <i class="fa-solid fa-clock"></i>
+                                    <span class="fw-bold">EN ATTENTE</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {# Actions #}
+                <div class="mt-5 pt-4 border-top border-secondary border-opacity-10 d-flex justify-content-end align-items-center gap-3">
+                    {% if demande.status == 'EN_ATTENTE' %}
+                        <a href="{{ path('front_demande_edit', {id: demande.id}) }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">
+                            <i class="fa-solid fa-pen me-2"></i> Modifier
+                        </a>
+                    {% endif %}
+
+                    <form method="post" action="{{ path('front_demande_delete', {id: demande.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette demande ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ demande.id) }}">
+                        <button class="btn btn-outline-danger rounded-pill px-4 fw-bold">
+                            <i class="fa-solid fa-trash me-2"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

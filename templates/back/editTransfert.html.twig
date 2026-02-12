@@ -1,0 +1,206 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Modifier Transfert | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Modifier Transfert #{{ transfert.id }}</h1>
+                <p class="text-white-50 mb-0">Modifier les informations du transfert de sang.</p>
+            </div>
+            <a href="{{ path('back_transfert_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+            </a>
+        </div>
+
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+        <div class="glass-card overflow-hidden" style="background: rgba(0, 0, 0, 0.4);">
+            <div class="p-4 p-md-5">
+                <h4 class="fw-black text-uppercase mb-4" style="color: var(--primary); letter-spacing: 1px;">
+                    Détails du Transfert
+                </h4>
+
+                {% if not form.vars.valid %}
+                    <div class="alert mb-4 rounded-4 border-0 bg-danger bg-opacity-10 text-danger p-4">
+                        <h5 class="fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i>Erreurs de validation</h5>
+                        {{ form_errors(form) }}
+                        <ul class="mb-0 small">
+                            {% for child in form.children %}
+                                {% for error in child.vars.errors %}
+                                    <li><strong>{{ child.vars.label|default(child.vars.name) }}:</strong> {{ error.message }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Organisation Origine</label>
+                        {{ form_widget(form.fromOrg, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.fromOrg.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.fromOrg.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">ID Origine</label>
+                        {{ form_widget(form.fromOrgId, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.fromOrgId.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.fromOrgId.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Organisation Destination</label>
+                        {{ form_widget(form.toOrg, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.toOrg.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.toOrg.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">ID Destination</label>
+                        {{ form_widget(form.toOrgId, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.toOrgId.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.toOrgId.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Quantité</label>
+                        {{ form_widget(form.quantite, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.quantite.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.quantite.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date d'Envoi</label>
+                        {{ form_widget(form.dateEnvoie, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.dateEnvoie.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.dateEnvoie.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date de Réception</label>
+                        {{ form_widget(form.dateReception, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                        {% if form.dateReception.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.dateReception.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Statut</label>
+                        {{ form_widget(form.status, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.status.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.status.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Stock</label>
+                        {{ form_widget(form.stock, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.stock.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.stock.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Demande</label>
+                        {{ form_widget(form.demande, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.demande.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.demande.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-4 pb-4 px-md-5 pb-md-5 d-flex justify-content-end align-items-center gap-3">
+                <a href="{{ path('back_transfert_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                    ANNULER
+                </a>
+                <button type="submit" class="btn btn-premium px-5">
+                    <i class="fa-solid fa-check me-2"></i>ENREGISTRER
+                </button>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<style>
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+{% endblock %}

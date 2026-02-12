@@ -1,22 +1,30 @@
-{% extends '@EasyAdmin/page/content.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block content_title %}Détails du Questionnaire{% endblock %}
+{% block title %}Détails du Questionnaire | BloodLink Admin{% endblock %}
 
-{% block main %}
-<div class="glass-card">
-    <h1>Questionnaire details</h1>
-    <div class="row">
-        <div class="col-md-6">
-            <p><b class="text-white">Nom :</b> {{ questionnaires.nom }}</p>
-            <p><b class="text-white">Prénom :</b> {{ questionnaires.prenom }}</p>
-            <p><b class="text-white">Âge :</b> {{ questionnaires.age }}</p>
+{% block body %}
+<div class="d-flex align-items-center justify-content-between mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Détails du Questionnaire</h1>
+        <p class="text-white-50 mb-0">Informations détaillées du donneur.</p>
+    </div>
+    <a href="{{ path('questionnaireback_list') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold" style="border-color:var(--border);">
+        <i class="fa-solid fa-arrow-left me-2"></i> Retour
+    </a>
+</div>
+
+<div class="glass-card p-5">
+    <div class="row g-4">
+        <div class="col-md-6 border-end border-secondary border-opacity-25">
+            <h5 class="text-primary fw-bold mb-4">INFORMATION PERSONNELLES</h5>
+            <p class="mb-3"><span class="text-white-50 text-uppercase small fw-bold d-block mb-1">Nom Complet</span> <span class="text-white fs-5">{{ questionnaires.nom|upper }} {{ questionnaires.prenom }}</span></p>
+            <p class="mb-3"><span class="text-white-50 text-uppercase small fw-bold d-block mb-1">Âge</span> <span class="text-white fs-5">{{ questionnaires.age }} ans</span></p>
         </div>
-        <div class="col-md-6">
-            <p><b class="text-white">Groupe Sanguin :</b> <span class="badge bg-danger">{{ questionnaires.getGroupSanguin() }}</span></p>
-            <p><b class="text-white">Campagne :</b> {{ questionnaires.campagne.titre }}</p>
+        <div class="col-md-6 ps-md-5">
+             <h5 class="text-primary fw-bold mb-4">INFORMATION MÉDICALES</h5>
+            <p class="mb-3"><span class="text-white-50 text-uppercase small fw-bold d-block mb-1">Groupe Sanguin</span> <span class="badge bg-danger fs-6">{{ questionnaires.getGroupSanguin() }}</span></p>
+            <p class="mb-3"><span class="text-white-50 text-uppercase small fw-bold d-block mb-1">Campagne</span> <span class="text-white">{{ questionnaires.campagne.titre }}</span></p>
         </div>
     </div>
-    <hr>
-    <a href="{{ path('questionnaireback_list') }}" class="btn btn-outline-light rounded-pill">Retour à la liste</a>
 </div>
 {% endblock %}
