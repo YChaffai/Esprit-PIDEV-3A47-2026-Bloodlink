@@ -60,7 +60,7 @@ class Questionnaire
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank(message: "veuillez choisir une campagne")]   
 
-    private ?Campagne $campagne = null;
+    private ?Compagne $campagne = null;
 
     #[ORM\OneToOne(mappedBy: 'questionnaire', cascade: ['persist', 'remove'])]
     private ?RendezVous $rendezVous = null;
@@ -178,12 +178,12 @@ class Questionnaire
         return $this;
     }
 
-    public function getCampagne(): ?Campagne
+    public function getCampagne(): ?Compagne
     {
         return $this->campagne;
     }
 
-    public function setCampagne(?Campagne $campagne): static
+    public function setCampagne(?Compagne $campagne): static
     {
         $this->campagne = $campagne;
 

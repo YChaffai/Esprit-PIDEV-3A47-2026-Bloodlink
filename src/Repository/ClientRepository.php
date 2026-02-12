@@ -40,4 +40,13 @@ class ClientRepository extends ServiceEntityRepository
   //            ->getOneOrNullResult()
   //        ;
   //    }
+    public function findOneByEmail(string $email): ?Client
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.user', 'u')
+            ->where('u.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

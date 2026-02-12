@@ -14,13 +14,14 @@
                 <div class="col-md-9">
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-hospital"></i></span>
-                        <input type="text" name="q" class="form-control" placeholder="Rechercher une entité (nom, localisation...)" value="{{ currentSearch }}" autocomplete="off">
+                        <input type="text" name="q" class="form-control" placeholder="Rechercher une entité (nom, adresse, ville...)" value="{{ currentSearch }}" autocomplete="off">
                     </div>
                 </div>
                 <div class="col-md-3">
                     <select name="sort" class="form-select">
                         <option value="nom" {% if currentSort == 'nom' %}selected{% endif %}>Nom</option>
-                        <option value="localisation" {% if currentSort == 'localisation' %}selected{% endif %}>Localisation</option>
+                        <option value="adresse" {% if currentSort == 'adresse' %}selected{% endif %}>Adresse</option>
+                        <option value="ville" {% if currentSort == 'ville' %}selected{% endif %}>Ville</option>
                     </select>
                 </div>
                 <input type="hidden" name="direction" value="{{ currentDirection }}">

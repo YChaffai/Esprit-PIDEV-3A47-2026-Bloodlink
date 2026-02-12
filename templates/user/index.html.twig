@@ -19,15 +19,14 @@
 <div class="glass-card p-4">
     {# Search & Filters Bar #}
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
-        <form action="{{ path('app_user_index') }}" method="get" class="d-flex gap-2 flex-grow-1 w-100" id="searchForm">
+        <form action="{{ path('app_user_index') }}" method="get" class="d-flex gap-2 flex-grow-1 w-100 js-filter-form">
             <div class="input-group" style="max-width: 500px;">
                 <span class="input-group-text bg-transparent border-0 ps-3">
                     <i class="fa-solid fa-magnifying-glass text-muted"></i>
                 </span>
                 <input type="text" name="q" value="{{ current_query }}" 
                        class="form-control form-control-premium border-0" 
-                       placeholder="Rechercher par nom, email ou ID..." 
-                       id="searchInput">
+                       placeholder="Rechercher par nom, email ou ID...">
                 {% if current_sort != 'id' %}
                     <input type="hidden" name="sort" value="{{ current_sort }}">
                     <input type="hidden" name="order" value="{{ current_order }}">
@@ -55,86 +54,9 @@
     </div>
 
     {# Table #}
-    <div class="table-responsive">
-        <table class="table table-premium align-middle mb-0">
-            <thead>
-                <tr>
-                    <th scope="col">Utilisateur</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Rôle</th>
-                    <th class="text-end" scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm"
-                                 style="width:44px; height:44px; font-weight:800; background: rgba(255,255,255,.05); border:1px solid var(--border); color: white; font-size: 0.9rem;">
-                                {{ user.prenom|slice(0,1)|upper }}{{ user.nom|slice(0,1)|upper }}
-                            </div>
-                            <div>
-                                <div class="fw-bold text-white">{{ user.prenom }} {{ user.nom }}</div>
-                                <div class="text-white-50 small" style="font-size: 0.75rem;">ID #{{ user.id }}</div>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td class="text-white-50 small">{{ user.email }}</td>
-
-                    <td>
-                        {% set role = user.role|upper %}
-                        {% if 'ADMIN' in role %}
-                            <span class="badge badge-premium badge-admin">
-                                <i class="fa-solid fa-shield-halved me-1 small"></i> {{ role }}
-                            </span>
-                        {% else %}
-                            <span class="badge badge-premium">
-                                {{ role }}
-                            </span>
-                        {% endif %}
-                    </td>
-
-                    <td class="text-end">
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ path('app_user_show', {'id': user.id}) }}" 
-                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
-                               style="font-size: 0.75rem; font-weight: 700;">
-                                <i class="fa-solid fa-eye me-1"></i> VOIR
-                            </a>
-                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
-                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
-                               style="font-size: 0.75rem; font-weight: 700;">
-                                <i class="fa-solid fa-pen me-1"></i> MODIFIER
-                            </a>
-                            {{ include('user/_delete_form.html.twig', { user: user }) }}
-                        </div>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="4" class="text-center py-5 text-muted">
-                        <i class="fa-solid fa-users-slash fa-2x mb-3 d-block opacity-25"></i>
-                        Aucun utilisateur trouvé.
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div id="list-content">
+        {% include 'user/_user_table.html.twig' %}
     </div>
 </div>
-
-<script>
-    const searchInput = document.getElementById('searchInput');
-    const searchForm = document.getElementById('searchForm');
-    let timeout = null;
-
-    searchInput.addEventListener('input', function() {
-        clearTimeout(timeout);
-        timeout = setTimeout(function() {
-            searchForm.submit();
-        }, 500);
-    });
-</script>
 {% endblock %}
+

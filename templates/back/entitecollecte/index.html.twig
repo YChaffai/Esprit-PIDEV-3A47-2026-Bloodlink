@@ -1,4 +1,4 @@
-{% extends 'back/base_back.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
 {% block title %}Admin - Liste des Entités{% endblock %}
 
@@ -26,7 +26,8 @@
                     <select name="sort" class="form-select">
                         <option value="id" {% if currentSort == 'id' %}selected{% endif %}>ID</option>
                         <option value="nom" {% if currentSort == 'nom' %}selected{% endif %}>Nom</option>
-                        <option value="localisation" {% if currentSort == 'localisation' %}selected{% endif %}>Localisation</option>
+                        <option value="adresse" {% if currentSort == 'adresse' %}selected{% endif %}>Adresse</option>
+                        <option value="ville" {% if currentSort == 'ville' %}selected{% endif %}>Ville</option>
                     </select>
                 </div>
                 <input type="hidden" name="direction" value="{{ currentDirection }}">

@@ -37,9 +37,9 @@ class EntiteCollecte
     private ?string $ville = null;
 
     /**
-     * @var Collection<int, Campagne>
+     * @var Collection<int, Compagne>
      */
-    #[ORM\ManyToMany(targetEntity: Campagne::class, mappedBy: 'entities')]
+    #[ORM\ManyToMany(targetEntity: Compagne::class, mappedBy: 'entites')]
     private Collection $campagnes;
 
     public function __construct()
@@ -111,27 +111,27 @@ class EntiteCollecte
     }
 
     /**
-     * @return Collection<int, Campagne>
+     * @return Collection<int, Compagne>
      */
     public function getCampagnes(): Collection
     {
         return $this->campagnes;
     }
 
-    public function addCampagne(Campagne $campagne): static
+    public function addCampagne(Compagne $campagne): static
     {
         if (!$this->campagnes->contains($campagne)) {
             $this->campagnes->add($campagne);
-            $campagne->addEntity($this);
+            $campagne->addEntite($this);
         }
 
         return $this;
     }
 
-    public function removeCampagne(Campagne $campagne): static
+    public function removeCampagne(Compagne $campagne): static
     {
         if ($this->campagnes->removeElement($campagne)) {
-            $campagne->removeEntity($this);
+            $campagne->removeEntite($this);
         }
 
         return $this;

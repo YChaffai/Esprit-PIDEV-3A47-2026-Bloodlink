@@ -76,6 +76,36 @@
        {{ form_start(filterForm, {
         'action': path('rendezvous_list', {'client_id': client_id}),
         'method': 'GET',
+        'attr': {'id': 'rv-filter-form', 'class': 'js-filter-form'}
+    }) }}
+        {# Utilisation de g-1 pour réduire l'espace entre les champs #}
+        <div class="row g-1 align-items-center">
+            {% set s = 'height: 38px; background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;' %}
+            
+            <div class="col-md-2">{{ form_widget(filterForm.campagne, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_date, {'attr': {'style': s}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_time, {'attr': {'style': s}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.statusClient, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.tri_date, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+
+            <div class="col-md-2">
+                <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}" 
+                   class="btn btn-danger w-100 d-flex align-items-center justify-content-center" 
+                   style="height: 38px; font-weight: bold; font-size: 0.8rem;">RESET</a>
+            </div>
+        </div>
+    {{ form_end(filterForm, {'render_rest': false}) }}
+    </div>
+
+    {# Liste des items stylisée en cartes sombres #}
+    <div id="list-content">
+        {% include 'rendez_vous/_list_content.html.twig' %}
+    </div>
+</div>
+
+{% endblock %}
+        'action': path('rendezvous_list', {'client_id': client_id}),
+        'method': 'GET',
         'attr': {'id': 'rv-filter-form'}
     }) }}
         {# Utilisation de g-1 pour réduire l'espace entre les champs #}

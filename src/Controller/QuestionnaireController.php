@@ -111,11 +111,17 @@ final class QuestionnaireController extends AbstractController
       }
     }
 
-    // LOGIQUE DE TRI UNIQUE
-    if (!empty($data['tri_date'])) {
-      $parts = explode('_', $data['tri_date']);
-      $direction = $parts[1]; // 'ASC' ou 'DESC'
-      $queryBuilder->orderBy('q.date', $direction);
+      if (!empty($data['tri_date'])) {
+        $parts = explode('_', $data['tri_date']);
+        $direction = $parts[1]; // 'ASC' ou 'DESC'
+        $queryBuilder->orderBy('q.date', $direction);
+      }
+
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('questionnaire/_list_content.html.twig', [
+            'questionnaires' => $queryBuilder->getQuery()->getResult(),
+             'client_id' => $client_id
+        ]);
     }
 
     return $this->render('questionnaire/list.html.twig', [
@@ -190,70 +196,36 @@ final class QuestionnaireController extends AbstractController
   }
   #[Route('/user/questionnaires', name: 'questionnaireback_list')]
   #[IsGranted('ROLE_ADMIN')]
-  public function listback(Request $request, QuestionnaireRepository $questionnaireRepository): Response
-  {
-    // 1. On crée le formulaire de filtre
-    $form = $this->createForm(QuestionnaireFilterType::class);
-    $form->handleRequest($request);
+    public function listback(Request $request, QuestionnaireRepository $questionnaireRepository): Response
+    {
+        // 1. On crée le formulaire de filtre
+        $form = $this->createForm(QuestionnaireFilterType::class);
+        $form->handleRequest($request);
 
-    // 2. On prépare le QueryBuilder pour la liste du Backoffice
-    $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
-      ->leftJoin('q.campagne', 'c')
-      ->orderBy('q.date', 'DESC');
-
-    // 3. On applique les filtres si le formulaire est soumis (GET)
-    if ($form->isSubmitted() && $form->isValid()) {
-      $data = $form->getData();
-
-      if (!empty($data['nom'])) {
-        $queryBuilder->andWhere('q.nom LIKE :nom')
-          ->setParameter('nom', '%' . $data['nom'] . '%');
-      }
-      if (!empty($data['prenom'])) {
-        $queryBuilder->andWhere('q.prenom LIKE :prenom')
-          ->setParameter('prenom', '%' . $data['prenom'] . '%');
-      }
-
-      if (!empty($data['campagne'])) {
-        $queryBuilder->andWhere('q.campagne = :campagne')
-          ->setParameter('campagne', $data['campagne']);
-      }
-
-      if (!empty($data['groupSanguin'])) {
-        $queryBuilder->andWhere('q.group_sanguin = :gs')
-          ->setParameter('gs', $data['groupSanguin']);
-      }
-      // Filtre Date
-      if ($data['filter_date']) {
-        $queryBuilder->andWhere('q.date LIKE :d')
-          ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-      }
-
-      // Filtre Heure (Format 24h en base de données)
-      if ($data['filter_time']) {
-        $queryBuilder->andWhere('q.date LIKE :t')
-          ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-      }
-      if (!empty($data['tri'])) {
-        $parts = explode('_', $data['tri']);
-        $type = $parts[0];      // 'id' ou 'date'
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
-
-        if ($type === 'id') {
-          $queryBuilder->orderBy('q.id', $direction);
-        } else {
-          // Trie par Date ET par Heure simultanément
-          $queryBuilder->orderBy('q.date', $direction);
+        // 2. On prépare les critères
+        $criteria = [];
+        if ($form->isSubmitted() && $form->isValid()) {
+            $criteria = $form->getData();
         }
-      }
-    }
 
-    // 4. On envoie 'filterForm' à la vue listback.html.twig
-    return $this->render('questionnaire/listback.html.twig', [
-      'questionnaires' => $queryBuilder->getQuery()->getResult(),
-      'filterForm' => $form->createView(),
-    ]);
-  }
+        // Add unified search parameter from request
+        $criteria['search'] = $request->query->get('search');
+
+        // 3. On appelle le repository
+        $questionnaires = $questionnaireRepository->searchBy($criteria);
+
+        // 4. On envoie 'filterForm' à la vue listback.html.twig
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('questionnaire/_listback_table.html.twig', [
+                'questionnaires' => $questionnaires,
+            ]);
+        }
+
+        return $this->render('questionnaire/listback.html.twig', [
+            'questionnaires' => $questionnaires,
+            'filterForm' => $form->createView(),
+        ]);
+    }
 
   #[Route('/user/questionnaire/new', name: 'questionnaireback_new')]
   #[IsGranted('ROLE_ADMIN')]
@@ -267,12 +239,11 @@ final class QuestionnaireController extends AbstractController
     if ($form->isSubmitted() && $form->isValid()) {
       $campagne = $questionnaire->getCampagne();
       $clientEmail = $form->get('client')->getData(); // L'email du client saisi
-      $client = $clientRepository->findOneBy(['email' => $clientEmail]); // Trouver le client par email
+      $client = $clientRepository->findOneByEmail($clientEmail); // Trouver le client par email via User
 
       if ($client) {
         // Associer la campagne et le client au questionnaire
         $questionnaire->setClient($client);
-        $questionnaire->setCampagne($campagne);
         $questionnaire->setNom($client->getUser()->getNom());
         $questionnaire->setPrenom($client->getUser()->getPrenom());
         $questionnaire->setDate(new DateTime('now', new \DateTimeZone('Africa/Tunis')));

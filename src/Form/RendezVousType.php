@@ -16,12 +16,22 @@ class RendezVousType extends AbstractType
 {
   public function buildForm(FormBuilderInterface $builder, array $options): void
   {
+    $rendezVous = $options['data'] ?? null;
+    $campagne = $rendezVous?->getQuestionnaire()?->getCampagne();
+    
+    $min = $campagne?->getDateDebut()?->format('Y-m-d\TH:i');
+    $max = $campagne?->getDateFin()?->format('Y-m-d\TH:i');
+
     $builder
       ->add('date_don', DateTimeType::class, [
         'widget' => 'single_text',
         // 'format' => 'yyyy-MM-dd HH:mm',  
         // 'html5' => false,
-        'attr' => ['class' => 'datepicker'],
+        'attr' => [
+            'class' => 'datepicker',
+            'min' => $min,
+            'max' => $max,
+        ],
         'label' => 'Date et heure du rendez-vous',
       ])
       ->add('entite', EntityType::class, [

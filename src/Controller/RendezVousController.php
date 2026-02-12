@@ -67,7 +67,7 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
 
           // --- 3. APPEL DU SERVICE SMS ---
             // On vérifie si le client a un numéro de téléphone
-            $telephone = $clientManaged->getTelephone();
+            $telephone = $clientManaged->getUser()->getTelephone();
             
             if ($telephone) {
                 // On formate la date pour qu'elle soit lisible dans le SMS
@@ -147,10 +147,18 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
         // }
          // LOGIQUE DE TRI UNIQUE
         if (!empty($data['tri_date'])) {
-        $parts = explode('_', $data['tri_date']);
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
-        $queryBuilder->orderBy('rv.date_don', $direction);
+            $dateForm = $data['tri_date']; // ex : 'date_ASC'
+            $parts = explode('_', $dateForm);
+            $direction = $parts[1]; // 'ASC' ou 'DESC'
+            $queryBuilder->orderBy('rv.date_don', $direction);
         }
+    }
+
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('rendez_vous/_list_content.html.twig', [
+            'rendezvous' => $queryBuilder->getQuery()->getResult(),
+             'client_id' => $client_id
+        ]);
     }
 
     return $this->render('rendez_vous/list.html.twig', [
@@ -232,7 +240,7 @@ public function newback(Request $request, EntityManagerInterface $em, CampagneRe
 
           // --- 3. APPEL DU SERVICE SMS ---
             // On vérifie si le client a un numéro de téléphone
-            $telephone = $clientManaged->getTelephone();
+            $telephone = $clientManaged->getUser()->getTelephone();
             
             if ($telephone) {
                 // On formate la date pour qu'elle soit lisible dans le SMS
@@ -271,74 +279,24 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
     $form = $this->createForm(RendezVousFilterType::class);
     $form->handleRequest($request);
 
-    $queryBuilder = $rendezVousRepository->createQueryBuilder('rv')
-        ->leftJoin('rv.questionnaire', 'q')
-        ->leftJoin('q.campagne', 'c')
-        ->leftJoin('c.entities', 'e');
-
-        if ($form->isSubmitted() && $form->isValid()) {
-        $data = $form->getData();
-
-        // Filtres texte (depuis les données copiées dans le questionnaire)
-        if (!empty($data['nom'])) {
-            $queryBuilder->andWhere('q.nom LIKE :nom')->setParameter('nom', '%' . $data['nom'] . '%');
-        }
-        if (!empty($data['prenom'])) {
-            $queryBuilder->andWhere('q.prenom LIKE :prenom')->setParameter('prenom', '%' . $data['prenom'] . '%');
-        }
-
-        // Filtres relations
-        if (!empty($data['campagne'])) {
-            $queryBuilder->andWhere('q.campagne = :campagne')->setParameter('campagne', $data['campagne']);
-        }
-        if (!empty($data['entite'])) {
-            $queryBuilder->andWhere('e = :entite') 
-                         ->setParameter('entite', $data['entite']);
-        }
-
-        // Filtre Statut
-        if (!empty($data['status'])) {
-            $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
-        }
-         // Filtre sur la DATE
-   // Filtre sur la DATE (ex: 2026-02-08)
-    if ($data['filter_date']) {
-        $queryBuilder->andWhere('rv.date_don LIKE :d')
-                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+    $criteria = [];
+    if ($form->isSubmitted() && $form->isValid()) {
+        $criteria = $form->getData();
     }
 
-    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
-    if ($data['filter_time']) {
-        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
-        $queryBuilder->andWhere('rv.date_don LIKE :t')
-                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-    }
-        // // Filtre Date & Heure exacte (Minute par minute)
-        // if (!empty($data['date'])) {
-        //     $dt = $data['date'];
-        //     // On crée une plage de 59 secondes pour ignorer les secondes stockées en BDD
-        //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
-        //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
-            
-        //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
-        //                  ->setParameter('s', $start)
-        //                  ->setParameter('e', $end);
-        // }
-       // LOGIQUE DE TRI UNIQUE
-       if (!empty($data['tri'])) {
-        $parts = explode('_', $data['tri']);
-        $type = $parts[0];      // 'id' ou 'date'
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
+    // Add unified search parameter from request
+    $criteria['search'] = $request->query->get('search');
 
-        if ($type === 'id') {
-            $queryBuilder->orderBy('rv.id', $direction);
-        } else {
-            // Trie par Date ET par Heure simultanément
-            $queryBuilder->orderBy('rv.date_don', $direction);
-        }
-    }}
+    $rendezvous = $rendezVousRepository->searchBy($criteria);
+
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('rendez_vous/_listback_table.html.twig', [
+            'rendezvous' => $rendezvous,
+        ]);
+    }
+
     return $this->render('rendez_vous/listback.html.twig', [
-        'rendezvous' => $queryBuilder->getQuery()->getResult(),
+        'rendezvous' => $rendezvous,
         'filterForm' => $form->createView(),
     ]);
 }

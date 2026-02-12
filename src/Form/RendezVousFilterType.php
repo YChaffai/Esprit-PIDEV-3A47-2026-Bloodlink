@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Entity\Campagne;
+use App\Entity\Compagne;
 use App\Entity\EntiteCollecte;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
@@ -23,7 +23,7 @@ class RendezVousFilterType extends AbstractType
             ])
             ->add('prenom', TextType::class, ['required' => false, 'attr' => ['placeholder' => 'Prénom...']])
             ->add('campagne', EntityType::class, [
-                'class' => Campagne::class,
+                'class' => Compagne::class,
                 'choice_label' => 'titre',
                 'required' => false,
                 'placeholder' => 'Toutes les campagnes',

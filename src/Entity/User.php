@@ -47,6 +47,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   #[ORM\Column]
   private ?string $password = null;
 
+  #[ORM\Column(length: 20, nullable: true)]
+  #[Assert\Length(
+    max: 20,
+    maxMessage: 'Le numéro de téléphone ne peut pas dépasser {{ limit }} caractères'
+  )]
+  #[Assert\Regex(
+    pattern: '/^[0-9\+\-\s\(\)]*$/',
+    message: 'Le numéro de téléphone contient des caractères invalides'
+  )]
+  private ?string $telephone = null;
+
   #[Assert\Length(min: 6, minMessage: 'Le mot de passe doit faire au moins 6 caractères')]
   #[Assert\Regex(
     pattern: '/^(?=.*[A-Za-z])(?=.*\d).+$/',
@@ -108,6 +119,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
   public function setEmail(?string $email): static
   {
     $this->email = $email;
+    return $this;
+  }
+
+  public function getTelephone(): ?string
+  {
+    return $this->telephone;
+  }
+
+  public function setTelephone(?string $telephone): static
+  {
+    $this->telephone = $telephone;
     return $this;
   }
 

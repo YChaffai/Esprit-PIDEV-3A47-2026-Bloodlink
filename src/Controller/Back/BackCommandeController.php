@@ -15,12 +15,31 @@ use Symfony\Component\Routing\Annotation\Route;
 class BackCommandeController extends AbstractController
 {
     #[Route('/', name: 'back_commandes_index', methods: ['GET'])]
-    public function index(CommandeRepository $commandeRepository): Response
+    public function index(Request $request, CommandeRepository $commandeRepository): Response
     {
-        $commandes = $commandeRepository->findBy([], ['id' => 'DESC']);
+        $search = $request->query->get('search', '');
+        $status = $request->query->get('status', '');
+        $priority = $request->query->get('priority', '');
+
+        $criteria = [
+            'search' => $search,
+            'status' => $status,
+            'priority' => $priority
+        ];
+
+        $commandes = $commandeRepository->searchBy($criteria);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('back/commande/_commande_table.html.twig', [
+                'commandes' => $commandes,
+            ]);
+        }
 
         return $this->render('back/Commande.html.twig', [
             'commandes' => $commandes,
+            'search' => $search,
+            'status' => $status,
+            'priority' => $priority,
         ]);
     }
 

@@ -12,156 +12,30 @@
 
 <div class="glass-card p-4">
     {# Filters Bar #}
-    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between mb-4">
-        <div class="input-group" style="max-width:400px;">
-            <span class="input-group-text bg-transparent border-0 ps-3">
-                <i class="fa-solid fa-magnifying-glass text-muted"></i>
-            </span>
-            <input id="trf-search" type="text" class="form-control form-control-premium border-0" placeholder="Rechercher par destination, statut...">
-        </div>
+    <form class="js-filter-form" action="{{ path('back_transfert_index') }}" method="get">
+        <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between mb-4">
+            <div class="input-group" style="max-width:400px;">
+                <span class="input-group-text bg-transparent border-0 ps-3">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+                <input name="search" type="text" class="form-control form-control-premium border-0" placeholder="Rechercher par destination, statut..." value="{{ search|default('') }}">
+            </div>
 
-        <div class="d-flex gap-2">
-            <select id="trf-status" class="form-select form-control-premium border-0" style="max-width:180px;">
-                <option value="">Tous statuts</option>
-                <option value="en_cours">En cours</option>
-                <option value="recu">Reçu</option>
-                <option value="annule">Annulé</option>
-            </select>
+            <div class="d-flex gap-2">
+                <select name="status" class="form-select form-control-premium border-0" style="max-width:180px;">
+                    <option value="">Tous statuts</option>
+                    <option value="en_cours" {% if status == 'en_cours' %}selected{% endif %}>En cours</option>
+                    <option value="recu" {% if status == 'recu' %}selected{% endif %}>Reçu</option>
+                    <option value="annule" {% if status == 'annule' %}selected{% endif %}>Annulé</option>
+                </select>
+            </div>
         </div>
-    </div>
+    </form>
 
     {# Table #}
-    <div class="table-responsive">
-        <table class="table table-premium align-middle mb-0">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Demande</th>
-                    <th scope="col">Origine</th>
-                    <th scope="col">Destination</th>
-                    <th scope="col">Quantité</th>
-                    <th scope="col">Date Envoi</th>
-                    <th scope="col">Statut</th>
-                    <th class="text-end" scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="trf-rows">
-            {% for t in transferts %}
-                <tr class="trf-row"
-                    data-search="{{ (t.id ~ ' ' ~ t.toOrg ~ ' ' ~ t.fromOrg ~ ' ' ~ t.status)|lower }}"
-                    data-status="{{ t.status|lower }}">
-
-                    <td><span class="badge badge-premium">#{{ t.id }}</span></td>
-
-                    <td>
-                        <span class="fw-bold text-white small">DEM-{{ t.demande ? t.demande.id : '-' }}</span>
-                    </td>
-
-                    <td>
-                        <div class="d-flex flex-column">
-                            <span class="fw-bold text-white small text-uppercase">{{ t.fromOrg }}</span>
-                            <span class="text-muted" style="font-size: 0.75rem;">ID: {{ t.fromOrgId }}</span>
-                        </div>
-                    </td>
-
-                    <td>
-                        <div class="d-flex flex-column">
-                            <span class="fw-bold text-white small text-uppercase">{{ t.toOrg }}</span>
-                            <span class="text-muted" style="font-size: 0.75rem;">ID: {{ t.toOrgId }}</span>
-                        </div>
-                    </td>
-
-                    <td class="fw-bold fs-5">{{ t.quantite }} <small class="text-muted fw-normal" style="font-size: 0.7rem;">UNITÉS</small></td>
-
-                    <td class="text-white-50 small">
-                        {{ t.dateEnvoie ? t.dateEnvoie|date('d/m/Y') : '-' }}
-                    </td>
-
-                    <td>
-                        {% set s = t.status|lower %}
-                        {% if s == 'recu' %}
-                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
-                                <i class="fa-solid fa-check-circle me-1 small"></i> REÇU
-                            </span>
-                        {% elseif s == 'annule' %}
-                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
-                                <i class="fa-solid fa-xmark me-1 small"></i> ANNULÉ
-                            </span>
-                        {% else %}
-                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3">
-                                <i class="fa-solid fa-truck me-1 small"></i> EN COURS
-                            </span>
-                        {% endif %}
-                    </td>
-
-                    <td class="text-end">
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ path('back_transfert_edit', {id: t.id}) }}"
-                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
-                               style="font-size: 0.75rem; font-weight: 700;">
-                                <i class="fa-solid fa-pen me-1 small"></i> MODIFIER
-                            </a>
-                            <form method="post" action="{{ path('back_transfert_delete', {id: t.id}) }}" onsubmit="return confirm('Supprimer ce transfert ?');" class="d-inline">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ t.id) }}">
-                                <button class="btn btn-sm rounded-pill px-3 btn-outline-danger border-danger border-opacity-25" style="font-size: 0.75rem; font-weight: 700;">
-                                    <i class="fa-solid fa-trash me-1 small"></i> SUPPRIMER
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="8" class="text-center py-5 text-muted">
-                        <i class="fa-solid fa-truck-medical fa-2x mb-3 d-block opacity-25"></i>
-                        Aucun transfert trouvé.
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <div id="list-content">
+        {% include 'back/transfert/_transfert_table.html.twig' %}
     </div>
-
-    <div class="text-white-50 mt-4 small px-2" id="trf-count"></div>
 </div>
-
-<script>
-    (function () {
-      const searchInput = document.getElementById('trf-search');
-      const statusSelect = document.getElementById('trf-status');
-      const rows = Array.from(document.querySelectorAll('.trf-row'));
-      const countEl = document.getElementById('trf-count');
-
-      function applyFilters() {
-        const q = (searchInput.value || '').trim().toLowerCase();
-        const status = (statusSelect.value || '').trim().toLowerCase();
-
-        let visible = 0;
-
-        rows.forEach(row => {
-          const hay = row.dataset.search || '';
-          const s = row.dataset.status || '';
-
-          const matchQ = !q || hay.includes(q);
-          const matchS = !status || s === status;
-
-          const show = matchQ && matchS;
-          row.style.display = show ? '' : 'none';
-          if (show) visible++;
-        });
-
-        if (countEl) {
-          countEl.textContent = `${visible} transfert(s) affiché(s)`;
-        }
-      }
-
-      [searchInput, statusSelect].forEach(el => {
-        if (!el) return;
-        el.addEventListener('input', applyFilters);
-        el.addEventListener('change', applyFilters);
-      });
-
-      applyFilters();
-    })();
-</script>
 {% endblock %}
+

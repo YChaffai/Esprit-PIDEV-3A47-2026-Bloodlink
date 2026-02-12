@@ -6,7 +6,7 @@
         margin-bottom: 8px;
         font-size: 0.9rem;
     }
-    .form-custom input, .form-custom textarea {
+    .form-custom input, .form-custom textarea, .form-custom select {
         background: rgba(255,255,255,0.02) !important;
         border: 1px solid var(--border) !important;
         color: white !important;
@@ -14,7 +14,7 @@
         border-radius: 12px !important;
         transition: all 0.3s ease;
     }
-    .form-custom input:focus, .form-custom textarea:focus {
+    .form-custom input:focus, .form-custom textarea:focus, .form-custom select:focus {
         background: rgba(255,255,255,0.05) !important;
         border-color: rgba(230, 57, 57, 0.4) !important;
         box-shadow: 0 0 15px rgba(230, 57, 57, 0.1) !important;
@@ -57,10 +57,17 @@
         </div>
         
         <div class="mb-4">
-            {{ form_label(form.localisation) }}
-            {{ form_widget(form.localisation) }}
-            <div class="form-help-custom">{{ form_help(form.localisation) }}</div>
-            <div class="form-error">{{ form_errors(form.localisation) }}</div>
+            {{ form_label(form.adresse) }}
+            {{ form_widget(form.adresse) }}
+            <div class="form-help-custom">{{ form_help(form.adresse) }}</div>
+            <div class="form-error">{{ form_errors(form.adresse) }}</div>
+        </div>
+
+        <div class="mb-4">
+            {{ form_label(form.ville) }}
+            {{ form_widget(form.ville) }}
+            <div class="form-help-custom">{{ form_help(form.ville) }}</div>
+            <div class="form-error">{{ form_errors(form.ville) }}</div>
         </div>
 
         <div class="mb-5">

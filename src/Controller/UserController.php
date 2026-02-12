@@ -30,6 +30,12 @@ final class UserController extends AbstractController
 
     $users = $userRepository->searchAndSort($query, $sortField, $sortOrder);
 
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('user/_user_table.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
     return $this->render('user/index.html.twig', [
       'users' => $users,
       'current_query' => $query,

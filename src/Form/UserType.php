@@ -34,6 +34,10 @@ class UserType extends AbstractType
         'required' => true,
         'attr' => ['class' => 'form-control']
       ])
+      ->add('telephone', TextType::class, [
+        'required' => false,
+        'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: +216 12 345 678']
+      ])
       ->add('plainPassword', PasswordType::class, [
         'required' => $isNew,
         'mapped' => true,

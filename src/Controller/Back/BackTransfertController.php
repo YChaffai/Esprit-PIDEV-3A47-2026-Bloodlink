@@ -18,35 +18,26 @@ class BackTransfertController extends AbstractController
     #[Route('/', name: 'back_transfert_index', methods: ['GET'])]
     public function index(Request $request, TransfertRepository $repo): Response
     {
-        $search = $request->query->get('search');
-        $sort   = $request->query->get('sort', 'id');
-        $dir    = $request->query->get('dir', 'ASC');
+        $search = $request->query->get('search', '');
+        $status = $request->query->get('status', '');
 
-        $allowedFields = ['id', 'quantite', 'dateEnvoie', 'dateReception', 'status', 'toOrg'];
-        if (!in_array($sort, $allowedFields)) {
-            $sort = 'id';
+        $criteria = [
+            'search' => $search,
+            'status' => $status,
+        ];
+
+        $transferts = $repo->searchBy($criteria);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('back/transfert/_transfert_table.html.twig', [
+                'transferts' => $transferts,
+            ]);
         }
-
-        $dir = strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC';
-
-        $qb = $repo->createQueryBuilder('t')
-            ->leftJoin('t.demande', 'd')
-            ->addSelect('d');
-
-        if ($search) {
-            $qb->andWhere('t.toOrg LIKE :search OR t.status LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
-        }
-
-        $qb->orderBy('t.' . $sort, $dir);
-
-        $transferts = $qb->getQuery()->getResult();
 
         return $this->render('back/Transfert.html.twig', [
             'transferts' => $transferts,
-            'sort'       => $sort,
-            'dir'        => $dir,
-            'search'     => $search,
+            'search' => $search,
+            'status' => $status,
         ]);
     }
 

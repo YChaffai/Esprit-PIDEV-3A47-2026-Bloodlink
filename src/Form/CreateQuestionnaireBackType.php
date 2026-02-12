@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Campagne;
+use App\Entity\Compagne;
 use App\Entity\Questionnaire;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -14,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use App\Repository\CampagneRepository;
+use App\Repository\CompagneRepository;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -43,18 +43,6 @@ class CreateQuestionnaireBackType extends AbstractType
         ],
       ])
 
-      //         ->add('client', EmailType::class, [
-      //             'label' => 'Email du client',
-      //             'attr' => [
-      //             'placeholder' => 'exemple@domaine.com',
-      //             'class' => 'form-control'
-      //         ],
-      // 'required' => true,
-      //             'mapped' => false
-      //         ])
-
-
-
       ->add('client', EmailType::class, [
         'label' => 'Email du client',
         'mapped' => false,
@@ -74,30 +62,16 @@ class CreateQuestionnaireBackType extends AbstractType
       ])
 
       ->add('campagne', EntityType::class, [
-        'class' => Campagne::class,
+        'class' => Compagne::class,
         'choice_label' => 'titre',
-        'query_builder' => function (CampagneRepository $repo) {
-          return $repo->createQueryBuilder('c')
-            ->where('c.date_fin > :today')
-            ->setParameter('today', new \DateTime());
+        'query_builder' => function (CompagneRepository $repo) {
+          return $repo->createQueryBuilder('c');
         },
         'placeholder' => 'Choisissez une campagne'
       ])
       ->add('submit', SubmitType::class, [
         'label' => 'Suivant'
       ])
-      //     ->add('campagne', EntityType::class, [
-      //         'class' => Campagne::class,
-      //         'choice_label' => 'id',
-      //     ])
-      //     ->add('rendezVous', EntityType::class, [
-      //         'class' => RendezVous::class,
-      //         'choice_label' => 'id',
-      //     ])
-      //     ->add('client', EntityType::class, [
-      //         'class' => Client::class,
-      //         'choice_label' => 'id',
-      //     ])
     ;
   }
 

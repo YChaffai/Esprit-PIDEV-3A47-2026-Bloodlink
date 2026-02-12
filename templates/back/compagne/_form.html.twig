@@ -43,6 +43,49 @@
         font-size: 0.8rem;
         margin-top: 5px;
     }
+    .blood-type-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+    }
+    .blood-type-grid .form-check {
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+    .blood-type-grid .form-check input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+    .blood-type-grid .form-check label {
+        display: inline-block;
+        padding: 8px 18px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.02);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.85rem;
+        color: #ccc;
+        user-select: none;
+    }
+    .blood-type-grid .form-check label:hover {
+        border-color: rgba(230, 57, 57, 0.4);
+        background: rgba(230, 57, 57, 0.05);
+    }
+    .blood-type-grid .form-check input[type="checkbox"]:checked + label {
+        border-color: var(--primary);
+        background: rgba(230, 57, 57, 0.15);
+        color: white;
+        font-weight: 600;
+    }
 </style>
 
 <div class="form-custom">
@@ -74,6 +117,15 @@
                 <div class="form-help-custom">{{ form_help(form.date_fin) }}</div>
                 <div class="form-error">{{ form_errors(form.date_fin) }}</div>
             </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Type(s) de sang</label>
+            <div class="blood-type-grid">
+                {{ form_widget(form.typeSang) }}
+            </div>
+            <div class="form-help-custom">{{ form_help(form.typeSang) }}</div>
+            <div class="form-error">{{ form_errors(form.typeSang) }}</div>
         </div>
 
         <div class="mb-5">

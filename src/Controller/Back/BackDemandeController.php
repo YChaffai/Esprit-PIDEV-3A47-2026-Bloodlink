@@ -23,20 +23,28 @@ class BackDemandeController extends AbstractController
     public function index(Request $request, DemandeRepository $demandeRepository): Response
     {
         $search = $request->query->get('search', '');
-        $sort = $request->query->get('sort', 'id');
-        $dir = $request->query->get('dir', 'DESC');
+        $urgence = $request->query->get('urgence', '');
+        $status = $request->query->get('status', '');
+        
+        $criteria = [
+            'search' => $search,
+            'urgence' => $urgence,
+            'status' => $status
+        ];
 
-        if ($search) {
-            $demandes = $demandeRepository->search($search);
-        } else {
-            $demandes = $demandeRepository->sortBy($sort, $dir);
+        $demandes = $demandeRepository->searchBy($criteria);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('back/demande/_demande_table.html.twig', [
+                'demandes' => $demandes,
+            ]);
         }
 
         return $this->render('back/Demande.html.twig', [
             'demandes' => $demandes,
             'search' => $search,
-            'sort' => $sort,
-            'dir' => $dir,
+            'urgence' => $urgence,
+            'status' => $status
         ]);
     }
 

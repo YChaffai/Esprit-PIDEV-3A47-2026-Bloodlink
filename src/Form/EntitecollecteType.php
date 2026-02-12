@@ -30,14 +30,6 @@ class EntitecollecteType extends AbstractType
             ->add('telephone', TelType::class, [
                 'label' => 'Numéro de téléphone',
                 'help' => 'Format numérique uniquement (ex: 0612345678).',
-            ])
-            ->add('type', ChoiceType::class, [
-                'label' => 'Type',
-                'choices' => [
-                    'Hôpital' => 'Hôpital',
-                    'Banque' => 'Banque',
-                    'Point Mobile' => 'Point Mobile',
-                ],
             ]);
     }
 

@@ -6,6 +6,7 @@ use App\Entity\Compagne;
 use App\Entity\EntiteCollecte;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -34,6 +35,23 @@ class CompagneType extends AbstractType
                 'label' => 'Date de fin',
                 'widget' => 'single_text',
                 'help' => 'Quand se termine la campagne ?',
+            ])
+            ->add('typeSang', ChoiceType::class, [
+                'label' => 'Type(s) de sang',
+                'choices' => [
+                    'A+' => 'A+',
+                    'A-' => 'A-',
+                    'B+' => 'B+',
+                    'B-' => 'B-',
+                    'AB+' => 'AB+',
+                    'AB-' => 'AB-',
+                    'O+' => 'O+',
+                    'O-' => 'O-',
+                ],
+                'multiple' => true,
+                'expanded' => true,
+                'required' => true,
+                'help' => 'Sélectionnez un ou plusieurs types de sang recherchés.',
             ])
             ->add('entites', EntityType::class, [
                 'class' => EntiteCollecte::class,

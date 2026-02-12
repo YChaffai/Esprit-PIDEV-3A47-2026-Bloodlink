@@ -3,7 +3,8 @@
         <tr>
             <th><a href="#" class="sortable text-decoration-none" data-sort="id">ID <i class="fas fa-sort"></i></a></th>
             <th><a href="#" class="sortable text-decoration-none" data-sort="nom">Nom <i class="fas fa-sort"></i></a></th>
-            <th><a href="#" class="sortable text-decoration-none" data-sort="localisation">Localisation <i class="fas fa-sort"></i></a></th>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="adresse">Adresse <i class="fas fa-sort"></i></a></th>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="ville">Ville <i class="fas fa-sort"></i></a></th>
             <th>Téléphone</th>
             <th class="text-end">Actions</th>
         </tr>
@@ -16,8 +17,10 @@
                 <div class="fw-bold text-white">{{ entitecollecte.nom }}</div>
             </td>
             <td class="align-middle text-white-50">
-                <i class="fas fa-location-dot me-2 text-primary"></i> {{ entitecollecte.localisation }}
+                <i class="fas fa-location-dot me-2 text-primary"></i> {{ entitecollecte.adresse }}
             </td>
+            <td class="align-middle text-white-50">{{ entitecollecte.ville }}</td>
+
             <td class="align-middle text-white-50">
                 <i class="fas fa-phone me-2 text-primary"></i> {{ entitecollecte.telephone }}
             </td>
@@ -30,7 +33,7 @@
         </tr>
     {% else %}
         <tr>
-            <td colspan="5" class="text-center py-5 text-muted">Aucune entité trouvée</td>
+            <td colspan="6" class="text-center py-5 text-muted">Aucune entité trouvée</td>
         </tr>
     {% endfor %}
     </tbody>

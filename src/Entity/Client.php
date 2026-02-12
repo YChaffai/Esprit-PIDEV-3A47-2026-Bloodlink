@@ -64,6 +64,16 @@ class Client
     return $this->user;
   }
 
+  public function getNom(): ?string
+  {
+      return $this->user?->getNom();
+  }
+
+  public function getPrenom(): ?string
+  {
+      return $this->user?->getPrenom();
+  }
+
   public function setUser(?User $user): static
   {
     $this->user = $user;

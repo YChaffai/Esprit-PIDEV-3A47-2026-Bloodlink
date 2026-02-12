@@ -16,28 +16,24 @@ class EntiteCollecteRepository extends ServiceEntityRepository
         parent::__construct($registry, EntiteCollecte::class);
     }
 
-    //    /**
-    //     * @return EntiteCollecte[] Returns an array of EntiteCollecte objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findBySearchAndSort(?string $search, string $sort, string $direction): array
+    {
+        $qb = $this->createQueryBuilder('e');
 
-    //    public function findOneBySomeField($value): ?EntiteCollecte
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($search) {
+            $qb->andWhere('e.nom LIKE :search OR e.ville LIKE :search OR e.adresse LIKE :search OR e.type LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        $allowedSorts = ['id', 'nom', 'telephone', 'type', 'adresse', 'ville'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'id';
+        }
+
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        return $qb->orderBy('e.' . $sort, $direction)
+            ->getQuery()
+            ->getResult();
+    }
 }

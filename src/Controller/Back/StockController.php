@@ -15,12 +15,31 @@ use Symfony\Component\Routing\Annotation\Route;
 class StockController extends AbstractController
 {
     #[Route('', name: 'back_stock_index', methods: ['GET'])]
-    public function index(StockRepository $stockRepository): Response
+    public function index(Request $request, StockRepository $stockRepository): Response
     {
-        $stocks = $stockRepository->findBy([], ['id' => 'DESC']);
+        $search = $request->query->get('search', '');
+        $typeOrg = $request->query->get('type_org', '');
+        $typeSang = $request->query->get('type_sang', '');
+
+        $criteria = [
+            'search' => $search,
+            'type_org' => $typeOrg,
+            'type_sang' => $typeSang,
+        ];
+
+        $stocks = $stockRepository->searchBy($criteria);
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('back/stock/_stock_table.html.twig', [
+                'stocks' => $stocks,
+            ]);
+        }
 
         return $this->render('back/Stock.html.twig', [
             'stocks' => $stocks,
+            'search' => $search,
+            'type_org' => $typeOrg,
+            'type_sang' => $typeSang,
         ]);
     }
 

@@ -9,7 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use App\Entity\Campagne;
+use App\Entity\Compagne;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 class QuestionnaireFilterType extends AbstractType
 {
@@ -43,7 +43,7 @@ class QuestionnaireFilterType extends AbstractType
         'attr' => ['class' => 'form-control']
     ])
             ->add('campagne', EntityType::class, [
-                'class' => Campagne::class,
+                'class' => Compagne::class,
                 'choice_label' => 'titre',
                 'required' => false,
                 'placeholder' => 'Toutes les campagnes',

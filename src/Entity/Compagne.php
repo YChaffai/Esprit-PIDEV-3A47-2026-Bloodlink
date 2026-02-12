@@ -10,9 +10,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
+use App\Validator\UniqueCampagneTypeSang;
+
 #[ORM\Entity(repositoryClass: CompagneRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['titre'], message: 'Une campagne avec ce titre existe déjà.')]
+#[UniqueCampagneTypeSang]
 class Compagne{
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,9 +26,18 @@ class Compagne{
     #[Assert\Count(min: 1, minMessage: "Veuillez sélectionner au moins une entité")]
     private Collection $entites;
 
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Assert\NotBlank(message: "Veuillez sélectionner au moins un type de sang")]
+    #[Assert\Count(min: 1, minMessage: "Veuillez sélectionner au moins un type de sang")]
+    private ?array $typeSang = [];
+
+    #[ORM\OneToMany(mappedBy: 'campagne', targetEntity: Questionnaire::class)]
+    private Collection $questionnaires;
+
     public function __construct()
     {
         $this->entites = new ArrayCollection();
+        $this->questionnaires = new ArrayCollection();
     }
 
 
@@ -112,4 +124,37 @@ class Compagne{
 
     public function getUpdatedAt(): ?\DateTime { return $this->updated_at; }
     public function setUpdatedAt(?\DateTime $updated_at): self { $this->updated_at = $updated_at; return $this; }
+
+    public function getTypeSang(): array { return $this->typeSang ?? []; }
+    public function setTypeSang(?array $typeSang): self { $this->typeSang = $typeSang ?? []; return $this; }
+
+    /**
+     * @return Collection<int, Questionnaire>
+     */
+    public function getQuestionnaires(): Collection
+    {
+        return $this->questionnaires;
+    }
+
+    public function addQuestionnaire(Questionnaire $questionnaire): self
+    {
+        if (!$this->questionnaires->contains($questionnaire)) {
+            $this->questionnaires->add($questionnaire);
+            $questionnaire->setCampagne($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionnaire(Questionnaire $questionnaire): self
+    {
+        if ($this->questionnaires->removeElement($questionnaire)) {
+            // set the owning side to null (unless already changed)
+            if ($questionnaire->getCampagne() === $this) {
+                $questionnaire->setCampagne(null);
+            }
+        }
+
+        return $this;
+    }
 }

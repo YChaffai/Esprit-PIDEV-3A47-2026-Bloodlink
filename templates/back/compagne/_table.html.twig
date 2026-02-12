@@ -5,6 +5,7 @@
             <th><a href="#" class="sortable text-decoration-none" data-sort="titre">Titre <i class="fas fa-sort"></i></a></th>
             <th>Description</th>
             <th>Entités</th>
+            <th>Types de Sang</th>
             <th><a href="#" class="sortable text-decoration-none" data-sort="date_debut">Dates <i class="fas fa-sort"></i></a></th>
             <th class="text-end">Actions</th>
         </tr>
@@ -31,6 +32,17 @@
                 {% endif %}
             </td>
             <td class="align-middle">
+                {% if compagne.typeSang|length > 0 %}
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for ts in compagne.typeSang %}
+                            <span class="badge" style="background: rgba(230,57,57,0.15); color: #e63939; border: 1px solid rgba(230,57,57,0.3); font-weight: 600;">{{ ts }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <span class="text-muted small italic">Aucun</span>
+                {% endif %}
+            </td>
+            <td class="align-middle">
                 <div class="date-info">
                     <div class="small text-white-50"><i class="far fa-calendar-alt me-2 text-primary"></i> {{ compagne.dateDebut ? compagne.dateDebut|date('d/m/Y') : '-' }}</div>
                     <div class="small text-white-50"><i class="far fa-calendar-check me-2"></i> {{ compagne.dateFin ? compagne.dateFin|date('d/m/Y') : '-' }}</div>
@@ -45,7 +57,7 @@
         </tr>
     {% else %}
         <tr>
-            <td colspan="6" class="text-center py-5 text-muted">Aucune campagne trouvée</td>
+            <td colspan="7" class="text-center py-5 text-muted">Aucune campagne trouvée</td>
         </tr>
     {% endfor %}
     </tbody>

@@ -180,11 +180,7 @@
           <i class="fa fa-layer-group"></i> Stocks
         </a>
       </li>
-      <li>
-        <a href="{{ path('back_entite_collecte_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_entite' %}active{% endif %}">
-          <i class="fa fa-map-marker-alt"></i> Collectes
-        </a>
-      </li>
+
       <li>
         <a href="{{ path('back_demande_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_demande' %}active{% endif %}">
           <i class="fa fa-file-medical"></i> Demandes
@@ -212,7 +208,7 @@
       </li>
       <li>
         <a href="{{ path('back_entitecollecte_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_entitecollecte' %}active{% endif %}">
-          <i class="fa fa-building"></i> Entités Collecte
+          <i class="fa fa-building"></i> Collectes
         </a>
       </li>
     </ul>
@@ -281,6 +277,7 @@
 
 {% block javascripts %}
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="{{ asset('js/ajax-search.js') }}"></script>
 {% endblock %}
 </body>
 </html>

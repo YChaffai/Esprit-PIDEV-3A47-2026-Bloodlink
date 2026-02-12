@@ -16,6 +16,29 @@ class CommandeRepository extends ServiceEntityRepository
         parent::__construct($registry, Commande::class);
     }
 
+    public function searchBy(array $criteria)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'DESC');
+
+        if (!empty($criteria['search'])) {
+            $qb->andWhere('c.type_sang LIKE :kw OR c.reference LIKE :kw') // Assuming reference exists, if not use ID
+               ->setParameter('kw', '%' . $criteria['search'] . '%');
+        }
+
+        if (!empty($criteria['status'])) {
+            $qb->andWhere('c.status LIKE :status')
+               ->setParameter('status', $criteria['status'] . '%');
+        }
+
+        if (!empty($criteria['priority'])) {
+            $qb->andWhere('c.priorite LIKE :priority')
+               ->setParameter('priority', $criteria['priority'] . '%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return Commande[] Returns an array of Commande objects
     //     */
