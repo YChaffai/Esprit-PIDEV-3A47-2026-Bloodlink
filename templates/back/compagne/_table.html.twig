@@ -1,0 +1,52 @@
+<table class="table table-custom">
+    <thead>
+        <tr>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="id">ID <i class="fas fa-sort"></i></a></th>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="titre">Titre <i class="fas fa-sort"></i></a></th>
+            <th>Description</th>
+            <th>Entités</th>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="date_debut">Dates <i class="fas fa-sort"></i></a></th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for compagne in compagnes %}
+        <tr>
+            <td class="align-middle text-white-50 small">#{{ compagne.id }}</td>
+            <td class="align-middle">
+                <div class="fw-bold text-white">{{ compagne.titre }}</div>
+            </td>
+            <td class="align-middle">
+                <div class="text-white-50 small">{{ compagne.description|slice(0, 50) }}{% if compagne.description|length > 50 %}...{% endif %}</div>
+            </td>
+            <td class="align-middle">
+                {% if compagne.entites|length > 0 %}
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for entite in compagne.entites %}
+                            <span class="badge badge-custom">{{ entite.nom }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <span class="text-muted small italic">Aucune</span>
+                {% endif %}
+            </td>
+            <td class="align-middle">
+                <div class="date-info">
+                    <div class="small text-white-50"><i class="far fa-calendar-alt me-2 text-primary"></i> {{ compagne.dateDebut ? compagne.dateDebut|date('d/m/Y') : '-' }}</div>
+                    <div class="small text-white-50"><i class="far fa-calendar-check me-2"></i> {{ compagne.dateFin ? compagne.dateFin|date('d/m/Y') : '-' }}</div>
+                </div>
+            </td>
+            <td class="text-end align-middle">
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ path('back_compagne_edit', {'id': compagne.id}) }}" class="btn-action edit" title="Modifier"><i class="fas fa-edit"></i></a>
+                    {{ include('back/compagne/_delete_form.html.twig') }}
+                </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="6" class="text-center py-5 text-muted">Aucune campagne trouvée</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

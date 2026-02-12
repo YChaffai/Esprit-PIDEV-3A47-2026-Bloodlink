@@ -1,0 +1,45 @@
+{% extends 'back/base_back.html.twig' %}
+
+{% block title %}Admin - Modifier Entité{% endblock %}
+
+{% block body %}
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2">Modifier l'Entité</h1>
+                <p class="text-white-50 mb-0">Interface d'administration</p>
+            </div>
+            <a href="{{ path('back_entitecollecte_index') }}" class="btn-back">
+                <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ include('back/entitecollecte/_form.html.twig', {'button_label': 'Mettre à jour l\'entité'}) }}
+            </div>
+        </div>
+
+        <div class="mt-5 pt-4 border-top border-secondary border-opacity-25">
+             <div class="d-flex align-items-center justify-content-between">
+                <span class="text-white-50">Zone de danger</span>
+                {{ include('back/entitecollecte/_delete_form.html.twig') }}
+             </div>
+        </div>
+    </div>
+
+    <style>
+        .btn-back {
+            color: #666;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-back:hover {
+            color: white;
+            transform: translateX(-5px);
+        }
+    </style>
+{% endblock %}

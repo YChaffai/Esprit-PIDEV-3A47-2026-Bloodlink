@@ -1,0 +1,90 @@
+
+<style>
+    .form-custom label {
+        color: #999;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    .form-custom input, .form-custom textarea, .form-custom select {
+        background: rgba(255,255,255,0.02) !important;
+        border: 1px solid var(--border) !important;
+        color: white !important;
+        padding: 12px 18px !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease;
+    }
+    .form-custom input:focus, .form-custom textarea:focus, .form-custom select:focus {
+        background: rgba(255,255,255,0.05) !important;
+        border-color: rgba(230, 57, 57, 0.4) !important;
+        box-shadow: 0 0 15px rgba(230, 57, 57, 0.1) !important;
+    }
+    .form-help-custom {
+        color: #666;
+        font-size: 0.75rem;
+        margin-top: 4px;
+        font-style: italic;
+    }
+    .btn-submit-custom {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+    .btn-submit-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(230, 57, 57, 0.3);
+    }
+    .form-error {
+        color: var(--primary);
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="form-custom">
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        <div class="mb-4">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre) }}
+            <div class="form-help-custom">{{ form_help(form.titre) }}</div>
+            <div class="form-error">{{ form_errors(form.titre) }}</div>
+        </div>
+        
+        <div class="mb-4">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description) }}
+            <div class="form-help-custom">{{ form_help(form.description) }}</div>
+            <div class="form-error">{{ form_errors(form.description) }}</div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                {{ form_label(form.date_debut) }}
+                {{ form_widget(form.date_debut) }}
+                <div class="form-help-custom">{{ form_help(form.date_debut) }}</div>
+                <div class="form-error">{{ form_errors(form.date_debut) }}</div>
+            </div>
+            <div class="col-lg-6">
+                {{ form_label(form.date_fin) }}
+                {{ form_widget(form.date_fin) }}
+                <div class="form-help-custom">{{ form_help(form.date_fin) }}</div>
+                <div class="form-error">{{ form_errors(form.date_fin) }}</div>
+            </div>
+        </div>
+
+        <div class="mb-5">
+            {{ form_label(form.entites) }}
+            {{ form_widget(form.entites) }}
+            <div class="form-help-custom">{{ form_help(form.entites) }}</div>
+            <div class="form-error">{{ form_errors(form.entites) }}</div>
+        </div>
+
+        <button class="btn btn-submit-custom">{{ button_label|default('Enregistrer les modifications') }}</button>
+    {{ form_end(form) }}
+</div>

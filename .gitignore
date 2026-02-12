@@ -12,3 +12,4 @@
 /assets/vendor/
 migrations/.gitignore
 src/Controller/.gitignore
+var_old/

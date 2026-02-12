@@ -1,0 +1,37 @@
+<table class="table table-custom">
+    <thead>
+        <tr>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="id">ID <i class="fas fa-sort"></i></a></th>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="nom">Nom <i class="fas fa-sort"></i></a></th>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="localisation">Localisation <i class="fas fa-sort"></i></a></th>
+            <th>Téléphone</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entitecollecte in entitecollectes %}
+        <tr>
+            <td class="align-middle text-white-50 small">#{{ entitecollecte.id }}</td>
+            <td class="align-middle">
+                <div class="fw-bold text-white">{{ entitecollecte.nom }}</div>
+            </td>
+            <td class="align-middle text-white-50">
+                <i class="fas fa-location-dot me-2 text-primary"></i> {{ entitecollecte.localisation }}
+            </td>
+            <td class="align-middle text-white-50">
+                <i class="fas fa-phone me-2 text-primary"></i> {{ entitecollecte.telephone }}
+            </td>
+            <td class="text-end align-middle">
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="{{ path('back_entitecollecte_edit', {'id': entitecollecte.id}) }}" class="btn-action edit" title="Modifier"><i class="fas fa-edit"></i></a>
+                    {{ include('back/entitecollecte/_delete_form.html.twig') }}
+                </div>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="5" class="text-center py-5 text-muted">Aucune entité trouvée</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

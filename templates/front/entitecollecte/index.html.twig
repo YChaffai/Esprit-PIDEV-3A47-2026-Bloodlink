@@ -1,0 +1,175 @@
+{% extends 'front/base_front.html.twig' %}
+
+{% block title %}Liste des Entités de Collecte{% endblock %}
+
+{% block body %}
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h1 class="display-5 fw-bold text-white mb-0">Entités de Collecte</h1>
+            <a href="{{ path('app_entitecollecte_new') }}" class="btn-primary-custom">+ Ajouter une entité</a>
+        </div>
+
+        <form method="get" class="search-box mb-5" id="search-form">
+            <div class="row g-3">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-hospital"></i></span>
+                        <input type="text" name="q" class="form-control" placeholder="Rechercher une entité (nom, localisation...)" value="{{ currentSearch }}" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select">
+                        <option value="nom" {% if currentSort == 'nom' %}selected{% endif %}>Nom</option>
+                        <option value="localisation" {% if currentSort == 'localisation' %}selected{% endif %}>Localisation</option>
+                    </select>
+                </div>
+                <input type="hidden" name="direction" value="{{ currentDirection }}">
+            </div>
+        </form>
+
+        <div class="table-responsive" id="table-container">
+            {{ include('front/entitecollecte/_table.html.twig') }}
+        </div>
+    </div>
+
+    <style>
+        .table-custom {
+            --bs-table-bg: transparent !important;
+            --bs-table-color: #fff !important;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: -10px;
+        }
+        
+        .table-custom thead th {
+            background: rgba(255,255,255,0.02) !important;
+            color: #666 !important;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            padding: 15px 20px;
+            border: none !important;
+        }
+
+        .table-custom tbody tr {
+            background: rgba(255,255,255,0.02) !important;
+            transition: all 0.3s ease;
+        }
+        
+        .table-custom tbody tr:hover {
+            background: rgba(255,255,255,0.05) !important;
+            transform: scale(1.005);
+        }
+
+        .table-custom tbody td {
+            padding: 20px !important;
+            border: none !important;
+            color: #ccc !important;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(230, 57, 57, 0.2);
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(230, 57, 57, 0.3);
+            color: white;
+        }
+
+        .search-box {
+            background: rgba(255,255,255,0.02);
+            padding: 24px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+        .search-box .form-control, .search-box .form-select {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: white !important;
+            padding: 12px 20px;
+        }
+        .search-box .form-control::placeholder { color: #666; }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white !important;
+        }
+        .btn-action i { font-size: 0.9rem; }
+        .btn-action.edit:hover { background: rgba(255, 193, 7, 0.3); color: #ffc107 !important; border-color: #ffc107; }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[name="q"]');
+            const sortSelect = document.querySelector('select[name="sort"]');
+            const searchForm = document.getElementById('search-form');
+            const tableContainer = document.getElementById('table-container');
+            const directionInput = document.querySelector('input[name="direction"]');
+            
+            let timeout = null;
+
+            function updateTable() {
+                const formData = new FormData(searchForm);
+                const params = new URLSearchParams(formData);
+                const url = `${window.location.pathname}?${params.toString()}`;
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    tableContainer.innerHTML = html;
+                    bindSortLinks();
+                    window.history.pushState({}, '', url);
+                });
+            }
+
+            function bindSortLinks() {
+                document.querySelectorAll('.sortable').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const newSort = this.dataset.sort;
+                        if (sortSelect.value === newSort) {
+                            directionInput.value = (directionInput.value === 'ASC') ? 'DESC' : 'ASC';
+                        } else {
+                            sortSelect.value = newSort;
+                            directionInput.value = 'ASC';
+                        }
+                        updateTable();
+                    });
+                });
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(updateTable, 500);
+            });
+
+            sortSelect.addEventListener('change', updateTable);
+
+            bindSortLinks();
+        });
+    </script>
+{% endblock %}
