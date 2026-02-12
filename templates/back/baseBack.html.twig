@@ -205,6 +205,16 @@
           <i class="fa fa-calendar-check"></i> Rendez-vous
         </a>
       </li>
+      <li>
+        <a href="{{ path('back_compagne_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_compagne' %}active{% endif %}">
+          <i class="fa fa-bullhorn"></i> Campagnes
+        </a>
+      </li>
+      <li>
+        <a href="{{ path('back_entitecollecte_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_entitecollecte' %}active{% endif %}">
+          <i class="fa fa-building"></i> Entités Collecte
+        </a>
+      </li>
     </ul>
 
     <div class="nav-group-label">Système</div>

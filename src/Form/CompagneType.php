@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Compagne;
-use App\Entity\Entitecollecte;
+use App\Entity\EntiteCollecte;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -36,7 +36,7 @@ class CompagneType extends AbstractType
                 'help' => 'Quand se termine la campagne ?',
             ])
             ->add('entites', EntityType::class, [
-                'class' => Entitecollecte::class,
+                'class' => EntiteCollecte::class,
                 'choice_label' => 'nom',
                 'label' => 'Entités de collecte',
                 'placeholder' => 'Sélectionner des entités...',

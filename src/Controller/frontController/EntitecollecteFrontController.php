@@ -2,9 +2,9 @@
 
 namespace App\Controller\frontController;
 
-use App\Entity\Entitecollecte;
-use App\Form\EntitecollecteType;
-use App\Repository\EntitecollecteRepository;
+use App\Entity\EntiteCollecte;
+use App\Form\EntiteCollecteType;
+use App\Repository\EntiteCollecteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +16,7 @@ final class EntitecollecteFrontController extends AbstractController
 {
     // Afficher la liste des entités de collecte
     #[Route(name: 'app_entitecollecte_index', methods: ['GET'])]
-    public function index(Request $request, EntitecollecteRepository $entitecollecteRepository): Response
+    public function index(Request $request, EntiteCollecteRepository $entitecollecteRepository): Response
     {
         $search = $request->query->get('q');
         $sort = $request->query->get('sort', 'nom'); // Default to nom
@@ -47,8 +47,8 @@ final class EntitecollecteFrontController extends AbstractController
     #[Route('/new', name: 'app_entitecollecte_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $entitecollecte = new Entitecollecte();
-        $form = $this->createForm(EntitecollecteType::class, $entitecollecte);
+        $entitecollecte = new EntiteCollecte();
+        $form = $this->createForm(EntiteCollecteType::class, $entitecollecte);
 
         $form->handleRequest($request);
 
@@ -67,7 +67,7 @@ final class EntitecollecteFrontController extends AbstractController
 
     // Afficher une entité de collecte spécifique
     #[Route('/{id}', name: 'app_entitecollecte_show', methods: ['GET'])]
-    public function show(Entitecollecte $entitecollecte): Response
+    public function show(EntiteCollecte $entitecollecte): Response
     {
         return $this->render('front/entitecollecte/show.html.twig', [
             'entitecollecte' => $entitecollecte,
@@ -76,9 +76,9 @@ final class EntitecollecteFrontController extends AbstractController
 
     // Modifier une entité de collecte existante
     #[Route('/{id}/edit', name: 'app_entitecollecte_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Entitecollecte $entitecollecte, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, EntiteCollecte $entitecollecte, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(EntitecollecteType::class, $entitecollecte);
+        $form = $this->createForm(EntiteCollecteType::class, $entitecollecte);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -96,7 +96,7 @@ final class EntitecollecteFrontController extends AbstractController
 
     // Supprimer une entité de collecte
     #[Route('/{id}', name: 'app_entitecollecte_delete', methods: ['POST'])]
-    public function delete(Request $request, Entitecollecte $entitecollecte, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, EntiteCollecte $entitecollecte, EntityManagerInterface $entityManager): Response
     {
         $entityManager->remove($entitecollecte);
         $entityManager->flush();

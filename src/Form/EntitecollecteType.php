@@ -2,10 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\Entitecollecte;
+use App\Entity\EntiteCollecte;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -18,20 +19,32 @@ class EntitecollecteType extends AbstractType
                 'label' => 'Nom de l\'entité',
                 'help' => 'Le nom officiel de l\'entité de collecte (ex: Hôpital X).',
             ])
-            ->add('localisation', TextType::class, [
-                'label' => 'Localisation',
-                'help' => 'Adresse ou ville principale.',
+            ->add('adresse', TextType::class, [
+                'label' => 'Adresse',
+                'help' => 'Adresse complète de l\'entité.',
+            ])
+            ->add('ville', TextType::class, [
+                'label' => 'Ville',
+                'help' => 'Ville de l\'entité.',
             ])
             ->add('telephone', TelType::class, [
                 'label' => 'Numéro de téléphone',
                 'help' => 'Format numérique uniquement (ex: 0612345678).',
+            ])
+            ->add('type', ChoiceType::class, [
+                'label' => 'Type',
+                'choices' => [
+                    'Hôpital' => 'Hôpital',
+                    'Banque' => 'Banque',
+                    'Point Mobile' => 'Point Mobile',
+                ],
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Entitecollecte::class,
+            'data_class' => EntiteCollecte::class,
             'csrf_protection' => false,
         ]);
     }

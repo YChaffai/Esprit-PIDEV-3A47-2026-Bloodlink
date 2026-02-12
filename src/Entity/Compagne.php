@@ -19,7 +19,7 @@ class Compagne{
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToMany(targetEntity: Entitecollecte::class, inversedBy: 'campagnes')]
+    #[ORM\ManyToMany(targetEntity: EntiteCollecte::class, inversedBy: 'campagnes')]
     #[Assert\Count(min: 1, minMessage: "Veuillez sélectionner au moins une entité")]
     private Collection $entites;
 
@@ -72,14 +72,14 @@ class Compagne{
     public function getId(): ?int { return $this->id; }
 
     /**
-     * @return Collection<int, Entitecollecte>
+     * @return Collection<int, EntiteCollecte>
      */
     public function getEntites(): Collection
     {
         return $this->entites;
     }
 
-    public function addEntite(Entitecollecte $entite): self
+    public function addEntite(EntiteCollecte $entite): self
     {
         if (!$this->entites->contains($entite)) {
             $this->entites->add($entite);
@@ -88,7 +88,7 @@ class Compagne{
         return $this;
     }
 
-    public function removeEntite(Entitecollecte $entite): self
+    public function removeEntite(EntiteCollecte $entite): self
     {
         $this->entites->removeElement($entite);
 
