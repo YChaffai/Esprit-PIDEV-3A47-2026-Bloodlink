@@ -1,15 +1,17 @@
 <table class="table table-custom">
     <thead>
         <tr>
+            <th><a href="#" class="sortable text-decoration-none" data-sort="id">ID <i class="fas fa-sort"></i></a></th>
             <th><a href="#" class="sortable text-decoration-none" data-sort="nom">Nom <i class="fas fa-sort"></i></a></th>
             <th><a href="#" class="sortable text-decoration-none" data-sort="localisation">Localisation <i class="fas fa-sort"></i></a></th>
-            <th><a href="#" class="sortable text-decoration-none" data-sort="telephone">Téléphone <i class="fas fa-sort"></i></a></th>
+            <th>Téléphone</th>
             <th class="text-end">Actions</th>
         </tr>
     </thead>
     <tbody>
     {% for entitecollecte in entitecollectes %}
         <tr>
+            <td class="align-middle text-white-50 small">#{{ entitecollecte.id }}</td>
             <td class="align-middle">
                 <div class="fw-bold text-white">{{ entitecollecte.nom }}</div>
             </td>
@@ -28,7 +30,7 @@
         </tr>
     {% else %}
         <tr>
-            <td colspan="4" class="text-center py-5 text-muted">Aucune entité trouvée</td>
+            <td colspan="5" class="text-center py-5 text-muted">Aucune entité trouvée</td>
         </tr>
     {% endfor %}
     </tbody>

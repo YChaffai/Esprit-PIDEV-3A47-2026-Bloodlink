@@ -6,15 +6,13 @@ use App\Repository\CompagneRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
-
-
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: CompagneRepository::class)]
 #[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(fields: ['titre'], message: 'Une campagne avec ce titre existe déjà.')]
 class Compagne{
     #[ORM\Id]
     #[ORM\GeneratedValue]

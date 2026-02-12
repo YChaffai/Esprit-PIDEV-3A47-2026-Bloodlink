@@ -20,7 +20,7 @@ final class CompagneBackController extends AbstractController
     {
         $search = $request->query->get('q');
         $sort = $request->query->get('sort', 'id');
-        $direction = $request->query->get('direction', 'DESC');
+        $direction = $request->query->get('direction', 'ASC');
 
         $compagnes = $compagneRepository->findBySearchAndSort($search, $sort, $direction);
 
