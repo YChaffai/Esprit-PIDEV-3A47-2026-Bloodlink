@@ -26,14 +26,17 @@ body{
   font-family:'Montserrat',sans-serif;
   margin:0;
   overflow-x:hidden;
+  scroll-behavior:smooth;
 }
 
+/* HEADER */
 .header{
   position:fixed; top:0; left:0; right:0; z-index:1000;
   padding:18px 5%;
   background:rgba(10,10,10,.75);
   border-bottom:1px solid var(--border);
   display:flex; justify-content:space-between; align-items:center;
+  backdrop-filter: blur(10px);
 }
 
 .nav-logo{
@@ -49,9 +52,9 @@ body{
   font-weight:800; cursor:pointer; font-size:1rem;
   transition: color 0.3s ease;
 }
-
 .menu-toggle-btn:hover{ color: var(--primary); }
 
+/* MENU OVERLAY */
 .nav-overlay{
   position:fixed; inset:0; z-index:999; display:none;
 }
@@ -84,6 +87,7 @@ body{
 
 .menu-list{ list-style:none; padding:0; margin:0; }
 .menu-item{ margin-bottom:16px; overflow:hidden; }
+
 .menu-link{
   display:block; font-size:2rem; font-weight:900;
   color:white; text-decoration:none; text-transform:uppercase;
@@ -92,17 +96,83 @@ body{
 }
 .menu-link:hover{ color:var(--primary); }
 
+/* MAIN */
 .main-container{
-  margin-top:96px; min-height:80vh; padding:0 5%;
+  margin-top:110px;
+  min-height:80vh;
+  padding:0 5%;
+  animation: fadeIn 1s ease;
 }
 
-.glass-card{
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--border);
-  border-radius:18px;
-  box-shadow:0 20px 60px rgba(0,0,0,.35);
+@keyframes fadeIn{
+  from{ opacity:0; transform: translateY(20px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+
+/* FOOTER */
+.footer{
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:60px 5% 30px 5%;
+  margin-top:80px;
+  position:relative;
+  overflow:hidden;
+}
+
+.footer::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:3px;
+  background:linear-gradient(90deg,transparent,var(--primary),transparent);
+  animation: slideLine 4s linear infinite;
+}
+
+@keyframes slideLine{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+
+.footer h5{
+  font-weight:800;
+  margin-bottom:20px;
+}
+
+.footer a{
+  color:#ccc;
+  text-decoration:none;
+  display:block;
+  margin-bottom:10px;
+  transition: all .3s ease;
+}
+
+.footer a:hover{
+  color:var(--primary);
+  transform:translateX(5px);
+}
+
+.social-icons a{
+  font-size:20px;
+  margin-right:15px;
+  color:white;
+  transition:.3s;
+}
+
+.social-icons a:hover{
+  color:var(--primary);
+  transform:scale(1.2);
+}
+
+.footer-bottom{
+  text-align:center;
+  margin-top:40px;
+  font-size:14px;
+  color:#888;
 }
 </style>
+
 {% block stylesheets %}{% endblock %}
 </head>
 
@@ -110,10 +180,10 @@ body{
 
 <header class="header">
   <a href="/" class="nav-logo"><i class="fas fa-droplet"></i> BLOODLINK</a>
-  <button id="menu-toggle" class="menu-toggle-btn" aria-expanded="false">MENU ☰</button>
+  <button id="menu-toggle" class="menu-toggle-btn">MENU ☰</button>
 </header>
 
-<div id="nav-container" class="nav-overlay" aria-hidden="true">
+<div id="nav-container" class="nav-overlay">
   <div class="nav-backdrop" id="backdrop"></div>
   <div class="nav-menu-panel" id="menu-panel">
     <div class="reveal-panel" id="wipe1"></div>
@@ -132,64 +202,69 @@ body{
   {% block body %}{% endblock %}
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/CustomEase.min.js"></script>
-<script>
-gsap.registerPlugin(CustomEase);
-CustomEase.create("osmo","0.65, 0.01, 0.05, 0.99");
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="row">
+    <div class="col-md-4">
+      <h5>BloodLink</h5>
+      <p>Plateforme intelligente de gestion et de mise en relation pour le don de sang.</p>
+      <div class="social-icons mt-3">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
 
+    <div class="col-md-4">
+      <h5>Navigation</h5>
+      <a href="/">Accueil</a>
+      <a href="#">Demandes</a>
+      <a href="#">Carte</a>
+      <a href="#">Contact</a>
+    </div>
+
+    <div class="col-md-4">
+      <h5>Contact</h5>
+      <p>Email: contact@bloodlink.com</p>
+      <p>Téléphone: +216 00 000 000</p>
+      <p>Tunis, Tunisie</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    © {{ "now"|date("Y") }} BloodLink - Tous droits réservés.
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
 const navContainer = document.getElementById('nav-container');
 const backdrop = document.getElementById('backdrop');
 const menuPanel = document.getElementById('menu-panel');
 const links = document.querySelectorAll('.menu-link');
-const wipe1 = document.getElementById('wipe1');
-const wipe2 = document.getElementById('wipe2');
 const toggleBtn = document.getElementById('menu-toggle');
 
 let isOpen = false;
 
-function lockScroll(lock){ document.body.style.overflow = lock ? 'hidden' : ''; }
-
 function openMenu(){
   navContainer.style.display = 'block';
-  navContainer.setAttribute('aria-hidden','false');
-  toggleBtn.setAttribute('aria-expanded','true');
-  toggleBtn.style.color = '#e63939';
-  lockScroll(true);
-
-  gsap.set(menuPanel,{x:'0%'});
-  gsap.set([wipe1,wipe2],{scaleY:1});
-  gsap.set(links,{y:'100%'});
-  gsap.set(backdrop,{opacity:0});
-
-  const tl = gsap.timeline();
-  tl.to(backdrop,{opacity:1,duration:0.5});
-  tl.fromTo(wipe1,{scaleY:1},{scaleY:0,duration:0.8,ease:"osmo"},"<");
-  tl.fromTo(wipe2,{scaleY:1},{scaleY:0,duration:0.9,ease:"osmo"},"-=0.4");
-  tl.fromTo(links,{y:'100%'},{y:'0%',duration:1,stagger:0.08,ease:"osmo"},"-=0.6");
-
+  gsap.to(menuPanel,{x:'0%',duration:0.6,ease:"power4.out"});
+  gsap.to(backdrop,{opacity:1,duration:0.5});
+  gsap.to(links,{y:'0%',duration:0.8,stagger:0.08,ease:"power4.out"});
   toggleBtn.textContent = 'FERMER ✕';
   isOpen = true;
 }
 
 function closeMenu(){
-  const tl = gsap.timeline({onComplete:()=>{
-    navContainer.style.display='none';
-    navContainer.setAttribute('aria-hidden','true');
-    toggleBtn.setAttribute('aria-expanded','false');
-    toggleBtn.style.color='white';
-    lockScroll(false);
-  }});
-  tl.to(links,{y:'-100%',duration:0.45,stagger:0.04,ease:"power2.in"});
-  tl.to(backdrop,{opacity:0,duration:0.45},"-=0.2");
-  tl.to(menuPanel,{x:'100%',duration:0.6,ease:"osmo"},"<");
+  gsap.to(menuPanel,{x:'100%',duration:0.6,ease:"power4.in"});
+  gsap.to(backdrop,{opacity:0,duration:0.4});
   toggleBtn.textContent = 'MENU ☰';
+  setTimeout(()=>navContainer.style.display='none',600);
   isOpen = false;
 }
 
 toggleBtn.addEventListener('click',()=>isOpen ? closeMenu() : openMenu());
 backdrop.addEventListener('click',closeMenu);
-window.addEventListener('keydown',(e)=>{if(e.key==='Escape' && isOpen) closeMenu();});
 </script>
 
 {% block javascripts %}{% endblock %}
