@@ -5,64 +5,73 @@
 {% block body %}
     <div class="glass-card p-5">
         <div class="d-flex justify-content-between align-items-center mb-5">
-            <h1 class="display-5 fw-bold text-white mb-0">Gestion des Campagnes</h1>
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2">Gestion des Campagnes</h1>
+                <p class="text-white-50 mb-0">Interface d'administration</p>
+            </div>
+            <a href="{{ path('back_compagne_new') }}" class="btn-primary-custom">
+                <i class="fas fa-plus me-2"></i> Nouvelle Campagne
+            </a>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-custom">
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Description</th>
-                        <th>Entités</th>
-                        <th>Dates</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for compagne in compagnes %}
-                    <tr>
-                        <td class="align-middle">
-                            <div class="fw-bold text-white">{{ compagne.titre }}</div>
-                        </td>
-                        <td class="align-middle">
-                            <div class="text-white-50 small">{{ compagne.description|slice(0, 50) }}{% if compagne.description|length > 50 %}...{% endif %}</div>
-                        </td>
-                        <td class="align-middle">
-                            {% if compagne.entites|length > 0 %}
-                                <div class="d-flex flex-wrap gap-1">
-                                    {% for entite in compagne.entites %}
-                                        <span class="badge badge-custom">{{ entite.nom }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <span class="text-muted small italic">Aucune</span>
-                            {% endif %}
-                        </td>
-                        <td class="align-middle">
-                            <div class="date-info">
-                                <div class="small text-white-50"><i class="far fa-calendar-alt me-2 text-primary"></i> {{ compagne.dateDebut ? compagne.dateDebut|date('d/m/Y') : '-' }}</div>
-                                <div class="small text-white-50"><i class="far fa-calendar-check me-2"></i> {{ compagne.dateFin ? compagne.dateFin|date('d/m/Y') : '-' }}</div>
-                            </div>
-                        </td>
-                        <td class="text-end align-middle">
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ path('back_compagne_edit', {'id': compagne.id}) }}" class="btn-action edit" title="Modifier"><i class="fas fa-edit"></i></a>
-                                {{ include('back/compagne/_delete_form.html.twig') }}
-                            </div>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">Aucune campagne trouvée</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <form method="get" class="search-box mb-5" id="search-form">
+            <div class="row g-3">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-search"></i></span>
+                        <input type="text" name="q" class="form-control" placeholder="Rechercher une campagne..." value="{{ currentSearch }}" autocomplete="off">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select">
+                        <option value="id" {% if currentSort == 'id' %}selected{% endif %}>ID</option>
+                        <option value="titre" {% if currentSort == 'titre' %}selected{% endif %}>Titre</option>
+                        <option value="date_debut" {% if currentSort == 'date_debut' %}selected{% endif %}>Date Début</option>
+                    </select>
+                </div>
+                <input type="hidden" name="direction" value="{{ currentDirection }}">
+            </div>
+        </form>
+
+        <div class="table-responsive" id="table-container">
+            {{ include('back/compagne/_table.html.twig') }}
         </div>
     </div>
 
     <style>
+        .btn-primary-custom {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 15px rgba(230, 57, 57, 0.2);
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(230, 57, 57, 0.3);
+            color: white;
+        }
+
+        .search-box {
+            background: rgba(255,255,255,0.02);
+            padding: 24px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+        }
+        .search-box .form-control, .search-box .form-select {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: white !important;
+            padding: 12px 20px;
+        }
+        .search-box .form-control::placeholder { color: #666; }
+
         .table-custom {
             --bs-table-bg: transparent !important;
             --bs-table-color: #fff !important;
@@ -125,5 +134,64 @@
         .btn-action.edit:hover { background: rgba(255, 193, 7, 0.3); color: #ffc107 !important; border-color: #ffc107; }
 
         .italic { font-style: italic; }
+
+        .sortable { color: #666; transition: color 0.3s ease; }
+        .sortable:hover { color: var(--primary); }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[name="q"]');
+            const sortSelect = document.querySelector('select[name="sort"]');
+            const searchForm = document.getElementById('search-form');
+            const tableContainer = document.getElementById('table-container');
+            const directionInput = document.querySelector('input[name="direction"]');
+            
+            let timeout = null;
+
+            function updateTable() {
+                const formData = new FormData(searchForm);
+                const params = new URLSearchParams(formData);
+                const url = `${window.location.pathname}?${params.toString()}`;
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    tableContainer.innerHTML = html;
+                    bindSortLinks();
+                    window.history.pushState({}, '', url);
+                });
+            }
+
+            function bindSortLinks() {
+                document.querySelectorAll('.sortable').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const newSort = this.dataset.sort;
+                        if (sortSelect.value === newSort) {
+                            directionInput.value = (directionInput.value === 'ASC') ? 'DESC' : 'ASC';
+                        } else {
+                            sortSelect.value = newSort;
+                            directionInput.value = 'ASC';
+                        }
+                        updateTable();
+                    });
+                });
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(updateTable, 500);
+            });
+
+            sortSelect.addEventListener('change', updateTable);
+
+            bindSortLinks();
+        });
+    </script>
+
 {% endblock %}

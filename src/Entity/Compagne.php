@@ -22,6 +22,7 @@ class Compagne{
     private ?int $id = null;
 
     #[ORM\ManyToMany(targetEntity: Entitecollecte::class, inversedBy: 'campagnes')]
+    #[Assert\Count(min: 1, minMessage: "Veuillez sélectionner au moins une entité")]
     private Collection $entites;
 
     public function __construct()
@@ -97,16 +98,16 @@ class Compagne{
     }
 
     public function getTitre(): ?string { return $this->titre; }
-    public function setTitre(string $titre): self { $this->titre = $titre; return $this; }
+    public function setTitre(?string $titre): self { $this->titre = $titre; return $this; }
 
     public function getDescription(): ?string { return $this->description; }
-    public function setDescription(string $description): self { $this->description = $description; return $this; }
+    public function setDescription(?string $description): self { $this->description = $description; return $this; }
 
     public function getDateDebut(): ?\DateTime { return $this->date_debut; }
-    public function setDateDebut(\DateTime $date_debut): self { $this->date_debut = $date_debut; return $this; }
+    public function setDateDebut(?\DateTime $date_debut): self { $this->date_debut = $date_debut; return $this; }
 
     public function getDateFin(): ?\DateTime { return $this->date_fin; }
-    public function setDateFin(\DateTime $date_fin): self { $this->date_fin = $date_fin; return $this; }
+    public function setDateFin(?\DateTime $date_fin): self { $this->date_fin = $date_fin; return $this; }
 
     public function getCreatedAt(): ?\DateTime { return $this->created_at; }
     public function setCreatedAt(\DateTime $created_at): self { $this->created_at = $created_at; return $this; }

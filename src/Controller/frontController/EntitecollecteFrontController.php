@@ -15,15 +15,28 @@ use Symfony\Component\Routing\Attribute\Route;
 final class EntitecollecteFrontController extends AbstractController
 {
     // Afficher la liste des entités de collecte
-    #[Route('/', name: 'app_entitecollecte_index', methods: ['GET'])]
+    #[Route(name: 'app_entitecollecte_index', methods: ['GET'])]
     public function index(Request $request, EntitecollecteRepository $entitecollecteRepository): Response
     {
         $search = $request->query->get('q');
-        $sort = $request->query->get('sort', 'id');
+        $sort = $request->query->get('sort', 'nom'); // Default to nom
         $direction = $request->query->get('direction', 'ASC');
 
+        // Prevent sorting by ID in front-office as requested
+        if ($sort === 'id') {
+            $sort = 'nom';
+        }
+
+        $entites = $entitecollecteRepository->findBySearchAndSort($search, $sort, $direction);
+
+        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            return $this->render('front/entitecollecte/_table.html.twig', [
+                'entitecollectes' => $entites,
+            ]);
+        }
+
         return $this->render('front/entitecollecte/index.html.twig', [
-            'entitecollectes' => $entitecollecteRepository->findBySearchAndSort($search, $sort, $direction),
+            'entitecollectes' => $entites,
             'currentSearch' => $search,
             'currentSort' => $sort,
             'currentDirection' => $direction,

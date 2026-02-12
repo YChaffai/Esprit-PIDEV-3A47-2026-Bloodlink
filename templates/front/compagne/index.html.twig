@@ -127,75 +127,26 @@
             <a href="{{ path('app_compagne_new') }}" class="btn-primary-custom">+ Créer une campagne</a>
         </div>
 
-        <form method="get" class="search-box mb-5">
+        <form method="get" class="search-box mb-5" id="search-form">
             <div class="row g-3">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-search"></i></span>
                         <input type="text" name="q" class="form-control" placeholder="Rechercher une campagne..." value="{{ currentSearch }}" autocomplete="off">
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select name="sort" class="form-select" onchange="this.form.submit()">
-                        <option value="id" {% if currentSort == 'id' %}selected{% endif %}>Trier par ID</option>
+                <div class="col-md-3">
+                    <select name="sort" class="form-select">
                         <option value="titre" {% if currentSort == 'titre' %}selected{% endif %}>Trier par Titre</option>
                         <option value="date_debut" {% if currentSort == 'date_debut' %}selected{% endif %}>Trier par Date Début</option>
                     </select>
                 </div>
+                <input type="hidden" name="direction" value="{{ currentDirection }}">
             </div>
         </form>
 
-        <div class="table-responsive">
-            <table class="table table-custom">
-                <thead>
-                    <tr>
-                        <th>Titre</th>
-                        <th>Description</th>
-                        <th>Entités</th>
-                        <th>Dates</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for compagne in compagnes %}
-                    <tr>
-                        <td class="align-middle">
-                            <div class="fw-bold text-white">{{ compagne.titre }}</div>
-                        </td>
-                        <td class="align-middle">
-                            <div class="text-white-50 small">{{ compagne.description|slice(0, 50) }}{% if compagne.description|length > 50 %}...{% endif %}</div>
-                        </td>
-                        <td class="align-middle">
-                            {% if compagne.entites|length > 0 %}
-                                <div class="d-flex flex-wrap gap-1">
-                                    {% for entite in compagne.entites %}
-                                        <span class="badge badge-custom">{{ entite.nom }}</span>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <span class="text-muted small italic">Aucune</span>
-                            {% endif %}
-                        </td>
-                        <td class="align-middle">
-                            <div class="date-info">
-                                <div class="small text-white-50"><i class="far fa-calendar-alt me-2 text-primary"></i> {{ compagne.dateDebut|date('d/m/Y') }}</div>
-                                <div class="small text-white-50"><i class="far fa-calendar-check me-2"></i> {{ compagne.dateFin|date('d/m/Y') }}</div>
-                            </div>
-                        </td>
-                        <td class="text-end align-middle">
-                            <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ path('app_compagne_show', {'id': compagne.id}) }}" class="btn-action show" title="Voir"><i class="fas fa-eye"></i></a>
-                                <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}" class="btn-action edit" title="Modifier"><i class="fas fa-edit"></i></a>
-                            </div>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">Aucune campagne trouvée</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="table-responsive" id="table-container">
+            {{ include('front/compagne/_table.html.twig') }}
         </div>
     </div>
 
@@ -209,24 +160,57 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Search logic
             const searchInput = document.querySelector('input[name="q"]');
-            const searchForm = searchInput.form;
+            const sortSelect = document.querySelector('select[name="sort"]');
+            const searchForm = document.getElementById('search-form');
+            const tableContainer = document.getElementById('table-container');
+            const directionInput = document.querySelector('input[name="direction"]');
             
             let timeout = null;
+
+            function updateTable() {
+                const formData = new FormData(searchForm);
+                const params = new URLSearchParams(formData);
+                const url = `${window.location.pathname}?${params.toString()}`;
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    tableContainer.innerHTML = html;
+                    bindSortLinks();
+                    // Update URL in browser for bookmarking
+                    window.history.pushState({}, '', url);
+                });
+            }
+
+            function bindSortLinks() {
+                document.querySelectorAll('.sortable').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const newSort = this.dataset.sort;
+                        if (sortSelect.value === newSort) {
+                            directionInput.value = (directionInput.value === 'ASC') ? 'DESC' : 'ASC';
+                        } else {
+                            sortSelect.value = newSort;
+                            directionInput.value = 'ASC';
+                        }
+                        updateTable();
+                    });
+                });
+            }
+
             searchInput.addEventListener('input', function() {
                 clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    searchForm.submit();
-                }, 500);
+                timeout = setTimeout(updateTable, 500);
             });
-            
-            if(searchInput.value) {
-                searchInput.focus();
-                const val = searchInput.value;
-                searchInput.value = '';
-                searchInput.value = val;
-            }
+
+            sortSelect.addEventListener('change', updateTable);
+
+            bindSortLinks();
 
             // Calendar logic
             var calendarEl = document.getElementById('calendar');
@@ -257,4 +241,5 @@
         });
     </script>
 {% endblock %}
+
 

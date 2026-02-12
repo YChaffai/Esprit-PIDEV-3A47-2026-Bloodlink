@@ -18,11 +18,24 @@ final class CompagneFrontController extends AbstractController
     public function index(Request $request, CompagneRepository $compagneRepository): Response
     {
         $search = $request->query->get('q');
-        $sort = $request->query->get('sort', 'id');
+        $sort = $request->query->get('sort', 'titre'); // Default to titre
         $direction = $request->query->get('direction', 'ASC');
 
+        // Prevent sorting by ID in front-office as requested
+        if ($sort === 'id') {
+            $sort = 'titre';
+        }
+
+        $compagnes = $compagneRepository->findBySearchAndSort($search, $sort, $direction);
+
+        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            return $this->render('front/compagne/_table.html.twig', [
+                'compagnes' => $compagnes,
+            ]);
+        }
+
         return $this->render('front/compagne/index.html.twig', [
-            'compagnes' => $compagneRepository->findBySearchAndSort($search, $sort, $direction),
+            'compagnes' => $compagnes,
             'currentSearch' => $search,
             'currentSort' => $sort,
             'currentDirection' => $direction,

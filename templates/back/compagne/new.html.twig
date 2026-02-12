@@ -1,0 +1,38 @@
+{% extends 'back/base_back.html.twig' %}
+
+{% block title %}Admin - Nouvelle Campagne{% endblock %}
+
+{% block body %}
+    <div class="glass-card p-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2">Nouvelle Campagne</h1>
+                <p class="text-white-50 mb-0">Interface d'administration</p>
+            </div>
+            <a href="{{ path('back_compagne_index') }}" class="btn-back">
+                <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {{ include('back/compagne/_form.html.twig', {'button_label': 'Créer la campagne'}) }}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .btn-back {
+            color: #666;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-back:hover {
+            color: white;
+            transform: translateX(-5px);
+        }
+    </style>
+{% endblock %}

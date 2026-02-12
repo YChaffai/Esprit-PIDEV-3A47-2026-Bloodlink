@@ -58,7 +58,7 @@ class Entitecollecte
         return $this->nom;
     }
 
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
         $this->nom = $nom;
         return $this;
@@ -69,7 +69,7 @@ class Entitecollecte
         return $this->localisation;
     }
 
-    public function setLocalisation(string $localisation): static
+    public function setLocalisation(?string $localisation): static
     {
         $this->localisation = $localisation;
         return $this;
@@ -80,7 +80,7 @@ class Entitecollecte
         return $this->telephone;
     }
 
-    public function setTelephone(string $telephone): static
+    public function setTelephone(?string $telephone): static
     {
         $this->telephone = $telephone;
         return $this;
