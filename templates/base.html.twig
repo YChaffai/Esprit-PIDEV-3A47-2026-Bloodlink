@@ -257,8 +257,8 @@
                 <li class="menu-item"><a href="/" class="menu-link">Accueil</a></li>
                 <li class="menu-item"><a href="{{ path('campagne_list') }}" class="menu-link">Campagnes</a></li>
                 {# Client_id fixé à 4 pour le développement sans auth #}
-                <li class="menu-item"><a href="{{ path('rendezvous_list', {'client_id': 4}) }}" class="menu-link">Mes Dossiers</a></li>
-                <li class="menu-item"><a href="{{ path('questionnaireback_list') }}" class="menu-link">Backoffice</a></li>
+                <li class="menu-item"><a href="{{ path('rendezvous_list', {'client_id': 4}) }}" class="menu-link">Mes questionnaires</a></li>
+                <li class="menu-item"><a href="{{ path('rendezvous_list', {'client_id': 4}) }}" class="menu-link">Mes rendez-vous</a></li>
             </ul>
         </div>
     </div>
@@ -269,6 +269,56 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('filter-form');
+        const resultsArea = document.getElementById('results-area');
+
+        // Fonction pour mettre à jour les résultats
+        const updateResults = () => {
+            // 1. On prépare l'URL avec les données du formulaire
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            const url = window.location.pathname + '?' + params.toString();
+
+            // 2. On baisse l'opacité pour montrer que ça charge
+            resultsArea.style.opacity = '0.5';
+
+            // 3. On récupère TOUTE la page (comme si on rechargeait)
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    // 4. C'est ici l'astuce : On convertit le texte HTML en vrai document
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // 5. On va chercher SEULEMENT la div #results-area dans la nouvelle page
+                    const newContent = doc.getElementById('results-area').innerHTML;
+
+                    // 6. On remplace l'ancien contenu par le nouveau
+                    resultsArea.innerHTML = newContent;
+                    
+                    // 7. On remet l'opacité et on met à jour l'URL du navigateur
+                    resultsArea.style.opacity = '1';
+                    window.history.pushState(null, '', url);
+                })
+                .catch(err => {
+                    console.error('Erreur lors du chargement', err);
+                    resultsArea.style.opacity = '1';
+                });
+        };
+
+        // On écoute les changements sur les select et les dates
+        form.querySelectorAll('select, input').forEach(input => {
+            input.addEventListener('change', updateResults);
+        });
+
+        // On empêche le rechargement classique si l'utilisateur appuie sur Entrée
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            updateResults();
+        });
+    });
+    
     document.addEventListener("DOMContentLoaded", function () {
         // Flatpickr
         flatpickr(".datepicker", {

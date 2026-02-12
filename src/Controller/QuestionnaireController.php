@@ -185,87 +185,130 @@ final class QuestionnaireController extends AbstractController
             "questionnaires" => $questionnaire,
         ]);
     }
-    #[Route('/backoffice/questionnaires', name: 'questionnaireback_list')]
-    public function listback(Request $request, QuestionnaireRepository $questionnaireRepository): Response
-    {
-        // 1. On crée le formulaire de filtre
-        $form = $this->createForm(QuestionnaireFilterType::class);
-        $form->handleRequest($request);
 
-        // 2. On prépare le QueryBuilder pour la liste du Backoffice
-        $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
-                             ->leftJoin('q.campagne', 'c')
-                             ->orderBy('q.date', 'DESC');
 
-        // 3. On applique les filtres si le formulaire est soumis (GET)
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
+    // src/Controller/QuestionnaireController.php
 
-            if (!empty($data['nom'])) {
-                $queryBuilder->andWhere('q.nom LIKE :nom')
-                             ->setParameter('nom', '%' . $data['nom'] . '%');
-            }
-             if (!empty($data['prenom'])) {
-                $queryBuilder->andWhere('q.prenom LIKE :prenom')
-                             ->setParameter('prenom', '%' . $data['prenom'] . '%');
-            }
+#[Route('/backoffice/questionnaires', name: 'questionnaireback_list')]
+public function listback(Request $request, QuestionnaireRepository $repo): Response
+{
+    // 1. Gestion du formulaire
+    $form = $this->createForm(QuestionnaireFilterType::class);
+    $form->handleRequest($request);
 
-            if (!empty($data['campagne'])) {
-                $queryBuilder->andWhere('q.campagne = :campagne')
-                             ->setParameter('campagne', $data['campagne']);
-            }
+    // 2. Récupération des données de filtre
+    // Si le form est soumis on prend les données, sinon un tableau vide
+    $filters = ($form->isSubmitted() && $form->isValid()) ? $form->getData() : [];
 
-            if (!empty($data['groupSanguin'])) {
-                $queryBuilder->andWhere('q.group_sanguin = :gs')
-                             ->setParameter('gs', $data['groupSanguin']);
-            }
-                // Filtre sur la DATE
-            // Filtre Date
-            if ($data['filter_date']) {
-                $queryBuilder->andWhere('q.date LIKE :d')
-                            ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-            }
+    // 3. Appel au Repository (C'est propre !)
+    $questionnaires = $repo->filterQuestionnaires($filters);
 
-            // Filtre Heure (Format 24h en base de données)
-            if ($data['filter_time']) {
-                $queryBuilder->andWhere('q.date LIKE :t')
-                            ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-            }
-            // if ($data['date_don']) {
-            //     // On récupère l'objet DateTime choisi
-            //     $selectedDateTime = $data['date_don'];
+    // 4. OPTIMISATION AJAX
+    // Si la requête est AJAX, on ne renvoie QUE le tableau (fichier partiel)
+    // Cela économise la bande passante et le temps de rendu du header/footer
+    // if ($request->isXmlHttpRequest()) {
+    //     return $this->render('questionnaire/_list.html.twig', [
+    //         'questionnaires' => $questionnaires,
+    //     ]);
+    // }
 
-            //     // On crée une borne de début (00:00:00)
-            //     $startOfDay = (clone $selectedDateTime)->setTime(0, 0, 0);
+    // 5. Affichage normal (Premier chargement de la page)
+    return $this->render('questionnaire/listback.html.twig', [
+        'questionnaires' => $questionnaires,
+        'filterForm' => $form->createView(),
+    ]);
+}
+    // #[Route('/backoffice/questionnaires', name: 'questionnaireback_list')]
+    // public function listback(Request $request, QuestionnaireRepository $questionnaireRepository): Response
+    // {
+    //     // 1. On crée le formulaire de filtre
+    //     $form = $this->createForm(QuestionnaireFilterType::class);
+    //     $form->handleRequest($request);
+
+    //     // 2. On prépare le QueryBuilder pour la liste du Backoffice
+    //     $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
+    //                          ->leftJoin('q.campagne', 'c')
+    //                          ->orderBy('q.date', 'DESC');
+
+    //     // 3. On applique les filtres si le formulaire est soumis (GET)
+    //     if ( $form->isSubmitted() && $form->isValid()) {
+    //         $data = $form->getData();
+
+    //         // if (!empty($data['nom'])) {
+    //         //     $queryBuilder->andWhere('q.nom LIKE :nom')
+    //         //                  ->setParameter('nom', '%' . $data['nom'] . '%');
+    //         // }
+    //         //  if (!empty($data['prenom'])) {
+    //         //     $queryBuilder->andWhere('q.prenom LIKE :prenom')
+    //         //                  ->setParameter('prenom', '%' . $data['prenom'] . '%');
+    //         // }
+
+    //         // if (!empty($data['campagne'])) {
+    //         //     $queryBuilder->andWhere('q.campagne = :campagne')
+    //         //                  ->setParameter('campagne', $data['campagne']);
+    //         // }
+    //         if (!empty($data['search'])) {
+    //         $search = $data['search'];
+    //         $queryBuilder->andWhere(
+    //             $queryBuilder->expr()->orX(
+    //                 'q.nom LIKE :search',
+    //                 'q.prenom LIKE :search',
+    //                 'c.titre LIKE :search'
+    //             )
+    //         )
+    //         ->setParameter('search', '%' . $search . '%');
+    //     }
+    //         if (!empty($data['groupSanguin'])) {
+    //             $queryBuilder->andWhere('q.group_sanguin = :gs')
+    //                          ->setParameter('gs', $data['groupSanguin']);
+    //         }
+    //             // Filtre sur la DATE
+    //         // Filtre Date
+    //         if ($data['filter_date']) {
+    //             $queryBuilder->andWhere('q.date LIKE :d')
+    //                         ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+    //         }
+
+    //         // Filtre Heure (Format 24h en base de données)
+    //         if ($data['filter_time']) {
+    //             $queryBuilder->andWhere('q.date LIKE :t')
+    //                         ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+    //         }
+    //         // if ($data['date_don']) {
+    //         //     // On récupère l'objet DateTime choisi
+    //         //     $selectedDateTime = $data['date_don'];
+
+    //         //     // On crée une borne de début (00:00:00)
+    //         //     $startOfDay = (clone $selectedDateTime)->setTime(0, 0, 0);
                 
-            //     // On crée une borne de fin (23:59:59)
-            //     $endOfDay = (clone $selectedDateTime)->setTime(23, 59, 59);
+    //         //     // On crée une borne de fin (23:59:59)
+    //         //     $endOfDay = (clone $selectedDateTime)->setTime(23, 59, 59);
 
-            //     $queryBuilder->andWhere('q.date BETWEEN :start AND :end')
-            //                 ->setParameter('start', $startOfDay)
-            //                 ->setParameter('end', $endOfDay);
+    //         //     $queryBuilder->andWhere('q.date BETWEEN :start AND :end')
+    //         //                 ->setParameter('start', $startOfDay)
+    //         //                 ->setParameter('end', $endOfDay);
                             
-            // }
-            // LOGIQUE DE TRI UNIQUE
-       if (!empty($data['tri'])) {
-        $parts = explode('_', $data['tri']);
-        $type = $parts[0];      // 'id' ou 'date'
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
+    //         // }
+    //         // LOGIQUE DE TRI UNIQUE
+    //    if (!empty($data['tri'])) {
+    //     $parts = explode('_', $data['tri']);
+    //     $type = $parts[0];      // 'id' ou 'date'
+    //     $direction = $parts[1]; // 'ASC' ou 'DESC'
 
-        if ($type === 'id') {
-            $queryBuilder->orderBy('q.id', $direction);
-        } else {
-            // Trie par Date ET par Heure simultanément
-            $queryBuilder->orderBy('q.date', $direction);
-        }
-        }}
+    //     if ($type === 'id') {
+    //         $queryBuilder->orderBy('q.id', $direction);
+    //     } else {
+    //         // Trie par Date ET par Heure simultanément
+    //         $queryBuilder->orderBy('q.date', $direction);
+    //     }
+    //     }}
 
-        // 4. On envoie 'filterForm' à la vue listback.html.twig
-        return $this->render('questionnaire/listback.html.twig', [
-            'questionnaires' => $queryBuilder->getQuery()->getResult(),
-            'filterForm' => $form->createView(),
-        ]);
-    }
+    //     // 4. On envoie 'filterForm' à la vue listback.html.twig
+    //     return $this->render('questionnaire/listback.html.twig', [
+    //         'questionnaires' => $queryBuilder->getQuery()->getResult(),
+    //         'filterForm' => $form->createView(),
+    //     ]);
+    // }
 
  #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
     public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response

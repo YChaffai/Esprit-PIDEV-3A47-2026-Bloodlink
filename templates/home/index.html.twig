@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil | BloodLink{% endblock %}
+
+{% block body %}
+<div class="row align-items-center" style="min-height: 75vh; padding-top: 40px;">
+    <div class="col-lg-7 mb-5 mb-lg-0">
+        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill mb-4 fw-bold" style="letter-spacing: 1px;">
+            <i class="fas fa-heartbeat me-2"></i> TECHNOLOGIE AU SERVICE DE LA VIE
+        </span>
+        
+        <h1 class="display-1" style="line-height: 0.9; margin-bottom: 25px;">
+            SAUVER DES VIES <br>
+            <span style="color: white; opacity: 0.9;">PAR LE CODE.</span>
+        </h1>
+        
+        <p class="lead mb-5" style="color: var(--muted); font-weight: 500; max-width: 580px; font-size: 1.2rem;">
+            Plus de panique dans les couloirs des hôpitaux. <strong>BloodLink</strong> est l'infrastructure numérique qui connecte les banques de sang aux donneurs en temps réel.
+        </p>
+        
+        <div class="d-flex flex-wrap gap-3">
+            <a href="{{ path('campagne_list') }}" class="btn btn-primary px-5 py-3 shadow-lg">
+                <i class="fas fa-calendar-check me-2"></i> PRENDRE RENDEZ-VOUS
+            </a>
+            <a href="#stats" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold" style="border-width: 2px; border-color: var(--border);">
+                VOIR L'IMPACT
+            </a>
+        </div>
+
+        <div class="row mt-5 pt-4 border-top" style="border-color: var(--border) !important;">
+            <div class="col-4">
+                <h3 class="mb-0 fw-bold text-white">100%</h3>
+                <small class="text-uppercase" style="color: var(--muted); font-size: 0.7rem; letter-spacing: 1px;">Disponibilité</small>
+            </div>
+            <div class="col-4">
+                <h3 class="mb-0 fw-bold" style="color: var(--primary);">+2.5k</h3>
+                <small class="text-uppercase" style="color: var(--muted); font-size: 0.7rem; letter-spacing: 1px;">Donneurs</small>
+            </div>
+            <div class="col-4">
+                <h3 class="mb-0 fw-bold text-white">Tunisie</h3>
+                <small class="text-uppercase" style="color: var(--muted); font-size: 0.7rem; letter-spacing: 1px;">Déploiement</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="glass-card position-relative overflow-hidden border-0" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(20px);">
+            <div style="position: absolute; top: -30%; right: -30%; width: 300px; height: 300px; background: var(--primary); filter: blur(120px); opacity: 0.15; z-index: 0;"></div>
+            
+            <div class="position-relative" style="z-index: 1;">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-4 rounded-circle bg-danger bg-opacity-10 mb-3">
+                        <i class="fas fa-tint fa-3x text-danger animate-pulse"></i>
+                    </div>
+                    <h3 class="fw-900 text-white">ALERTE CRITIQUE</h3>
+                    <p class="small text-muted">Stock en baisse à Ariana & Tunis</p>
+                </div>
+
+                <div class="p-4 rounded-4 mb-4 text-center" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border);">
+                    <span class="text-muted d-block small text-uppercase mb-2">Groupe Sanguin Prioritaire</span>
+                    <h2 class="display-3 fw-900 mb-0" style="color: var(--primary);">O Négatif</h2>
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn btn-primary py-3 rounded-4 fw-bold">
+                        RÉPONDRE À L'APPEL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="mt-5 pt-5">
+    <div class="glass-card py-5" style="margin-bottom: 0; border-radius: 30px 30px 0 0; background: linear-gradient(to top, rgba(230, 57, 57, 0.05), transparent);">
+        <div class="row g-5">
+            <div class="col-md-5">
+                <h4 class="fw-900 text-white mb-4"><i class="fas fa-droplet text-primary me-2"></i> BLOODLINK</h4>
+                <p style="color: var(--muted); line-height: 1.6; max-width: 350px;">
+                    Une plateforme conçue pour moderniser le don de sang. Nous utilisons le Deep Learning et les réseaux pour optimiser chaque goutte.
+                </p>
+                <div class="d-flex gap-3 mt-4">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-6">
+                <h6 class="text-white fw-bold text-uppercase mb-4"></h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="nav-footer-link"></a></li>
+                    <li class="mb-2"><a href="#" class="nav-footer-link"></a></li>
+                    <li class="mb-2"><a href="#" class="nav-footer-link"></a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-4 col-6 text-md-end">
+                <h6 class="text-white fw-bold text-uppercase mb-4">Contact & Support</h6>
+                <p class="small text-white">Cebalat, Ariana Governorate, Tunisie</p>
+                <p class="text-white fw-bold">contact@noa-bloodlink.tn</p>
+                <p class="text-white fw-bold">+16 95 122 960</p>
+
+            </div>
+        </div>
+        
+        <div class="text-center mt-5 pt-4 border-top" style="border-color: var(--border) !important;">
+            <p class="small mb-0" style="color: var(--muted);">© 2026 NOA Architecture. Built with <i class="fas fa-heart text-danger"></i> for humans.</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Styles spécifiques pour index.html.twig */
+    .animate-pulse {
+        animation: pulse-red 2s infinite;
+    }
+    @keyframes pulse-red {
+        0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(230, 57, 57, 0)); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 15px rgba(230, 57, 57, 0.4)); }
+        100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(230, 57, 57, 0)); }
+    }
+
+    .social-link {
+        width: 45px; height: 45px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.05); color: white;
+        border-radius: 12px; text-decoration: none; transition: 0.3s;
+    }
+    .social-link:hover {
+        background: var(--primary); transform: translateY(-5px); color: white;
+    }
+
+    .nav-footer-link {
+        color: var(--muted); text-decoration: none; transition: 0.3s; font-size: 0.9rem;
+    }
+    .nav-footer-link:hover {
+        color: var(--primary); padding-left: 5px;
+    }
+
+    .fw-900 { font-weight: 900; }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Animation GSAP pour l'entrée
+        gsap.from(".display-1", { duration: 1.2, y: 100, opacity: 0, ease: "power4.out" });
+        gsap.from(".lead", { duration: 1, y: 50, opacity: 0, ease: "power4.out", delay: 0.2 });
+        gsap.from(".glass-card", { duration: 1.5, scale: 0.8, opacity: 0, ease: "elastic.out(1, 0.75)", delay: 0.4 });
+    });
+</script>
+{% endblock %}

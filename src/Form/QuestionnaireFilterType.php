@@ -16,6 +16,16 @@ class QuestionnaireFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+        // 1. CHAMP DE RECHERCHE UNIQUE
+            ->add('search', TextType::class, [
+                'required' => false,
+                'label' => false,
+                'attr' => [
+                    'placeholder' => 'Rechercher (Nom, Prénom, campagne)...',
+                    'class' => 'form-control',
+                    'autocomplete' => 'off'
+                ]
+            ]) 
            ->add('nom', TextType::class, [
                 'required' => false,
                 'label' => false,
