@@ -1,0 +1,108 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Nouvelle Demande | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Nouvelle Demande</h1>
+                <p class="text-white-50 mb-0">Créer une nouvelle demande de sang pour une banque.</p>
+            </div>
+            <a href="{{ path('back_demande_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+            </a>
+        </div>
+
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+        <div class="glass-card overflow-hidden" style="background: rgba(0, 0, 0, 0.4);">
+            <div class="p-4 p-md-5">
+                <h4 class="fw-black text-uppercase mb-4" style="color: var(--primary); letter-spacing: 1px;">
+                    Détails de la Demande
+                </h4>
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Banque</label>
+                        {{ form_widget(form.banque, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.banque.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.banque.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Type de Sang</label>
+                        {{ form_widget(form.typeSang, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.typeSang.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.typeSang.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Quantité</label>
+                        {{ form_widget(form.quantite, {'attr': {'class': 'form-control form-control-premium border-0', 'placeholder': 'Quantité en unités'}}) }}
+                        {% if form.quantite.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.quantite.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Urgence</label>
+                        {{ form_widget(form.urgence, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                        {% if form.urgence.vars.errors|length > 0 %}
+                            <div class="mt-2 fade-in">
+                                {% for error in form.urgence.vars.errors %}
+                                    <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-4 pb-4 px-md-5 pb-md-5 d-flex justify-content-end align-items-center gap-3">
+                <a href="{{ path('back_demande_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                    ANNULER
+                </a>
+                <button type="submit" class="btn btn-premium px-5">
+                    <i class="fa-solid fa-check me-2"></i>ENREGISTRER LA DEMANDE
+                </button>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<style>
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+{% endblock %}

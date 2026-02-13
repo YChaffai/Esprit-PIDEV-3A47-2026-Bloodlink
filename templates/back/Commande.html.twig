@@ -1,0 +1,48 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Commandes | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Commandes de Sang</h1>
+        <p class="text-white-50 mb-0">Gérez les demandes de sang et suivez leur statut de validation.</p>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    {# Filters Bar #}
+    <form class="js-filter-form" action="{{ path('back_commandes_index') }}" method="get">
+        <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between mb-4">
+            <div class="input-group" style="max-width:400px;">
+                <span class="input-group-text bg-transparent border-0 ps-3">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+                <input name="search" type="text" class="form-control form-control-premium border-0" placeholder="Rechercher par référence, sang..." value="{{ search|default('') }}">
+            </div>
+
+            <div class="d-flex gap-2">
+                <select name="status" class="form-select form-control-premium border-0" style="max-width:180px;">
+                    <option value="">Tous statuts</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>En attente</option>
+                    <option value="accepted" {% if status == 'accepted' %}selected{% endif %}>Acceptée</option>
+                    <option value="rejected" {% if status == 'rejected' %}selected{% endif %}>Refusée</option>
+                </select>
+
+                <select name="priority" class="form-select form-control-premium border-0" style="max-width:160px;">
+                    <option value="">Priorités</option>
+                    <option value="urgent" {% if priority == 'urgent' %}selected{% endif %}>Urgent</option>
+                    <option value="high" {% if priority == 'high' %}selected{% endif %}>Haute</option>
+                    <option value="normal" {% if priority == 'normal' %}selected{% endif %}>Normale</option>
+                    <option value="low" {% if priority == 'low' %}selected{% endif %}>Basse</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    {# Table #}
+    <div id="list-content">
+        {% include 'back/commande/_commande_table.html.twig' %}
+    </div>
+</div>
+{% endblock %}

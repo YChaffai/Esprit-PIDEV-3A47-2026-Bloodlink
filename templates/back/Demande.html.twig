@@ -1,0 +1,53 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Demandes | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Demandes de Sang</h1>
+        <p class="text-white-50 mb-0">Gérez les demandes de sang et validez ou refusez les requêtes.</p>
+    </div>
+    <a href="{{ path('back_demande_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+        <i class="fa-solid fa-plus"></i> NOUVELLE DEMANDE
+    </a>
+</div>
+
+<div class="glass-card p-4">
+    {# Filters Bar #}
+    <form class="js-filter-form" action="{{ path('back_demande_index') }}" method="get">
+        <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between mb-4">
+            <div class="input-group" style="max-width:400px;">
+                <span class="input-group-text bg-transparent border-0 ps-3">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+                <input name="search" type="text" class="form-control form-control-premium border-0" placeholder="Rechercher par type, statut, banque..." value="{{ search }}">
+            </div>
+
+            <div class="d-flex gap-2">
+                <select name="urgence" class="form-select form-control-premium border-0" style="max-width:180px;">
+                    <option value="">Toutes urgences</option>
+                    <option value="normale" {% if urgence == 'normale' %}selected{% endif %}>Normale</option>
+                    <option value="urgente" {% if urgence == 'urgente' %}selected{% endif %}>Urgente</option>
+                </select>
+
+                <select name="status" class="form-select form-control-premium border-0" style="max-width:180px;">
+                    <option value="">Tous statuts</option>
+                    <option value="en_attente" {% if status == 'en_attente' %}selected{% endif %}>En attente</option>
+                    <option value="en_cours" {% if status == 'en_cours' %}selected{% endif %}>En cours</option>
+                    <option value="validee" {% if status == 'validee' %}selected{% endif %}>Validée</option>
+                    <option value="refusee" {% if status == 'refusee' %}selected{% endif %}>Refusée</option>
+                    <option value="satisfaite" {% if status == 'satisfaite' %}selected{% endif %}>Satisfaite</option>
+                    <option value="annulee" {% if status == 'annulee' %}selected{% endif %}>Annulée</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    {# Table #}
+    <div id="list-content">
+        {% include 'back/demande/_demande_table.html.twig' %}
+    </div>
+</div>
+{% endblock %}
+

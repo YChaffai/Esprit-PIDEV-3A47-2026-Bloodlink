@@ -1,0 +1,127 @@
+{# templates/user/_form.html.twig #}
+
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+<div class="glass-card overflow-hidden" style="background: rgba(0, 0, 0, 0.4);">
+  <div class="p-4 p-md-5">
+    <h4 class="fw-black text-uppercase mb-4" style="color: var(--primary); letter-spacing: 1px;">
+      {{ title|default('Informations Utilisateur') }}
+    </h4>
+
+    <div class="row g-4">
+      {# --- 1. Loop for Standard Fields (Prenom, Nom, Email) --- #}
+      {% set fields = [
+        {'name': 'prenom', 'label': 'Prénom', 'placeholder': 'Ex: Jean', 'col': '6'},
+        {'name': 'nom', 'label': 'Nom', 'placeholder': 'Ex: Dupont', 'col': '6'},
+        {'name': 'email', 'label': 'Email', 'placeholder': 'jean.dupont@example.com', 'col': '12'}
+      ] %}
+
+      {% for field in fields %}
+        {% set formField = attribute(form, field.name) %}
+        <div class="col-md-{{ field.col }}">
+          <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">
+            {{ field.label }}
+          </label>
+
+          {{ form_widget(formField, {
+            'attr': {
+              'class': 'form-control form-control-premium border-0' ~ (formField.vars.errors|length > 0 ? ' is-invalid' : ''),
+              'placeholder': field.placeholder
+            }
+          }) }}
+
+          {% if formField.vars.errors|length > 0 %}
+            <div class="mt-2 fade-in">
+              {% for error in formField.vars.errors %}
+                <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {# --- 2. Password Field --- #}
+      {% if form.plainPassword is defined %}
+        <div class="col-md-6">
+          <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">
+            Mot De Passe
+          </label>
+
+          {{ form_widget(form.plainPassword, {
+            'attr': {
+              'class': 'form-control form-control-premium border-0' ~ (form.plainPassword.vars.errors|length > 0 ? ' is-invalid' : ''),
+              'placeholder': '••••••••'
+            }
+          }) }}
+
+          {% if form.plainPassword.vars.errors|length > 0 %}
+            <div class="mt-2 fade-in">
+              {% for error in form.plainPassword.vars.errors %}
+                <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          
+          {% if form.plainPassword.first is defined and form.plainPassword.first.vars.errors|length > 0 %}
+            <div class="mt-2 fade-in">
+              {% for error in form.plainPassword.first.vars.errors %}
+                <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                  <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {# --- 3. Role Field --- #}
+      <div class="{{ form.plainPassword is defined ? 'col-md-6' : 'col-12' }}">
+        <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">
+          Rôle
+        </label>
+
+        {{ form_widget(form.role, {
+          'attr': {
+            'class': 'form-select form-control-premium border-0' ~ (form.role.vars.errors|length > 0 ? ' is-invalid' : '')
+          }
+        }) }}
+
+        {% if form.role.vars.errors|length > 0 %}
+          <div class="mt-2 fade-in">
+            {% for error in form.role.vars.errors %}
+              <div class="d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="px-4 pb-4 px-md-5 pb-md-5 d-flex justify-content-end align-items-center gap-3">
+    <button type="submit" class="btn btn-premium px-5">
+      <i class="fa-solid fa-check me-2"></i>{{ button_label|default('Enregistrer') }}
+    </button>
+  </div>
+</div>
+
+{% if form._token is defined %}
+    {{ form_widget(form._token) }}
+{% endif %}
+
+{{ form_end(form, {'render_rest': false}) }}
+
+<style>
+  .fade-in {
+    animation: fadeIn 0.3s ease-in;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

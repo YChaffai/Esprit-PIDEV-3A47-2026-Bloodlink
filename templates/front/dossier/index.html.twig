@@ -1,0 +1,206 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mon Dossier Médical | BloodLink{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-file-medical me-2" style="color:var(--primary);"></i>
+                {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
+                    Gestion des Dossiers Médicaux
+                {% else %}
+                    Mes Dossiers Médicaux
+                {% endif %}
+            </h1>
+            <div style="color:var(--muted);">
+                {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
+                    Consultez et gérez les dossiers médicaux des patients.
+                {% else %}
+                    Un dossier médical est créé pour chaque don effectué.
+                {% endif %}
+            </div>
+        </div>
+
+        {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
+            <div>
+                <a href="{{ path('front_dossier_new') }}" class="btn btn-premium d-flex align-items-center gap-2 px-4 shadow-sm" style="background:var(--primary); color:white; border-radius:30px; font-weight:700;">
+                    <i class="fa-solid fa-plus-circle"></i> NOUVEAU DOSSIER
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    {# --- SEARCH & FILTER BAR --- #}
+    <div class="glass-card p-3 mb-4">
+        <form method="get" action="{{ path('front_dossier_show') }}" class="row g-3 align-items-center">
+            
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-secondary text-muted" style="border-right:0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ currentSearch }}" 
+                           class="form-control bg-transparent text-white border-secondary border-start-0" 
+                           placeholder="Rechercher (Type, ID...)" 
+                           style="box-shadow:none;">
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <select name="sort" class="form-select bg-transparent text-white border-secondary" style="box-shadow:none;" onchange="this.form.submit()">
+                    <option value="date" class="text-dark" {% if currentSort == 'date' %}selected{% endif %}>📅 Trier par Date</option>
+                    <option value="age" class="text-dark" {% if currentSort == 'age' %}selected{% endif %}>🎂 Trier par Age</option>
+                    <option value="poids" class="text-dark" {% if currentSort == 'poids' %}selected{% endif %}>⚖️ Trier par Poids</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-md-2 d-grid">
+                {% set newDir = currentDir == 'ASC' ? 'DESC' : 'ASC' %}
+                {% set icon = currentDir == 'ASC' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short' %}
+                <a href="{{ path('front_dossier_show', {'q': currentSearch, 'sort': currentSort, 'dir': newDir}) }}" 
+                   class="btn btn-outline-secondary text-white fw-bold d-flex align-items-center justify-content-center gap-2">
+                   <i class="fa-solid {{ icon }}"></i> 
+                   {{ currentDir == 'ASC' ? 'Croissant' : 'Décroissant' }}
+                </a>
+            </div>
+        </form>
+    </div>
+
+    {% if dossiers|length > 0 %}
+        <div class="glass-card overflow-hidden">
+            <div class="p-4 d-flex justify-content-between align-items-center"
+                 style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+                <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">Historique Médical</div>
+                <div class="small fw-bold text-white">{{ dossiers|length }} résultats trouvés</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark mb-0 align-middle"
+                       style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
+                    <thead>
+                        <tr style="color:var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
+                            <th class="py-3 ps-4">Patient</th>
+                            <th class="py-3">Don Associé</th>
+                            <th class="py-3">Constantes</th>
+                            <th class="py-3 text-center">Indice de Masse Corporelle (IMC)</th>
+                            <th class="py-3 pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dossier in dossiers %}
+                            {% set heightM = dossier.taille / 100 %}
+                            {% set bmi = 0 %}
+                            {% set bmiColor = 'secondary' %}
+                            {% set bmiLabel = 'Inconnu' %}
+                            
+                            {% if heightM > 0 %}
+                                {% set bmi = (dossier.poid / (heightM * heightM))|number_format(1) %}
+                                {% if bmi < 18.5 %}{% set bmiColor = 'info' %}{% set bmiLabel = 'Insuffisance' %}
+                                {% elseif bmi < 25 %}{% set bmiColor = 'success' %}{% set bmiLabel = 'Normal' %}
+                                {% elseif bmi < 30 %}{% set bmiColor = 'warning' %}{% set bmiLabel = 'Surpoids' %}
+                                {% else %}{% set bmiColor = 'danger' %}{% set bmiLabel = 'Obésité' %}{% endif %}
+                            {% endif %}
+
+                            <tr class="cmd-row transition-all" style="border-top:1px solid var(--border);">
+                                <td class="py-4 ps-4">
+                                    {% if dossier.client and dossier.client.user %}
+                                        <div class="fw-bold text-white">{{ dossier.client.user.nomComplet }}</div>
+                                        <div class="small text-muted">ID Patient: #{{ dossier.client.id }}</div>
+                                    {% else %}
+                                        <span class="text-muted">Anonyme</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="d-flex align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25" 
+                                             style="width:48px; height:48px;">
+                                            <i class="fa-solid fa-droplet text-danger opacity-75"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-white">
+                                                {% if dossier.don %}{{ dossier.don.date|date('d/m/Y') }}{% else %}Don supprimé{% endif %}
+                                            </div>
+                                            <div class="small" style="color:var(--muted);">{{ dossier.don.typeDon ?? '—' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="py-4">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <div class="badge bg-transparent border border-secondary border-opacity-25 text-white fw-normal px-2 py-1">
+                                            <i class="fa-solid fa-weight-scale me-1 text-muted"></i>{{ dossier.poid }} kg
+                                        </div>
+                                        <div class="badge bg-transparent border border-secondary border-opacity-25 text-white fw-normal px-2 py-1">
+                                            <i class="fa-solid fa-ruler-vertical me-1 text-muted"></i>{{ dossier.taille }} cm
+                                        </div>
+                                        <div class="badge bg-transparent border border-secondary border-opacity-25 text-white fw-normal px-2 py-1">
+                                            <i class="fa-solid fa-cake-candles me-1 text-muted"></i>{{ dossier.age }} ans
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="py-4 text-center">
+                                    {% if heightM > 0 %}
+                                        <div class="d-flex align-items-center justify-content-center gap-3">
+                                            <div class="text-end">
+                                                <div class="fw-black fs-4 text-white" style="line-height:1;">{{ bmi }}</div>
+                                                <span class="badge rounded-pill bg-{{ bmiColor }} bg-opacity-10 text-{{ bmiColor }} border border-{{ bmiColor }} border-opacity-25 mt-1">
+                                                    {{ bmiLabel }}
+                                                </span>
+                                            </div>
+
+                                            {% set chartConfig = {
+                                                "type": "gauge",
+                                                "data": { "datasets": [{ "value": bmi, "data": [18.5, 25, 30, 40], "backgroundColor": ["#0dcaf0", "#198754", "#ffc107", "#dc3545"], "borderWidth": 0 }] },
+                                                "options": { "needle": { "radiusPercentage": 2, "widthPercentage": 4, "lengthPercentage": 70, "color": "white" }, "valueLabel": { "display": false }, "plugins": { "datalabels": { "display": false } } }
+                                            } %}
+                                            <img src="https://quickchart.io/chart?c={{ chartConfig|json_encode|url_encode }}&width=100&height=60" 
+                                                 alt="Gauge IMC" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted small">Incomplet</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="py-4 pe-4 text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ path('front_dossier_edit', {'id': dossier.id}) }}" 
+                                           class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
+                                            <i class="fa-solid fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="{{ path('front_dossier_delete', {'id': dossier.id}) }}" onsubmit="return confirm('Supprimer ce dossier ?');" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_dossier_' ~ dossier.id) }}">
+                                            <button class="btn btn-sm rounded-pill bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3">
+                                                <i class="fa-solid fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card p-5 text-center">
+            <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:76px;height:76px;background: rgba(230,57,57,.1); border: 1px solid rgba(230,57,57,.2);">
+                <i class="fa-solid fa-file-circle-question fs-2 text-primary" style="color:var(--primary) !important;"></i>
+            </div>
+            <h4 class="fw-black text-white mb-2">Aucun dossier trouvé</h4>
+            <p class="text-white-50 mb-0">Effectuez un don pour générer votre premier dossier médical complet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .cmd-row:hover { background: rgba(255,255,255,0.03) !important; }
+    .form-select option { background: #111; color: #fff; }
+</style>
+{% endblock %}

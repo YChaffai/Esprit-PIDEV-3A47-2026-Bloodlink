@@ -1,221 +1,61 @@
-{# {% extends 'base.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block title %}Liste des questionnaires{% endblock %}
+{% block title %}Liste des questionnaires | BloodLink Admin{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1>Liste des questionnaires</h1>
-    <a  href="{{ path('questionnaireback_new')}}">create questionnaire</a>
-
-    <hr> #}
-{# Filtres #}
-{# <div class="card p-3 mb-4 shadow-sm">
-    {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form'}}) }}
-        <div class="row g-2 align-items-center">
-            <div class="col-md-2">{{ form_widget(filterForm.nom) }}</div>
-            <div class="col-md-2">{{ form_widget(filterForm.prenom) }}</div>
-            <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
-            <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
-
-            <div class="col-md-3">{{ form_widget(filterForm.campagne) }}</div>
-            <div class="col-md-2">{{ form_widget(filterForm.groupSanguin) }}</div>
-            <div class="col-md-3">{{ form_widget(filterForm.tri) }}</div>
-
-            <div class="col-md-1">
-                <a href="{{ path('questionnaireback_list') }}" class="btn btn-outline-danger btn-sm">Reset</a>
-            </div>
-        </div>
-    {{ form_end(filterForm, {'render_rest': false}) }}
-</div> #}
-{# 
-    {% for quest in questionnaires %}
-        <div class="mb-4">
-        <p><b>id questionnaire : </b> {{ quest.id}} </p>
-            <p><b>nom : </b> {{ quest.nom }} </p>
-            <p><b>prenom : </b> {{ quest.prenom }} </p>
-    
-            <p><b>Campagne : </b> {{ quest.campagne.titre }} </p>
-            
-            <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>
-            <p><b>Group_sanguin : </b> {{ quest.getGroupSanguin() }} </p>
-
-            <a  href="{{ path('questionnaireback_details', { id : quest.id })}}">Details</a>
-
-         </div>
-        <hr>
-    {% else %}
-        <p>Aucun questionnaire trouvé.</p>
-    {% endfor %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Questionnaires</h1>
+        <p class="text-white-50 mb-0">Consultez et gérez les questionnaires des donneurs.</p>
+    </div>
+    <a href="{{ path('questionnaireback_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+        <i class="fa-solid fa-plus"></i> NOUVEAU QUESTIONNAIRE
+    </a>
 </div>
 
-<script>
-    const form = document.getElementById('auto-filter-form');
-    form.querySelectorAll('input, select').forEach(element => {
-        element.addEventListener('change', () => form.submit());
-        
-        // Pour une recherche plus fluide au clavier sur le nom/prénom
-        if (element.type === 'text') {
-            element.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    form.submit();
-                }
-            });
-        }
-    });
-</script>
-{% endblock %} #}
-
-{% extends 'base.html.twig' %}
-
-{% block title %}Liste des questionnaires{% endblock %}
-
-{% block body %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Liste des questionnaires</h1>
-        <a href="{{ path('questionnaireback_new') }}" class="btn btn-primary rounded-pill px-4">Create Questionnaire</a>
-    </div>
-
-    {# Filtres compacts #}
-    <div class="glass-card p-3 mb-4 shadow-sm" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px;">
-        {# ID IMPORTANT : on garde 'auto-filter-form' #}
-        {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form'}}) }}
-            <div class="row g-1 align-items-center">
-                {% set s = 'height: 38px; background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;' %}
-                 {# Barre de recherche #}
-                <div class="col-md-5">
-                    <div class="input-group">
-                        {{ form_widget(filterForm.search, {'attr': {'style': s, 'placeholder': 'Rechercher (Nom, Prénom, Groupe, Campagne)...'}}) }}
-                    </div>
+<div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
+    {# Filtres #}
+    <div class="mb-4">
+        {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form', 'class': 'js-filter-form'}}) }}
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Recherche</label>
+                    <input type="text" name="search" class="form-control form-control-premium border-0" placeholder="Nom ou Prénom..." value="{{ app.request.query.get('search') }}">
                 </div>
-                <div class="col-md-2">{{ form_widget(filterForm.filter_date, {'attr': {'style': s}}) }}</div>
-                <div class="col-md-2">{{ form_widget(filterForm.filter_time, {'attr': {'style': s}}) }}</div>
-                <div class="col-md-2">{{ form_widget(filterForm.groupSanguin, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Groupe Sanguin</label>
+                    {{ form_widget(filterForm.groupSanguin, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Campagne</label>
+                    {{ form_widget(filterForm.campagne, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
                 
-               
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date</label>
+                    {{ form_widget(filterForm.filter_date, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                 <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Heure</label>
+                    {{ form_widget(filterForm.filter_time, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Tri</label>
+                    {{ form_widget(filterForm.tri, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
 
-                <div class="col-md-3 mt-2">{{ form_widget(filterForm.tri, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
-
-                <div class="col-md-2">
-                    <a href="{{ path('questionnaireback_list') }}" class="btn btn-danger no-popup w-100">Reset</a>
+                <div class="col-md-3">
+                    <a href="{{ path('questionnaireback_list') }}" class="btn btn-outline-danger w-100 py-3 fw-bold rounded-pill">
+                        <i class="fa-solid fa-rotate-left me-2"></i> RÉINITIALISER
+                    </a>
                 </div>
             </div>
         {{ form_end(filterForm, {'render_rest': false}) }}
-
-      
     </div>
 
-    {# Liste des résultats #}
-    <div id="results-area" style="transition: opacity 0.3s ease;">
-        {% for quest in questionnaires %}
-            <div class="glass-card mb-3 p-3" style="border-left: 4px solid var(--primary);">
-                <div class="row align-items-center">
-                    <div class="col-md-1">
-                        <span class="text-white-50 small">#{{ quest.id }}</span>
-                    </div>
-                    <div class="col-md-3">
-                        <b class="text-white-50 small" >nom et prenom:</b> <span class="text-white">{{ quest.nom}} {{ quest.prenom }}</span>
-                    </div>
-                    <div class="col-md-2 text-center">
-                        <span class="text-white-50 small">groupe:</span> <span class="text-white">{{ quest.getGroupSanguin() }}</span>
-                    </div>
-                    <div class="col-md-3">
-                        <span class="text-white-50 small">Campagne:</span> <span class="text-white">{{ quest.campagne.titre }}</span>
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <span class="text-white-50" style="font-size: 0.85rem;">{{ quest.date | date("d/m/Y H:i") }}</span>
-                    </div>
-                    <div class="col-md-1 text-end">
-                        <a href="{{ path('questionnaireback_details', { id : quest.id }) }}" class="btn btn-sm btn-outline-light rounded-circle">
-                            <i class="fas fa-eye"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="text-center p-5 glass-card">
-                <p class="text-white-50 mb-0">Aucun questionnaire trouvé.</p>
-            </div>
-        {% endfor %}
+    {# Table #}
+    <div id="list-content">
+        {% include 'questionnaire/_listback_table.html.twig' %}
     </div>
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById('auto-filter-form');
-    const area = document.getElementById('results-area');
-    let ctrl = new AbortController(); // Pour annuler les requêtes précédentes
-
-    if (!form || !area) return;
-
-    // Fonction pour ne pas spammer le serveur (attend 300ms après la frappe)
-    const debounce = (fn, delay) => {
-        let timer;
-        return (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn(...args), delay);
-        };
-    };
-
-    const updateResults = () => {
-        // 1. On annule la requête précédente si elle tourne encore
-        ctrl.abort(); 
-        ctrl = new AbortController();
-
-        // 2. On prépare l'URL avec les données du formulaire
-        const formData = new FormData(form);
-        const url = location.pathname + '?' + new URLSearchParams(formData).toString();
-        
-        // Petit effet visuel pour dire "ça charge"
-        area.style.opacity = '0.5';
-
-        // 3. On lance la requête
-        fetch(url, { 
-            headers: {'X-Requested-With': 'XMLHttpRequest'}, 
-            signal: ctrl.signal 
-        })
-        .then(response => response.text())
-        .then(html => {
-            // 4. MAGIE ICI : On parse le HTML complet reçu
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            
-            // On cherche la nouvelle liste dans la page reçue
-            const newContent = doc.getElementById('results-area');
-            
-            // On remplace l'ancienne liste par la nouvelle
-            if (newContent) {
-                area.innerHTML = newContent.innerHTML;
-            }
-            
-            // 5. On met à jour l'URL du navigateur et on remet l'opacité
-            history.replaceState(null, '', url);
-            area.style.opacity = '1';
-        })
-        .catch(err => {
-            // On ignore les erreurs d'annulation
-            if (err.name !== 'AbortError') {
-                console.error(err);
-                area.style.opacity = '1';
-            }
-        });
-    };
-
-    // --- Écouteurs d'événements ---
-
-    // Empêcher le rechargement classique du formulaire
-    form.addEventListener('submit', e => { e.preventDefault(); updateResults(); });
-
-    // Recherche texte (avec délai)
-    const searchInput = form.querySelector('input[name*="search"]'); // Sélecteur intelligent
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(updateResults, 300));
-    }
-
-    // Listes déroulantes et Dates (mise à jour immédiate)
-    form.querySelectorAll('select, input[type="date"], input[type="time"]').forEach(el => {
-        el.addEventListener('change', updateResults);
-    });
-});
-</script>
 {% endblock %}

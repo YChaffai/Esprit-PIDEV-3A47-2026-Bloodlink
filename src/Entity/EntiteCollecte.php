@@ -16,18 +16,30 @@ class EntiteCollecte
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $localisation = null;
 
-    #[ORM\Column]
-    private ?int $telephone = null;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le téléphone est obligatoire.')]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Le type est obligatoire.')]
+    private ?string $type = 'Hôpital'; // Hôpital, Banque, Point Mobile
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'L\'adresse est obligatoire.')]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'La ville est obligatoire.')]
+    private ?string $ville = null;
 
     /**
-     * @var Collection<int, Campagne>
+     * @var Collection<int, Compagne>
      */
-    #[ORM\ManyToMany(targetEntity: Campagne::class, mappedBy: 'entities')]
+    #[ORM\ManyToMany(targetEntity: Compagne::class, mappedBy: 'entites')]
     private Collection $campagnes;
 
     public function __construct()
@@ -52,52 +64,74 @@ class EntiteCollecte
         return $this;
     }
 
-    public function getLocalisation(): ?string
-    {
-        return $this->localisation;
-    }
 
-    public function setLocalisation(string $localisation): static
-    {
-        $this->localisation = $localisation;
-
-        return $this;
-    }
-
-    public function getTelephone(): ?int
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
-    public function setTelephone(int $telephone): static
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
 
         return $this;
     }
 
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): static
+    {
+        $this->adresse = $adresse;
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): static
+    {
+        $this->ville = $ville;
+        return $this;
+    }
+
     /**
-     * @return Collection<int, Campagne>
+     * @return Collection<int, Compagne>
      */
     public function getCampagnes(): Collection
     {
         return $this->campagnes;
     }
 
-    public function addCampagne(Campagne $campagne): static
+    public function addCampagne(Compagne $campagne): static
     {
         if (!$this->campagnes->contains($campagne)) {
             $this->campagnes->add($campagne);
-            $campagne->addEntity($this);
+            $campagne->addEntite($this);
         }
 
         return $this;
     }
 
-    public function removeCampagne(Campagne $campagne): static
+    public function removeCampagne(Compagne $campagne): static
     {
         if ($this->campagnes->removeElement($campagne)) {
-            $campagne->removeEntity($this);
+            $campagne->removeEntite($this);
         }
 
         return $this;

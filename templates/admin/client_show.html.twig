@@ -1,0 +1,163 @@
+{% extends '@EasyAdmin/crud/detail.html.twig' %}
+
+{% block content_title %}
+    Client #{{ entity.primaryKeyValue }}
+{% endblock %}
+
+{% block main %}
+    {% set c = entity.instance %}
+    {% set gs = c.typeSang ?? 'N/A' %}
+
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-pill px-3 py-2"
+                      style="background: rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:#fff;">
+                    Groupe: <strong class="ms-1">{{ gs }}</strong>
+                </span>
+
+                <span class="badge rounded-pill px-3 py-2"
+                      style="background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10); color:#fff;">
+                    ID: <strong class="ms-1">{{ c.id }}</strong>
+                </span>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                {# Back to list #}
+                <a href="{{ ea_url().setAction('index') }}"
+                   class="btn btn-sm rounded-pill fw-bold"
+                   style="background: transparent; color: #fff; border:1px solid rgba(255,255,255,.12);">
+                    <i class="fa fa-arrow-left me-1"></i> Retour
+                </a>
+
+                {# Edit #}
+                <a href="{{ ea_url().setAction('edit').setEntityId(c.id) }}"
+                   class="btn btn-sm rounded-pill fw-bold"
+                   style="background: rgba(230,57,57,.12); color:#fff; border:1px solid rgba(230,57,57,.25);">
+                    <i class="fa fa-pen me-1"></i> Modifier
+                </a>
+
+                {# Optional: jump to Don list filtered by this client (works only if DonCrud exists in EA) #}
+                {# 
+                <a href="{{ ea_url()
+                    .setController('App\\Controller\\Admin\\DonCrudController')
+                    .setAction('index')
+                    .set('filters[client][value]', c.id)
+                }}"
+                   class="btn btn-sm rounded-pill fw-bold"
+                   style="background: transparent; color:#fff; border:1px solid rgba(255,255,255,.12);">
+                    <i class="fa fa-hand-holding-heart me-1"></i> Dons
+                </a>
+                #}
+
+                {# Optional: jump to Dossier list filtered by this client (works only if DossierMedCrud exists in EA) #}
+                {#
+                <a href="{{ ea_url()
+                    .setController('App\\Controller\\Admin\\DossierMedCrudController')
+                    .setAction('index')
+                    .set('filters[client][value]', c.id)
+                }}"
+                   class="btn btn-sm rounded-pill fw-bold"
+                   style="background: transparent; color:#fff; border:1px solid rgba(255,255,255,.12);">
+                    <i class="fa fa-notes-medical me-1"></i> Dossiers
+                </a>
+                #}
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-lg-4">
+                <div class="p-4"
+                     style="background: rgba(255,255,255,.03);
+                            border: 1px solid rgba(255,255,255,.10);
+                            border-radius: 18px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,.35);">
+
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 92px; height: 92px;
+                                    background: rgba(230,57,57,.12);
+                                    border: 1px solid rgba(230,57,57,.25);
+                                    color: #fff;
+                                    font-weight: 900;
+                                    font-size: 1.35rem;">
+                            C{{ c.id }}
+                        </div>
+
+                        <h5 class="mt-3 mb-1" style="color:#fff; font-weight:900; letter-spacing:-.3px;">
+                            Client #{{ c.id }}
+                        </h5>
+                        <div class="small" style="color: rgba(255,255,255,.65);">Donneur</div>
+
+                        <div class="mt-3">
+                            <span class="badge rounded-pill px-3 py-2"
+                                  style="background: rgba(230,57,57,.14);
+                                         border:1px solid rgba(230,57,57,.25);
+                                         color:#fff;
+                                         font-size: .95rem;">
+                                {{ gs }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" style="border-color: rgba(255,255,255,.10);">
+
+                    <div class="small">
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.65);">ID</span>
+                            <span class="fw-semibold" style="color:#fff;">{{ c.id }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.65);">Groupe sanguin</span>
+                            <span class="fw-semibold" style="color:#fff;">{{ gs }}</span>
+                        </div>
+
+                        {# If you have dernierDon and want to show it (Twig date formatting won’t trigger intl issues) #}
+                        {#
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.65);">Dernier don</span>
+                            <span class="fw-semibold" style="color:#fff;">
+                                {{ c.dernierDon ? c.dernierDon|date('Y-m-d') : '—' }}
+                            </span>
+                        </div>
+                        #}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-8">
+                <div class="p-4"
+                     style="background: rgba(255,255,255,.03);
+                            border: 1px solid rgba(255,255,255,.10);
+                            border-radius: 18px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,.35);">
+
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h6 class="mb-0" style="color:#fff; font-weight:900; letter-spacing:-.2px;">
+                            Détails
+                        </h6>
+                        <div class="small" style="color: rgba(255,255,255,.65);">
+                            EasyAdmin • Detail View
+                        </div>
+                    </div>
+
+                    {# renders normal EasyAdmin detail fields #}
+                    {{ parent() }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Small CSS polish for EA detail page in dark mode #}
+    <style>
+        .ea-content, .content-panel, .content-panel-body { background: transparent !important; }
+        .ea-detail .field-label { color: rgba(255,255,255,.65) !important; }
+        .ea-detail .field-value { color: #fff !important; }
+        .ea-detail .form-control, .ea-detail input, .ea-detail select, .ea-detail textarea {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid rgba(255,255,255,.10) !important;
+            color: #fff !important;
+        }
+    </style>
+{% endblock %}

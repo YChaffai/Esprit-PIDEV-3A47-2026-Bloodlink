@@ -1,0 +1,148 @@
+{% extends '@EasyAdmin/crud/detail.html.twig' %}
+
+{% block content_title %}
+    Don #{{ entity.primaryKeyValue }}
+{% endblock %}
+
+{% block main %}
+    {% set d = entity.instance %}
+    {# Safe fallbacks #}
+    {% set type = d.typeDon ?? 'N/A' %}
+    {% set dateDon = d.date ? d.date|date('d/m/Y') : '—' %}
+    {% set qty = d.quantite ? (d.quantite ~ ' ml') : '—' %}
+    
+    {# Timestamp Formatting #}
+    {% set created = d.createdAt ? d.createdAt|date('d/m/Y H:i') : '—' %}
+    {% set updated = d.updatedAt ? d.updatedAt|date('d/m/Y H:i') : '—' %}
+
+    <div class="container-fluid">
+        {# HEADER BADGES #}
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-pill px-3 py-2"
+                      style="background: rgba(230,57,57,.14); border:1px solid rgba(230,57,57,.25); color:#fff;">
+                    Type: <strong class="ms-1">{{ type }}</strong>
+                </span>
+                <span class="badge rounded-pill px-3 py-2"
+                      style="background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.10); color:#fff;">
+                    ID: <strong class="ms-1">{{ d.id }}</strong>
+                </span>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ ea_url().setAction('index') }}"
+                   class="btn btn-sm rounded-pill fw-bold"
+                   style="background: transparent; color: #fff; border:1px solid rgba(255,255,255,.12);">
+                    <i class="fa fa-arrow-left me-1"></i> Retour
+                </a>
+                <a href="{{ ea_url().setAction('edit').setEntityId(d.id) }}"
+                   class="btn btn-sm rounded-pill fw-bold"
+                   style="background: rgba(230,57,57,.12); color:#fff; border:1px solid rgba(230,57,57,.25);">
+                    <i class="fa fa-pen me-1"></i> Modifier
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            {# LEFT SIDEBAR #}
+            <div class="col-12 col-lg-4">
+                <div class="p-4"
+                     style="background: rgba(255,255,255,.03);
+                            border: 1px solid rgba(255,255,255,.10);
+                            border-radius: 18px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,.35);">
+
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 92px; height: 92px;
+                                    background: rgba(230,57,57,.12);
+                                    border: 1px solid rgba(230,57,57,.25);
+                                    color: #fff;
+                                    font-weight: 900;
+                                    font-size: 1.35rem;">
+                            <i class="fa fa-hand-holding-droplet fa-lg"></i>
+                        </div>
+
+                        <h5 class="mt-3 mb-1" style="color:#fff; font-weight:900; letter-spacing:-.3px;">
+                            Don #{{ d.id }}
+                        </h5>
+                        <div class="small" style="color: rgba(255,255,255,.65);">
+                            {{ d.client ? ('Client #' ~ d.client.id) : 'Anonyme' }}
+                        </div>
+
+                        <div class="mt-3">
+                            <span class="badge rounded-pill px-3 py-2"
+                                  style="background: rgba(255,255,255,.06);
+                                         border:1px solid rgba(255,255,255,.10);
+                                         color:#fff;
+                                         font-size: .95rem;">
+                                {{ dateDon }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" style="border-color: rgba(255,255,255,.10);">
+
+                    <div class="small">
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.65);">Type</span>
+                            <span class="fw-semibold" style="color:#fff;">{{ type }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.65);">Quantité</span>
+                            <span class="fw-semibold" style="color:#fff;">{{ qty }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.65);">Entité</span>
+                            <span class="fw-semibold" style="color:#fff;">#{{ d.idEntite }}</span>
+                        </div>
+
+                        <hr class="my-3" style="border-color: rgba(255,255,255,.10);">
+                        
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.50);">Créé le</span>
+                            <span class="fw-semibold" style="color:rgba(255,255,255,.8);">{{ created }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-1">
+                            <span style="color: rgba(255,255,255,.50);">Modifié le</span>
+                            <span class="fw-semibold" style="color:rgba(255,255,255,.8);">{{ updated }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# RIGHT CONTENT #}
+            <div class="col-12 col-lg-8">
+                <div class="p-4"
+                     style="background: rgba(255,255,255,.03);
+                            border: 1px solid rgba(255,255,255,.10);
+                            border-radius: 18px;
+                            box-shadow: 0 20px 60px rgba(0,0,0,.35);">
+
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h6 class="mb-0" style="color:#fff; font-weight:900; letter-spacing:-.2px;">
+                            Détails du don
+                        </h6>
+                        <div class="small" style="color: rgba(255,255,255,.65);">
+                            EasyAdmin • Detail View
+                        </div>
+                    </div>
+
+                    {{ parent() }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Style Override #}
+    <style>
+        .ea-content, .content-panel, .content-panel-body { background: transparent !important; }
+        .ea-detail .field-label { color: rgba(255,255,255,.65) !important; }
+        .ea-detail .field-value { color: #fff !important; }
+        .ea-detail .form-control, .ea-detail input, .ea-detail select, .ea-detail textarea {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid rgba(255,255,255,.10) !important;
+            color: #fff !important;
+        }
+    </style>
+{% endblock %}

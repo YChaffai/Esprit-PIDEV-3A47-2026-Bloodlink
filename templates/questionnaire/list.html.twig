@@ -1,70 +1,3 @@
-{# {% extends 'base.html.twig' %}
-
-{% block title %}Liste des questionnaires{% endblock %}
-
-{% block body %} #}
-{# <div class="container mt-4">
-    <h1>Liste des questionnaires</h1>
-    <hr> #}
-{# Filtres #}
-{# <div class="card p-3 mb-4 shadow-sm"> #}
-    {# {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form'}}) }} #}
-        {# <div class="row g-2 align-items-center">        #}
-         {# <div class="col-md-3">{{ form_widget(filterForm.date) }}</div> #}
-        {# <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
-        <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>  
-            <div class="col-md-3">{{ form_widget(filterForm.campagne) }}</div>
-            <div class="col-md-3">{{ form_widget(filterForm.tri_date) }}</div>
-
-            <div class="col-md-1">
-                <a href="{{ path('questionnaire_list', { 'client_id': client_id }) }}" class="btn btn-outline-danger btn-sm">Reset</a>
-            </div>
-        </div> #}
-    {# {{ form_end(filterForm, {'render_rest': false}) }} #}
-{# </div> #}
-    {# {% for quest in questionnaires %} #}
-        {# <div class="mb-4">
-            <p><b>Campagne : </b> {{ quest.campagne.titre }} </p>
-            <p><b>Submitted le : </b> {{ quest.date|date('Y-m-d H:i') }} </p>
-             #}
-            {# <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p>#}
-            {# <a  href="{{ path('questionnaire_update', { id : quest.id })}}">Update</a>
-            <a  href="{{ path('questionnaire_delete', { id : quest.id })}}">Delete</a>
-            <a  href="{{ path('questionnaireback_details', { id : quest.id })}}">Details</a>
-             #}
-            {# {% if quest.rendezVous is null %}
-                <a href="{{ path('rendezvous_new', { 'questionnaire_id': quest.id, 'client_id': quest.client.id }) }}" >
-                Prendre rendez-vous
-                </a>
-            {% else %}
-                <a href="{{ path('rendezvous_update', { 'id': quest.rendezVous.id }) }}">
-                update mon rendez-vous
-                </a>
-            {% endif %} #}
-         {# </div>
-        <hr> #}
-    {# {% else %}
-        <p>Aucun questionnaire trouvé.</p>
-    {% endfor %} #}
-
-    {# <script>
-    const form = document.getElementById('auto-filter-form');
-    form.querySelectorAll('input, select').forEach(element => {
-        element.addEventListener('change', () => form.submit());
-        
-        // Pour une recherche plus fluide au clavier sur le nom/prénom
-        if (element.type === 'text') {
-            element.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    form.submit();
-                }
-            });
-        }
-    });
-</script> #}
-{# </div>
-{% endblock %}  #}
 {% extends 'base.html.twig' %}
 
 {% block body %}
@@ -72,7 +5,7 @@
     <h1>Liste des questionnaires</h1>
 
     <div class="glass-card mb-4">
-        {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form'}}) }}
+        {{ form_start(filterForm, {'attr': {'id': 'auto-filter-form', 'class': 'js-filter-form'}}) }}
             <div class="row g-3 align-items-center">
                 <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
                 <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
@@ -86,33 +19,9 @@
         {{ form_end(filterForm, {'render_rest': false}) }}
     </div>
 
-    {% for quest in questionnaires %}
-        <div class="glass-card">
-            <h3>{{ quest.campagne.titre }}</h3>
-            <p class="text-muted small"style="color: red !important;">Soumis le : {{ quest.date|date('d/m/Y H:i') }}</p>
-            <div class="d-flex gap-2">
-                <a href="{{ path('questionnaire_update', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Update</a>
-                <a  href="{{ path('questionnaire_delete', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Delete</a>
-                <a href="{{ path('questionnaire_details', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Details</a>
-            </div>
-        </div>
-    {% endfor %}
-
-    <script>
-    const form = document.getElementById('auto-filter-form');
-    form.querySelectorAll('input, select').forEach(element => {
-        element.addEventListener('change', () => form.submit());
-        
-        // Pour une recherche plus fluide au clavier sur le nom/prénom
-        if (element.type === 'text') {
-            element.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    form.submit();
-                }
-            });
-        }
-    });
-</script> 
+    <div id="list-content">
+        {% include 'questionnaire/_list_content.html.twig' %}
+    </div>
 </div>
 {% endblock %}
+    

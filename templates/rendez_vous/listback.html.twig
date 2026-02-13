@@ -1,249 +1,67 @@
-{# {% extends 'base.html.twig' %}
+{% extends 'back/baseBack.html.twig' %}
 
-{% block title %}Liste des rendez vous{% endblock %}
-
-{% block body %}
-<div class="container mt-4">
-    <h1>Liste des rendez vous</h1>
-    <hr>
-<div class="card p-3 mb-4 shadow-sm bg-light">
-    {{ form_start(filterForm, {'attr': {'id': 'rv-filter-form'}}) }}
-        <div class="row g-2">
-            <div class="col-md-4">{{ form_widget(filterForm.nom) }}</div>
-            <div class="col-md-2">{{ form_row(filterForm.prenom) }}</div>
-            <div class="col-md-2">{{ form_row(filterForm.campagne) }}</div>
-            <div class="col-md-2">{{ form_row(filterForm.entite) }}</div>
-            {# <div class="col-md-3">{{ form_widget(filterForm.date) }}</div> #}
-            {# <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
-            <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
-            <div class="col-md-3">{{ form_widget(filterForm.status) }}</div>
-            <div class="col-md-3">{{ form_widget(filterForm.tri) }}</div>
-            <div class="col-md-2">
-                <a href="{{ path('rendezvousback_list') }}" class="btn btn-secondary w-100">Reset</a>
-            </div>
-        </div>
-    {{ form_end(filterForm, {'render_rest': false}) }}
-</div> #}
-    {# {% for r in rendezvous %}
-        <div class="mb-4">
-            <p><b>id rendez vous : </b> {{ r.id }} </p>
-            <p><b>nom : </b> {{ r.questionnaire.client.nom }} </p>
-            <p><b>prenom : </b> {{ r.questionnaire.client.prenom }} </p>
-                <p><b>date rendez vous : </b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
-
-            <p><b>Campagne : </b> {{ r.questionnaire.campagne.titre }} </p>
-            <p><b>entite de collecte : </b> {{ r.entite.nom }} </p>
-            <p><b>status : </b> {{ r.status }} </p>
-
-            
-            <p><b>Date du questionnaire : </b> {{ quest.date | date("d/m/Y H:i") }} </p> #} 
-            {# On affiche le bouton seulement si le statut n'est pas 'annulé' #}
-            {# {% if r.status != 'annulé' %}
-                <a href="{{ path('questionnaireback_details', { id : r.questionnaire.id }) }}" class="btn btn-info btn-sm">
-                    Questionnaire
-                </a>
-                <a  href="{{ path('rendezvousback_update', { id : r.id })}}">Update</a>
-            {% endif %}            
-           
-
-            <a  href="{{ path('rendezvousback_delete', { id : r.id })}}">Delete</a>
-
-
-
-         </div>
-        <hr>
-    {% else %}
-        <p>Aucun rendez vous trouvé.</p>
-    {% endfor %}
-
-   <script> #}
-    {# const rvForm = document.getElementById('rv-filter-form');
-    if (rvForm) {
-        // 1. On écoute TOUS les selects (Campagne, Entité, Status)
-        rvForm.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', () => {
-                rvForm.submit();
-            });
-        });
-
-        // 2. On écoute TOUS les champs texte (Nom, Prénom)
-        rvForm.querySelectorAll('input[type="text"]').forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    rvForm.submit();
-                }
-            });
-            // Optionnel : soumettre aussi quand on quitte le champ
-            input.addEventListener('blur', () => {
-                if (input.value !== "") rvForm.submit();
-            });
-        });
-
-        // 3. Soumission pour la date
-        const dateInput = rvForm.querySelector('.datepicker');
-        if (dateInput) {
-            dateInput.addEventListener('blur', function() {
-                if (this.value) rvForm.submit();
-            });
-        }
-        rvForm.querySelectorAll('select').forEach(select => {
-            select.addEventListener('change', () => rvForm.submit());
-        });
-    } #}
-
-    {# const rvForm = document.getElementById('rv-filter-form');
-    if (rvForm) {
-        // On écoute le changement sur TOUS les éléments du formulaire
-        // (Date, Time, Select, Text)
-        rvForm.querySelectorAll('input, select').forEach(element => {
-            element.addEventListener('change', () => {
-                rvForm.submit();
-            });
-
-            // Pour soumettre avec la touche "Entrée" sur les champs texte
-            if (element.type === 'text') {
-                element.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        rvForm.submit();
-                    }
-                });
-            }
-        });
-    }
-</script>
-</div>
-{% endblock %} #}
-
-
-{# templates/rendez_vous/listback.html.twig #}
-{% extends 'base.html.twig' %}
-
-{% block title %}Gestion des Rendez-vous{% endblock %}
+{% block title %}Gestion des Rendez-vous | BloodLink Admin{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-white mb-0" style="text-transform: none !important;">Gestion des Rendez-vous</h1>
-        <span class="badge bg-danger rounded-pill px-3 py-2">{{ rendezvous|length }} Réservations</span>
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Rendez-vous</h1>
+        <p class="text-white-50 mb-0">Gérez les rendez-vous des donneurs et leur statut.</p>
     </div>
+    <div class="d-flex gap-2">
+         <span class="badge bg-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0" style="font-size: 0.9rem;">
+            <i class="fa-solid fa-calendar-check me-2"></i> {{ rendezvous|length }} RÉS.
+         </span>
+    </div>
+</div>
 
-    {# --- FORMULAIRE DE FILTRE (Style BloodLink) --- #}
-    <div class="glass-card p-3 mb-4 shadow-sm" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px;">
-        {{ form_start(filterForm, {'attr': {'id': 'rv-filter-form'}}) }}
-            
-            {% set s = 'height: 38px; background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.9rem;' %}
-            
-            <div class="row g-2 align-items-center">
-                {# Ligne 1 : Recherche texte & Relations #}
-                <div class="col-md-3">{{ form_widget(filterForm.nom, {'attr': {'style': s, 'placeholder': 'Nom du donneur'}}) }}</div>
-                <div class="col-md-3">{{ form_widget(filterForm.prenom, {'attr': {'style': s, 'placeholder': 'Prénom du donneur'}}) }}</div>
-                <div class="col-md-3">{{ form_widget(filterForm.campagne, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
-                <div class="col-md-3">{{ form_widget(filterForm.entite, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+<div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
+    {# Filtres #}
+    <div class="mb-4">
+        {{ form_start(filterForm, {'attr': {'id': 'rv-filter-form', 'class': 'js-filter-form'}}) }}
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Recherche</label>
+                    <input type="text" name="search" class="form-control form-control-premium border-0" placeholder="Nom ou Prénom..." value="{{ app.request.query.get('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Campagne</label>
+                     {{ form_widget(filterForm.campagne, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Entité</label>
+                     {{ form_widget(filterForm.entite, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date</label>
+                    {{ form_widget(filterForm.filter_date, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                 <div class="col-md-2">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Heure</label>
+                    {{ form_widget(filterForm.filter_time, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Statut</label>
+                    {{ form_widget(filterForm.status, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Tri</label>
+                    {{ form_widget(filterForm.tri, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
                 
-                {# Ligne 2 : Dates, Status et Tri #}
-                <div class="col-md-2 mt-2">{{ form_widget(filterForm.filter_date, {'attr': {'style': s}}) }}</div>
-                <div class="col-md-2 mt-2">{{ form_widget(filterForm.filter_time, {'attr': {'style': s}}) }}</div>
-                <div class="col-md-3 mt-2">{{ form_widget(filterForm.status, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
-                <div class="col-md-3 mt-2">{{ form_widget(filterForm.tri, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
-                
-                <div class="col-md-2 mt-2">
-                    <a href="{{ path('rendezvousback_list') }}" 
-                       class="btn btn-danger no-popup w-100">RESET</a>
+                <div class="col-md-2">
+                    <a href="{{ path('rendezvousback_list') }}" class="btn btn-outline-danger w-100 py-3 fw-bold rounded-pill">
+                        <i class="fa-solid fa-rotate-left me-2"></i> RESET
+                    </a>
                 </div>
             </div>
         {{ form_end(filterForm, {'render_rest': false}) }}
     </div>
 
-    {# --- LISTE DES RÉSULTATS --- #}
-    <div class="row">
-        {% for r in rendezvous %}
-            <div class="col-12 mb-3">
-                <div class="glass-card p-3" style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; border-left: 4px solid var(--primary);">
-                    <div class="row align-items-center">
-                        
-                        {# Info Client #}
-                        <div class="col-md-3">
-                            <p class="mb-0 text-white fw-bold">{{ r.questionnaire.client.nom|upper }} {{ r.questionnaire.client.prenom }}</p>
-                            <span class="text-white-50 small">#{{ r.id }}</span>
-                        </div>
-
-                        {# Info Date & Lieu #}
-                        <div class="col-md-3">
-                            <p class="mb-0 text-white"><i class="far fa-calendar-alt text-danger me-1"></i> {{ r.getDateDon()|date('d/m/Y') }} <span class="text-white-50">à {{ r.getDateDon()|date('H:i') }}</span></p>
-                            <p class="mb-0 text-white small"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ r.entite.nom }}</p>
-                        </div>
-
-                        {# Campagne #}
-                        <div class="col-md-3">
-                            <span class="badge bg-dark border border-secondary text-white-50 fw-normal text-truncate" style="max-width: 100%;">
-                                {{ r.questionnaire.campagne.titre }}
-                            </span>
-                        </div>
-
-                        {# Statut #}
-                        <div class="col-md-1 text-center">
-                            {% if r.status == 'confirmé' %}
-                                <span class="badge bg-success rounded-pill">Confirmé</span>
-                            {% elseif r.status == 'annulé' %}
-                                <span class="badge bg-secondary rounded-pill">Annulé</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark rounded-pill">En attente</span>
-                            {% endif %}
-                        </div>
-
-                        {# Actions #}
-                        <div class="col-md-2 text-end">
-                            <div class="d-flex gap-2 justify-content-end">
-                                {% if r.status != 'annulé' %}
-                                    <a href="{{ path('questionnairebackrv_details', { id : r.questionnaire.id }) }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
-                                        <i class="fas fa-file-medical"></i>
-                                    </a>
-                                    <a href="{{ path('rendezvousback_update', { id : r.id })}}" class="btn btn-outline-light btn-sm rounded-pill px-3">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                {% endif %}
-                                <a href="{{ path('rendezvousback_delete', { id : r.id })}}" class="btn btn-outline-danger btn-sm rounded-pill px-3" ">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="col-12">
-                <div class="glass-card p-5 text-center">
-                    <p class="text-white-50 mb-0">Aucun rendez-vous trouvé.</p>
-                </div>
-            </div>
-        {% endfor %}
+    {# Table #}
+    <div id="list-content">
+        {% include 'rendez_vous/_listback_table.html.twig' %}
     </div>
-
-    {# --- SCRIPT AUTO-SUBMIT --- #}
-    <script>
-        const rvForm = document.getElementById('rv-filter-form');
-        if (rvForm) {
-            rvForm.querySelectorAll('input, select').forEach(element => {
-                element.addEventListener('change', () => {
-                    if (element.value !== "") {
-                        rvForm.submit();
-                    }
-                });
-                
-                // Support de la touche Entrée pour les champs texte
-                if (element.type === 'text') {
-                    element.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            rvForm.submit();
-                        }
-                    });
-                }
-            });
-        }
-    </script>
 </div>
 {% endblock %}

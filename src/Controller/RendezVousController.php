@@ -14,7 +14,9 @@ use App\Entity\RendezVous;
 use App\Entity\Questionnaire;
 use App\Form\UpdateRendezVousType;
 use App\Repository\RendezVousRepository;
-use App\Service\SmsService; 
+use App\Service\SmsService;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 final class RendezVousController extends AbstractController
 {
     #[Route('/rendez/vous', name: 'app_rendez_vous')]
@@ -27,6 +29,7 @@ final class RendezVousController extends AbstractController
 
      //-------------------------------------------frontoffice--------------------------------------------------------------//
     #[Route('/rendez_vous/new', name: 'rendezvous_new')]
+    #[IsGranted('ROLE_CLIENT')]
 public function new(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo,
         SmsService $smsService): Response
 {
@@ -64,7 +67,7 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
 
           // --- 3. APPEL DU SERVICE SMS ---
             // On vérifie si le client a un numéro de téléphone
-            $telephone = $clientManaged->getTelephone();
+            $telephone = $clientManaged->getUser()->getTelephone();
             
             if ($telephone) {
                 // On formate la date pour qu'elle soit lisible dans le SMS
@@ -94,68 +97,104 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
         'form' => $form->createView(),
     ], new Response(null, $status));
 }
-  #[Route('/rendez_vous/list/{client_id}', name: 'rendezvous_list')]
-public function list(int $client_id, Request $request, RendezVousRepository $rvRepository): Response
+//   #[Route('/rendez_vous/list/{client_id}', name: 'rendezvous_list')]
+//   #[IsGranted('ROLE_CLIENT')]
+// public function list(int $client_id, Request $request, RendezVousRepository $rvRepository): Response
+// {
+//     $form = $this->createForm(RendezVousFilterType::class);
+//     $form->handleRequest($request);
+
+//     $queryBuilder = $rvRepository->createQueryBuilder('rv')
+//         ->join('rv.questionnaire', 'q')
+//         ->where('q.client = :client_id')
+//         ->andWhere('rv.status != :status_annule')
+//         ->setParameter('client_id', $client_id)
+//         ->setParameter('status_annule', 'annulé')
+//         ->orderBy('rv.date_don', 'DESC');
+
+//     if ($form->isSubmitted() && $form->isValid()) {
+//         $data = $form->getData();
+
+//         if ($data['campagne']) {
+//             $queryBuilder->andWhere('q.campagne = :campagne')->setParameter('campagne', $data['campagne']);
+//         }
+
+//         if ($data['status']) {
+//             $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
+//         }
+//       // Filtre sur la DATE
+//    // Filtre sur la DATE (ex: 2026-02-08)
+//     if ($data['filter_date']) {
+//         $queryBuilder->andWhere('rv.date_don LIKE :d')
+//                      ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+//     }
+
+//     // Filtre sur l'HEURE (Format 24h, ex: 14:00)
+//     if ($data['filter_time']) {
+//         // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
+//         $queryBuilder->andWhere('rv.date_don LIKE :t')
+//                      ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+//     }
+//         // if ($data['date']) {
+//         //     $dt = $data['date'];
+//         //     // Logique identique au Back : filtrage à la minute près
+//         //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
+//         //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
+            
+//         //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
+//         //                  ->setParameter('s', $start)
+//         //                  ->setParameter('e', $end);
+//         // }
+//          // LOGIQUE DE TRI UNIQUE
+//         if (!empty($data['tri_date'])) {
+//             $dateForm = $data['tri_date']; // ex : 'date_ASC'
+//             $parts = explode('_', $dateForm);
+//             $direction = $parts[1]; // 'ASC' ou 'DESC'
+//             $queryBuilder->orderBy('rv.date_don', $direction);
+//         }
+//     }
+
+//     if ($request->isXmlHttpRequest()) {
+//         return $this->render('rendez_vous/_list_content.html.twig', [
+//             'rendezvous' => $queryBuilder->getQuery()->getResult(),
+//              'client_id' => $client_id
+//         ]);
+//     }
+
+//     return $this->render('rendez_vous/list.html.twig', [
+//         'rendezvous' => $queryBuilder->getQuery()->getResult(),
+//         'filterForm' => $form->createView(),
+//         'client_id' => $client_id
+//     ]);
+// }
+
+#[Route('/rendez_vous/list/{client_id}', name: 'rendezvous_list')]
+public function list(int $client_id, Request $request, RendezVousRepository $repo): Response
 {
     $form = $this->createForm(RendezVousFilterType::class);
     $form->handleRequest($request);
 
-    $queryBuilder = $rvRepository->createQueryBuilder('rv')
-        ->join('rv.questionnaire', 'q')
-        ->where('q.client = :client_id')
-        ->andWhere('rv.status != :status_annule')
-        ->setParameter('client_id', $client_id)
-        ->setParameter('status_annule', 'annulé')
-        ->orderBy('rv.date_don', 'DESC');
+    $criteria = $form->isSubmitted() && $form->isValid() ? $form->getData() : [];
+    $criteria['client_id'] = $client_id;
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $data = $form->getData();
+    // Vous devez créer cette méthode searchBy dans votre RendezVousRepository
+    $rendezvous = $repo->searchBy($criteria);
 
-        if ($data['campagne']) {
-            $queryBuilder->andWhere('q.campagne = :campagne')->setParameter('campagne', $data['campagne']);
-        }
-
-        if ($data['status']) {
-            $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
-        }
-      // Filtre sur la DATE
-   // Filtre sur la DATE (ex: 2026-02-08)
-    if ($data['filter_date']) {
-        $queryBuilder->andWhere('rv.date_don LIKE :d')
-                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-    }
-
-    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
-    if ($data['filter_time']) {
-        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
-        $queryBuilder->andWhere('rv.date_don LIKE :t')
-                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-    }
-        // if ($data['date']) {
-        //     $dt = $data['date'];
-        //     // Logique identique au Back : filtrage à la minute près
-        //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
-        //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
-            
-        //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
-        //                  ->setParameter('s', $start)
-        //                  ->setParameter('e', $end);
-        // }
-         // LOGIQUE DE TRI UNIQUE
-        if (!empty($data['tri_date'])) {
-        $parts = explode('_', $data['tri_date']);
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
-        $queryBuilder->orderBy('rv.date_don', $direction);
-        }
+    // --- LOGIQUE DYNAMIQUE ---
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('rendez_vous/_list_content.html.twig', [
+            'rendezvous' => $rendezvous,
+        ]);
     }
 
     return $this->render('rendez_vous/list.html.twig', [
-        'rendezvous' => $queryBuilder->getQuery()->getResult(),
+        'rendezvous' => $rendezvous,
         'filterForm' => $form->createView(),
         'client_id' => $client_id
     ]);
 }
      #[Route('/rendez_vous/update/{id}', name:'rendezvous_update')]
+     #[IsGranted('ROLE_CLIENT')]
     public function update(int $id, Request $request, RendezVousRepository $rendezVousRepository, EntityManagerInterface $em){
         $rendezvous = $rendezVousRepository->find($id);
         $clientId = $rendezvous->getQuestionnaire()->getClient()->getId();
@@ -174,6 +213,7 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
     }
     
     #[Route('/rendez_vous/delete/{id}', name:'rendezvous_delete')]
+    #[IsGranted('ROLE_CLIENT')]
     public function delete($id, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository){
         $rendezvous = $rendezVousRepository->find($id);
         $clientId = $rendezvous->getQuestionnaire()->getClient()->getId();
@@ -189,6 +229,7 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
 
     //-------------------------------------------backoffice--------------------------------------------------------------//
  #[Route('backoffice/rendez_vous/new', name: 'rendezvousback_new')]
+ #[IsGranted('ROLE_ADMIN')]
 public function newback(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo,
         SmsService $smsService): Response
 {
@@ -225,7 +266,7 @@ public function newback(Request $request, EntityManagerInterface $em, CampagneRe
 
           // --- 3. APPEL DU SERVICE SMS ---
             // On vérifie si le client a un numéro de téléphone
-            $telephone = $clientManaged->getTelephone();
+            $telephone = $clientManaged->getUser()->getTelephone();
             
             if ($telephone) {
                 // On formate la date pour qu'elle soit lisible dans le SMS
@@ -258,84 +299,36 @@ $request->getSession()->remove('pending_questionnaireback');
 
 
 #[Route('/backoffice/rendezvous', name: 'rendezvousback_list')]
+#[IsGranted('ROLE_ADMIN')]
 public function listback(Request $request, RendezVousRepository $rendezVousRepository): Response
 {
     $form = $this->createForm(RendezVousFilterType::class);
     $form->handleRequest($request);
 
-    $queryBuilder = $rendezVousRepository->createQueryBuilder('rv')
-        ->leftJoin('rv.questionnaire', 'q')
-        ->leftJoin('q.campagne', 'c')
-        ->leftJoin('c.entities', 'e');
-
-        if ($form->isSubmitted() && $form->isValid()) {
-        $data = $form->getData();
-
-        // Filtres texte (depuis les données copiées dans le questionnaire)
-        if (!empty($data['nom'])) {
-            $queryBuilder->andWhere('q.nom LIKE :nom')->setParameter('nom', '%' . $data['nom'] . '%');
-        }
-        if (!empty($data['prenom'])) {
-            $queryBuilder->andWhere('q.prenom LIKE :prenom')->setParameter('prenom', '%' . $data['prenom'] . '%');
-        }
-
-        // Filtres relations
-        if (!empty($data['campagne'])) {
-            $queryBuilder->andWhere('q.campagne = :campagne')->setParameter('campagne', $data['campagne']);
-        }
-        if (!empty($data['entite'])) {
-            $queryBuilder->andWhere('e = :entite') 
-                         ->setParameter('entite', $data['entite']);
-        }
-
-        // Filtre Statut
-        if (!empty($data['status'])) {
-            $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
-        }
-         // Filtre sur la DATE
-   // Filtre sur la DATE (ex: 2026-02-08)
-    if ($data['filter_date']) {
-        $queryBuilder->andWhere('rv.date_don LIKE :d')
-                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+    $criteria = [];
+    if ($form->isSubmitted() && $form->isValid()) {
+        $criteria = $form->getData();
     }
 
-    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
-    if ($data['filter_time']) {
-        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
-        $queryBuilder->andWhere('rv.date_don LIKE :t')
-                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-    }
-        // // Filtre Date & Heure exacte (Minute par minute)
-        // if (!empty($data['date'])) {
-        //     $dt = $data['date'];
-        //     // On crée une plage de 59 secondes pour ignorer les secondes stockées en BDD
-        //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
-        //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
-            
-        //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
-        //                  ->setParameter('s', $start)
-        //                  ->setParameter('e', $end);
-        // }
-       // LOGIQUE DE TRI UNIQUE
-       if (!empty($data['tri'])) {
-        $parts = explode('_', $data['tri']);
-        $type = $parts[0];      // 'id' ou 'date'
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
+    // Add unified search parameter from request
+    $criteria['search'] = $request->query->get('search');
 
-        if ($type === 'id') {
-            $queryBuilder->orderBy('rv.id', $direction);
-        } else {
-            // Trie par Date ET par Heure simultanément
-            $queryBuilder->orderBy('rv.date_don', $direction);
-        }
-    }}
+    $rendezvous = $rendezVousRepository->searchBy($criteria);
+
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('rendez_vous/_listback_table.html.twig', [
+            'rendezvous' => $rendezvous,
+        ]);
+    }
+
     return $this->render('rendez_vous/listback.html.twig', [
-        'rendezvous' => $queryBuilder->getQuery()->getResult(),
+        'rendezvous' => $rendezvous,
         'filterForm' => $form->createView(),
     ]);
 }
 
     #[Route('/backoffice/rendez_vous/update/{id}', name:'rendezvousback_update')]
+    #[IsGranted('ROLE_ADMIN')]
     public function updateback(int $id, Request $request, RendezVousRepository $rendezVousRepository, EntityManagerInterface $em){
         $rendezvous = $rendezVousRepository->find($id);
         $form= $this->createForm(UpdateRendezVousType::class, $rendezvous);
@@ -350,6 +343,7 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
     }
 
     #[Route('/backoffice/rendez_vous/delete/{id}', name:'rendezvousback_delete')]
+    #[IsGranted('ROLE_ADMIN')]
     public function deleteback($id, EntityManagerInterface $em, RendezVousRepository $rendezVousRepository){
         $rendezvous = $rendezVousRepository->find($id);
         $em->remove($rendezvous);

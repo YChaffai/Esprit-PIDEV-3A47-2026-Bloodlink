@@ -1,0 +1,85 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Réinitialiser le mot de passe{% endblock %}
+
+{% block body %}
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-6 col-xl-5">
+
+      <div class="glass-card p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="mb-3">
+            <i class="fa-solid fa-shield-halved" style="font-size:3rem; color:var(--primary);"></i>
+          </div>
+          <h2 class="m-0" style="font-weight:900;">Mot de passe oublié</h2>
+          <p class="mt-2 mb-0" style="color:var(--muted);">
+            Saisissez votre e-mail et nous vous enverrons un lien de réinitialisation.
+          </p>
+        </div>
+
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+          <div class="mb-4">
+            <label class="form-label fw-bold small text-uppercase" style="color:var(--muted);">
+              Adresse E-mail
+            </label>
+
+            {{ form_widget(form.email, {
+              attr: {
+                class: 'form-control form-control-lg input-dark' ~ (form.email.vars.errors|length ? ' is-invalid' : ''),
+                placeholder: 'nom@exemple.com'
+              }
+            }) }}
+
+            {% for error in form.email.vars.errors %}
+              <div class="mt-2 error-pill small">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+              </div>
+            {% endfor %}
+          </div>
+
+          {# reCAPTCHA #}
+          <div class="mb-4 d-flex justify-content-center">
+            <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+          </div>
+
+          <button type="submit" class="btn btn-outline-light btn-lg w-100 rounded-pill mb-3">
+            <i class="fa-solid fa-envelope me-2"></i>Envoyer le lien
+          </button>
+
+          <div class="text-center">
+            <a href="{{ path('app_login') }}" class="text-decoration-none" style="color:var(--muted);">
+              <i class="fa-solid fa-arrow-left me-2"></i>Retour à la connexion
+            </a>
+          </div>
+
+        {{ form_end(form) }}
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <style>
+    .input-dark{
+      background: rgba(255,255,255,.06) !important;
+      border: 1px solid rgba(255,255,255,.10) !important;
+      color: #fff !important;
+      border-radius: 12px;
+      padding: 12px 15px;
+    }
+    .input-dark::placeholder{ color: rgba(255,255,255,.45) !important; }
+    .input-dark:focus{
+      box-shadow: 0 0 0 .2rem rgba(230,57,57,.25) !important;
+      border-color: rgba(230,57,57,.5) !important;
+    }
+    .error-pill {
+      background: rgba(230,57,57,0.15);
+      color: #ff8e8e;
+      padding: 8px 15px;
+      border-radius: 50px;
+      border: 1px solid rgba(230,57,57,0.3);
+    }
+  </style>
+{% endblock %}

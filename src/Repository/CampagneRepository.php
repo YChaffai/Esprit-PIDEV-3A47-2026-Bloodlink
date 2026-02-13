@@ -2,19 +2,19 @@
 
 namespace App\Repository;
 
-use App\Entity\Campagne;
+use App\Entity\Compagne;
 use App\Entity\Client;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Campagne>
+ * @extends ServiceEntityRepository<Compagne>
  */
 class CampagneRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Campagne::class);
+        parent::__construct($registry, Compagne::class);
     }
 public function findCompatibleForClient(Client $client): array
     {
@@ -47,7 +47,7 @@ public function findCompatibleForClient(Client $client): array
     }
 
     //    /**
-    //     * @return Campagne[] Returns an array of Campagne objects
+    //     * @return Compagne[] Returns an array of Compagne objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -61,7 +61,7 @@ public function findCompatibleForClient(Client $client): array
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Campagne
+    //    public function findOneBySomeField($value): ?Compagne
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')

@@ -18,64 +18,7 @@ class QuestionnaireRepository extends ServiceEntityRepository
 
 // src/Repository/QuestionnaireRepository.php
 
-public function filterQuestionnaires(array $filters)
-{
-    $qb = $this->createQueryBuilder('q')
-        // OPTIMISATION 1 : On "Select" la campagne tout de suite (Jointure Eager Loading).
-        // Cela divise par 2 ou 3 le temps de chargement de la page (évite le problème N+1).
-        ->leftJoin('q.campagne', 'c')
-        ->addSelect('c') 
-        ->orderBy('q.date', 'DESC');
 
-    // --- 1. Recherche Globale (Nom, Prénom, Campagne) ---
-    if (!empty($filters['search'])) {
-        $term = trim($filters['search']); // On nettoie les espaces inutiles
-
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'q.nom LIKE :search',
-                'q.prenom LIKE :search',
-                'c.titre LIKE :search' // Cela devrait fonctionner si la jointure est faite
-            )
-        ) 
-        ->setParameter('search', '%' . $term . '%');
-    }
-
-    // --- 2. Filtre Groupe Sanguin ---
-    if (!empty($filters['groupSanguin'])) {
-        $qb->andWhere('q.groupSanguin = :gs')
-           ->setParameter('gs', $filters['groupSanguin']);
-    }
-
-    // --- 3. Filtre Date ---
-    if (!empty($filters['filter_date'])) {
-        $qb->andWhere('q.date LIKE :d')
-           ->setParameter('d', $filters['filter_date']->format('Y-m-d') . '%');
-    }
-
-    // --- 4. Filtre Heure ---
-    if (!empty($filters['filter_time'])) {
-        $qb->andWhere('q.date LIKE :t')
-           ->setParameter('t', '%' . $filters['filter_time']->format('H:i') . '%');
-    }
-
-    // --- 5. Tri ---
-    if (!empty($filters['tri'])) {
-        $parts = explode('_', $filters['tri']);
-        if (count($parts) === 2) {
-            $field = ($parts[0] === 'id') ? 'q.id' : 'q.date';
-            $direction = $parts[1];
-            $qb->orderBy($field, $direction);
-        }
-    }
-
-    // OPTIMISATION 2 : Limiter les résultats !
-    // C'est CRUCIAL pour la vitesse de la recherche "LIKE %...%".
-    // 20 résultats suffisent pour une recherche instantanée (l'utilisateur affinera si besoin).
-    $qb->setMaxResults(20);
-
-    return $qb->getQuery()->getResult();
-}
     //    /**
     //     * @return Questionnaire[] Returns an array of Questionnaire objects
     //     */
@@ -100,4 +43,55 @@ public function filterQuestionnaires(array $filters)
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function searchBy(array $criteria)
+    {
+        $qb = $this->createQueryBuilder('q')
+            ->leftJoin('q.campagne', 'c');
+
+        if (!empty($criteria['search'])) {
+            $qb->andWhere('q.nom LIKE :kw OR q.prenom LIKE :kw')
+               ->setParameter('kw', '%' . $criteria['search'] . '%');
+        }
+
+        if (!empty($criteria['campagne'])) {
+            $qb->andWhere('q.campagne = :campagne')
+               ->setParameter('campagne', $criteria['campagne']);
+        }
+
+        if (!empty($criteria['groupSanguin'])) {
+            $qb->andWhere('q.group_sanguin = :gs')
+               ->setParameter('gs', $criteria['groupSanguin']);
+        }
+
+        if (!empty($criteria['filter_date'])) {
+            $qb->andWhere('q.date LIKE :d')
+               ->setParameter('d', $criteria['filter_date']->format('Y-m-d') . '%');
+        }
+
+        if (!empty($criteria['filter_time'])) {
+            $qb->andWhere('q.date LIKE :t')
+               ->setParameter('t', '%' . $criteria['filter_time']->format('H:i') . '%');
+        }
+        
+        // Sorting
+        $sortField = 'q.date';
+        $sortOrder = 'DESC';
+
+        if (!empty($criteria['tri'])) {
+            $parts = explode('_', $criteria['tri']);
+            if (count($parts) === 2) {
+                $type = $parts[0];
+                $direction = $parts[1];
+                
+                if ($type === 'id') {
+                    $sortField = 'q.id';
+                }
+                $sortOrder = $direction;
+            }
+        }
+        
+        $qb->orderBy($sortField, $sortOrder);
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -17,165 +17,172 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class QuestionnaireController extends AbstractController
 {
-    //-------------------------------------------frontoffice--------------------------------------------------------------//
-     #[Route('/questionnaire/new/{id}/{client_id}',  name: 'questionnaire_new')]
-    public function new(int $id, int $client_id, Request $request, CampagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
-    {
-        $campagne = $campagneRepo->find($id);
-        $client = $clientRepository->find($client_id);
-        $existing = $questionnaireRepo->findOneBy([
-        'campagne' => $campagne,
-        'client' => $client
+  //-------------------------------------------frontoffice--------------------------------------------------------------//
+  #[Route('/questionnaire/new/{id}/{client_id}',  name: 'questionnaire_new')]
+  #[IsGranted('ROLE_CLIENT')]
+  public function new(int $id, int $client_id, Request $request, CampagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
+  {
+    $campagne = $campagneRepo->find($id);
+$client = $clientRepository->findOneBy(['user' => $client_id]);
+    $existing = $questionnaireRepo->findOneBy([
+      'campagne' => $campagne,
+      'client' => $client
     ]);
 
     if ($existing) {
-        // Ajoute un message flash pour informer l'utilisateur
-        $this->addFlash('danger', 'Désolé, vous avez déjà rempli un questionnaire pour cette campagne.');
-        
-        // Redirige vers la liste des campagnes ou une autre page de ton choix
-        return $this->redirectToRoute('campagne_list'); 
-    }
-        
-        $questionnaire = new Questionnaire();
-        $questionnaire->setCampagne($campagne);
-        $questionnaire->setNom($client -> getNom());
-        $questionnaire->setPrenom($client -> getPrenom());
-       
-        $questionnaire->setGroupSanguin($client->getTypeSang());
-        $form = $this->createForm(QuestionnaireType::class, $questionnaire);
+      // Ajoute un message flash pour informer l'utilisateur
+      $this->addFlash('danger', 'Désolé, vous avez déjà rempli un questionnaire pour cette campagne.');
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid() ) {
-            //$questionnaire->setClient($this->getUser());  // Associe le questionnaire à l'utilisateur connecté
-            // dd($form->getErrors(true));
-            $questionnaire->setClient($client);
-            $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
-            $em->persist($questionnaire);
-            // $em->flush();
-            $request->getSession()->set('pending_questionnaire', $questionnaire);
-            return $this->redirectToRoute('rendezvous_new');
-        }
-        $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
-
-
-        return $this->render('questionnaire/new.html.twig', [
-            'form' => $form->createView(),
-            'campagne' => $campagne,
-            'client_id' => $client,
-            
-        ], new Response(null, $status));
+      // Redirige vers la liste des campagnes ou une autre page de ton choix
+      return $this->redirectToRoute('campagne_list');
     }
 
+    $questionnaire = new Questionnaire();
+    $questionnaire->setCampagne($campagne);
+    $questionnaire->setNom($client->getNom());
+    $questionnaire->setPrenom($client->getPrenom());
 
-    #[Route('/questionnaire/list/{client_id}', name:'questionnaire_list')]
-    public function list(Request $request, int $client_id, QuestionnaireRepository $questionnaireRepository){
-         // 1. On crée le formulaire de filtre
-        $form = $this->createForm(QuestionnaireFilterType::class);
-        $form->handleRequest($request);
+    $questionnaire->setGroupSanguin($client->getTypeSang());
+    $form = $this->createForm(QuestionnaireType::class, $questionnaire);
 
-        // 2. On prépare le QueryBuilder pour la liste du Backoffice
-        $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
-        ->where('q.client = :client_id') // Sécurité : on filtre par le client de l'URL
-        ->setParameter('client_id', $client_id)
-        ->leftJoin('q.campagne', 'c')
-        ->orderBy('q.date', 'DESC');
+    $form->handleRequest($request);
 
-        // 3. On applique les filtres si le formulaire est soumis (GET)
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            // Filtrer par DATE uniquement
-    
-             if (!empty($data['campagne'])) {
-                $queryBuilder->andWhere('q.campagne = :campagne')
-                             ->setParameter('campagne', $data['campagne']);
-            }
+    if ($form->isSubmitted() && $form->isValid()) {
+      // dd($form->getErrors(true));
+      $questionnaire->setClient($client);
+      $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
+      $em->persist($questionnaire);
+      // $em->flush();
+      $request->getSession()->set('pending_questionnaire', $questionnaire);
+      return $this->redirectToRoute('rendezvous_new');
+    }
+    $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
-              // Filtre sur la DATE
-   // Filtre sur la DATE (ex: 2026-02-08)
-    if ($data['filter_date']) {
+
+    return $this->render('questionnaire/new.html.twig', [
+      'form' => $form->createView(),
+      'campagne' => $campagne,
+      'client_id' => $client,
+
+    ], new Response(null, $status));
+  }
+
+
+  #[Route('/questionnaire/list/{client_id}', name: 'questionnaire_list')]
+  #[IsGranted('ROLE_CLIENT')]
+  public function list(Request $request, int $client_id, QuestionnaireRepository $questionnaireRepository)
+  {
+    // 1. On crée le formulaire de filtre
+    $form = $this->createForm(QuestionnaireFilterType::class);
+    $form->handleRequest($request);
+
+    // 2. On prépare le QueryBuilder pour la liste du Backoffice
+    $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
+      ->where('q.client = :client_id') // Sécurité : on filtre par le client de l'URL
+      ->setParameter('client_id', $client_id)
+      ->leftJoin('q.campagne', 'c')
+      ->orderBy('q.date', 'DESC');
+
+    // 3. On applique les filtres si le formulaire est soumis (GET)
+    if ($form->isSubmitted() && $form->isValid()) {
+      $data = $form->getData();
+      // Filtrer par DATE uniquement
+
+      if (!empty($data['campagne'])) {
+        $queryBuilder->andWhere('q.campagne = :campagne')
+          ->setParameter('campagne', $data['campagne']);
+      }
+
+      // Filtre sur la DATE
+      if ($data['filter_date']) {
         $queryBuilder->andWhere('q.date LIKE :d')
-                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-    }
+          ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
+      }
 
-    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
-    if ($data['filter_time']) {
+      // Filtre sur l'HEURE (Format 24h, ex: 14:00)
+      if ($data['filter_time']) {
         // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
         $queryBuilder->andWhere('q.date LIKE :t')
-                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+          ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
+      }
     }
-        }
 
-        //  $questionnaires = $questionnaireRepository->findBy(['client' =>$client_id]);
-       // LOGIQUE DE TRI UNIQUE
-       if (!empty($data['tri_date'])) {
+      if (!empty($data['tri_date'])) {
         $parts = explode('_', $data['tri_date']);
         $direction = $parts[1]; // 'ASC' ou 'DESC'
         $queryBuilder->orderBy('q.date', $direction);
-        }
+      }
 
-        return $this->render('questionnaire/list.html.twig', [
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('questionnaire/_list_content.html.twig', [
             'questionnaires' => $queryBuilder->getQuery()->getResult(),
-            'filterForm' => $form->createView(),
-            'client_id' => $client_id 
+             'client_id' => $client_id
         ]);
     }
 
-     #[Route('/questionnaire/update/{id}', name:'questionnaire_update')]
-    public function update($id, Request $request, QuestionnaireRepository $questionnaireRepository, EntityManagerInterface $em){
-        $questionnaire = $questionnaireRepository->find($id);
-        $clientId = $questionnaire->getClient()->getId();
-        $form= $this->createForm(UpdateQuestionnaireType::class, $questionnaire);
-        $form->handleRequest($request);
-        if($form->isSubmitted()){
-            $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
-            $em->flush();
-            return $this->redirectToRoute('questionnaire_list', ['client_id' => $clientId]);
-        }
-        return $this->render('questionnaire/update.html.twig', [
-            "form" => $form,
-            'questionnaires' => $questionnaire
-        ]);
+    return $this->render('questionnaire/list.html.twig', [
+      'questionnaires' => $queryBuilder->getQuery()->getResult(),
+      'filterForm' => $form->createView(),
+      'client_id' => $client_id
+    ]);
+  }
+
+  #[Route('/questionnaire/update/{id}', name: 'questionnaire_update')]
+  #[IsGranted('ROLE_CLIENT')]
+  public function update($id, Request $request, QuestionnaireRepository $questionnaireRepository, EntityManagerInterface $em)
+  {
+    $questionnaire = $questionnaireRepository->find($id);
+    $clientId = $questionnaire->getClient()->getId();
+    $form = $this->createForm(UpdateQuestionnaireType::class, $questionnaire);
+    $form->handleRequest($request);
+    if ($form->isSubmitted()) {
+      $questionnaire->setDate(date: new DateTime('now', new \DateTimeZone('Africa/Tunis')));
+      $em->flush();
+      return $this->redirectToRoute('questionnaire_list', ['client_id' => $clientId]);
     }
+    return $this->render('questionnaire/update.html.twig', [
+      "form" => $form,
+      'questionnaires' => $questionnaire
+    ]);
+  }
 
-    #[Route('/questionnaire/delete/{id}', name:'questionnaire_delete')]
-    public function delete($id, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepository){
-        $questionnaire = $questionnaireRepository->find($id);
-        $clientId = $questionnaire->getClient()->getId();
-        $em->remove($questionnaire);
-        $em->flush();
-        return $this->redirectToRoute('questionnaire_list',  ['client_id' => $clientId]);
+  #[Route('/questionnaire/delete/{id}', name: 'questionnaire_delete')]
+  #[IsGranted('ROLE_CLIENT')]
+  public function delete($id, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepository)
+  {
+    $questionnaire = $questionnaireRepository->find($id);
+    $clientId = $questionnaire->getClient()->getId();
+    $em->remove($questionnaire);
+    $em->flush();
+    return $this->redirectToRoute('questionnaire_list',  ['client_id' => $clientId]);
+  }
 
-    }
+  #[Route('/questionnaire/details/{id}', name: 'questionnaire_details')]
+  #[IsGranted('ROLE_CLIENT')]
+  public function details($id, QuestionnaireRepository $questionnaireRepository): Response
+  {
+    $questionnaire = $questionnaireRepository->find($id);
+    return $this->render('questionnaire/details.html.twig', [
+      "questionnaires" => $questionnaire,
+    ]);
+  }
 
-     #[Route('/questionnaire/details/{id}', name: 'questionnaire_details')]
-    public function details($id, QuestionnaireRepository $questionnaireRepository): Response{
-        $questionnaire = $questionnaireRepository->find($id);
-        return $this->render('questionnaire/details.html.twig', [
-            "questionnaires" => $questionnaire,
-        ]);
-    }
+  //-------------------------------------------backoffice--------------------------------------------------------------//
 
-    //-------------------------------------------backoffice--------------------------------------------------------------//
+  #[Route('/user/questionnaire/details/{id}', name: 'questionnaireback_details')]
+  #[IsGranted('ROLE_ADMIN')]
+  public function detailsback($id, QuestionnaireRepository $questionnaireRepository): Response
+  {
+    $questionnaire = $questionnaireRepository->find($id);
 
-    // #[Route('/backoffice/questionnaires', name: 'questionnaireback_list')]
-    // public function listback(QuestionnaireRepository $questionnaireRepository){
-    //     return $this->render('questionnaire/listback.html.twig', [
-    //         'questionnaires' => $questionnaireRepository->findAll()
-    //     ]);
-    // }
-
-     #[Route('/backoffice/questionnaire/details/{id}', name: 'questionnaireback_details')]
-    public function detailsback($id, QuestionnaireRepository $questionnaireRepository): Response{
-        $questionnaire = $questionnaireRepository->find($id);
-        
-        return $this->render('questionnaire/detailsback.html.twig', [
-            "questionnaires" => $questionnaire,
-        ]);
-    }
+    return $this->render('questionnaire/detailsback.html.twig', [
+      "questionnaires" => $questionnaire,
+    ]);
+  }
 
      #[Route('/backoffice/questionnaire/detailsrv/{id}', name: 'questionnairebackrv_details')]
     public function detailsbackrv($id, QuestionnaireRepository $questionnaireRepository): Response{
@@ -189,318 +196,76 @@ final class QuestionnaireController extends AbstractController
 
     // src/Controller/QuestionnaireController.php
 
-#[Route('/backoffice/questionnaires', name: 'questionnaireback_list')]
-public function listback(Request $request, QuestionnaireRepository $repo): Response
-{
-    // 1. Gestion du formulaire
-    $form = $this->createForm(QuestionnaireFilterType::class);
-    $form->handleRequest($request);
-
-    // 2. Récupération des données de filtre
-    // Si le form est soumis on prend les données, sinon un tableau vide
-    $filters = ($form->isSubmitted() && $form->isValid()) ? $form->getData() : [];
-
-    // 3. Appel au Repository (C'est propre !)
-    $questionnaires = $repo->filterQuestionnaires($filters);
-
-    // 4. OPTIMISATION AJAX
-    // Si la requête est AJAX, on ne renvoie QUE le tableau (fichier partiel)
-    // Cela économise la bande passante et le temps de rendu du header/footer
-    // if ($request->isXmlHttpRequest()) {
-    //     return $this->render('questionnaire/_list.html.twig', [
-    //         'questionnaires' => $questionnaires,
-    //     ]);
-    // }
-
-    // 5. Affichage normal (Premier chargement de la page)
-    return $this->render('questionnaire/listback.html.twig', [
-        'questionnaires' => $questionnaires,
-        'filterForm' => $form->createView(),
-    ]);
-}
-    // #[Route('/backoffice/questionnaires', name: 'questionnaireback_list')]
-    // public function listback(Request $request, QuestionnaireRepository $questionnaireRepository): Response
-    // {
-    //     // 1. On crée le formulaire de filtre
-    //     $form = $this->createForm(QuestionnaireFilterType::class);
-    //     $form->handleRequest($request);
-
-    //     // 2. On prépare le QueryBuilder pour la liste du Backoffice
-    //     $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
-    //                          ->leftJoin('q.campagne', 'c')
-    //                          ->orderBy('q.date', 'DESC');
-
-    //     // 3. On applique les filtres si le formulaire est soumis (GET)
-    //     if ( $form->isSubmitted() && $form->isValid()) {
-    //         $data = $form->getData();
-
-    //         // if (!empty($data['nom'])) {
-    //         //     $queryBuilder->andWhere('q.nom LIKE :nom')
-    //         //                  ->setParameter('nom', '%' . $data['nom'] . '%');
-    //         // }
-    //         //  if (!empty($data['prenom'])) {
-    //         //     $queryBuilder->andWhere('q.prenom LIKE :prenom')
-    //         //                  ->setParameter('prenom', '%' . $data['prenom'] . '%');
-    //         // }
-
-    //         // if (!empty($data['campagne'])) {
-    //         //     $queryBuilder->andWhere('q.campagne = :campagne')
-    //         //                  ->setParameter('campagne', $data['campagne']);
-    //         // }
-    //         if (!empty($data['search'])) {
-    //         $search = $data['search'];
-    //         $queryBuilder->andWhere(
-    //             $queryBuilder->expr()->orX(
-    //                 'q.nom LIKE :search',
-    //                 'q.prenom LIKE :search',
-    //                 'c.titre LIKE :search'
-    //             )
-    //         )
-    //         ->setParameter('search', '%' . $search . '%');
-    //     }
-    //         if (!empty($data['groupSanguin'])) {
-    //             $queryBuilder->andWhere('q.group_sanguin = :gs')
-    //                          ->setParameter('gs', $data['groupSanguin']);
-    //         }
-    //             // Filtre sur la DATE
-    //         // Filtre Date
-    //         if ($data['filter_date']) {
-    //             $queryBuilder->andWhere('q.date LIKE :d')
-    //                         ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-    //         }
-
-    //         // Filtre Heure (Format 24h en base de données)
-    //         if ($data['filter_time']) {
-    //             $queryBuilder->andWhere('q.date LIKE :t')
-    //                         ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-    //         }
-    //         // if ($data['date_don']) {
-    //         //     // On récupère l'objet DateTime choisi
-    //         //     $selectedDateTime = $data['date_don'];
-
-    //         //     // On crée une borne de début (00:00:00)
-    //         //     $startOfDay = (clone $selectedDateTime)->setTime(0, 0, 0);
-                
-    //         //     // On crée une borne de fin (23:59:59)
-    //         //     $endOfDay = (clone $selectedDateTime)->setTime(23, 59, 59);
-
-    //         //     $queryBuilder->andWhere('q.date BETWEEN :start AND :end')
-    //         //                 ->setParameter('start', $startOfDay)
-    //         //                 ->setParameter('end', $endOfDay);
-                            
-    //         // }
-    //         // LOGIQUE DE TRI UNIQUE
-    //    if (!empty($data['tri'])) {
-    //     $parts = explode('_', $data['tri']);
-    //     $type = $parts[0];      // 'id' ou 'date'
-    //     $direction = $parts[1]; // 'ASC' ou 'DESC'
-
-    //     if ($type === 'id') {
-    //         $queryBuilder->orderBy('q.id', $direction);
-    //     } else {
-    //         // Trie par Date ET par Heure simultanément
-    //         $queryBuilder->orderBy('q.date', $direction);
-    //     }
-    //     }}
-
-    //     // 4. On envoie 'filterForm' à la vue listback.html.twig
-    //     return $this->render('questionnaire/listback.html.twig', [
-    //         'questionnaires' => $queryBuilder->getQuery()->getResult(),
-    //         'filterForm' => $form->createView(),
-    //     ]);
-    // }
-
- #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
-    public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
+ #[Route('/user/questionnaires', name: 'questionnaireback_list')]
+  #[IsGranted('ROLE_ADMIN')]
+    public function listback(Request $request, QuestionnaireRepository $questionnaireRepository): Response
     {
-        $questionnaire = new Questionnaire();
-        
-        $form = $this->createForm(CreateQuestionnaireBackType::class, $questionnaire);
+        // 1. On crée le formulaire de filtre
+        $form = $this->createForm(QuestionnaireFilterType::class);
         $form->handleRequest($request);
 
+        // 2. On prépare les critères
+        $criteria = [];
         if ($form->isSubmitted() && $form->isValid()) {
-            $campagne = $questionnaire->getCampagne();
-            $clientEmail = $form->get('client')->getData(); // L'email du client saisi
-            $client = $clientRepository->findOneBy(['email' => $clientEmail]); // Trouver le client par email
-
-            if ($client) {
-                // Associer la campagne et le client au questionnaire
-                $questionnaire->setClient($client);
-                $questionnaire->setCampagne($campagne);
-                $questionnaire->setNom($client->getNom());
-            $questionnaire->setPrenom($client->getPrenom());
-                $questionnaire->setDate(new DateTime('now', new \DateTimeZone('Africa/Tunis')));
-                $questionnaire->setGroupSanguin($client->getTypeSang());
-
-                // Persister et enregistrer le questionnaire
-                $em->persist($questionnaire);
-                // $em->flush();
-// 3. On utilise la clé attendue par le controller de destination
-            $request->getSession()->set('pending_questionnaireback', $questionnaire);
-                // Rediriger vers la page du rendez-vous (en passant l'ID du questionnaire)
-                return $this->redirectToRoute('rendezvousback_new', ['questionnaire_id' => $questionnaire->getId()]);
-            } else {
-                // Si le client n'est pas trouvé, ajouter un message d'erreur
-                $this->addFlash('error', 'Client non trouvé avec cet email.');
-            }
+            $criteria = $form->getData();
         }
-        $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
-        return $this->render('questionnaire/newback.html.twig', [
-            'form' => $form->createView(),
-        ], new Response(null, $status));
+        // Add unified search parameter from request
+        $criteria['search'] = $request->query->get('search');
+
+        // 3. On appelle le repository
+        $questionnaires = $questionnaireRepository->searchBy($criteria);
+
+        // 4. On envoie 'filterForm' à la vue listback.html.twig
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('questionnaire/_listback_table.html.twig', [
+                'questionnaires' => $questionnaires,
+            ]);
+        }
+
+        return $this->render('questionnaire/listback.html.twig', [
+            'questionnaires' => $questionnaires,
+            'filterForm' => $form->createView(),
+        ]);
     }
+  #[Route('/user/questionnaire/new', name: 'questionnaireback_new')]
+  #[IsGranted('ROLE_ADMIN')]
+  public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
+  {
+    $questionnaire = new Questionnaire();
 
+    $form = $this->createForm(CreateQuestionnaireBackType::class, $questionnaire);
+    $form->handleRequest($request);
 
+    if ($form->isSubmitted() && $form->isValid()) {
+      $campagne = $questionnaire->getCampagne();
+      $clientEmail = $form->get('client')->getData(); // L'email du client saisi
+      $client = $clientRepository->findOneByEmail($clientEmail); // Trouver le client par email via User
 
+      if ($client) {
+        // Associer la campagne et le client au questionnaire
+        $questionnaire->setClient($client);
+        $questionnaire->setNom($client->getUser()->getNom());
+        $questionnaire->setPrenom($client->getUser()->getPrenom());
+        $questionnaire->setDate(new DateTime('now', new \DateTimeZone('Africa/Tunis')));
+        $questionnaire->setGroupSanguin($client->getTypeSang());
 
-//-----------------------------------------------------------------
+        // Persister et enregistrer le questionnaire
+        $em->persist($questionnaire);
+        // $em->flush();
+        // 3. On utilise la clé attendue par le controller de destination
+        $request->getSession()->set('pending_questionnaireback', $questionnaire);
+        // Rediriger vers la page du rendez-vous (en passant l'ID du questionnaire)
+        return $this->redirectToRoute('rendezvousback_new', ['questionnaire_id' => $questionnaire->getId()]);
+      } else {
+        // Si le client n'est pas trouvé, ajouter un message d'erreur
+        $this->addFlash('error', 'Client non trouvé avec cet email.');
+      }
+    }
+    $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
-
-
-
-//   #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
-//     public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
-//     {
-//         $questionnaire = new Questionnaire();
-        
-//         $form = $this->createForm(CreateQuestionnaireBackType::class, $questionnaire);
-//         $form->handleRequest($request);
-
-//         if ($form->isSubmitted() && $form->isValid()) {
-//             $campagne = $form->get('campagne')->getData()->getId();
-            
-//             $clientEmail = $form->get('client')->getData(); // L'email du client saisi
-//             $client = $clientRepository->findOneBy(['email' => $clientEmail]); // Trouver le client par email
-
-//             if ($client) {
-//                 // Associer la campagne et le client au questionnaire
-//                 $questionnaire->setClient($client);
-//                 $questionnaire->setNom($client->getNom());
-//                 $questionnaire->setPrenom($client->getPrenom());
-                
-//                 $questionnaire->setCampagne($campagne);
-//                 $questionnaire->setDate(new \DateTime('now', new \DateTimeZone('Africa/Tunis')));
-//                 $questionnaire->setGroupSanguin($client->getTypeSang());
-
-//                 // Persister et enregistrer le questionnaire
-//                 $em->persist($questionnaire);
-//                 // $em->flush();
-//                 $request->getSession()->set('pending_questionnaireback', $questionnaire);
-
-//                 // Rediriger vers la page du rendez-vous (en passant l'ID du questionnaire)
-//                  return $this->redirectToRoute('rendezvousback_new');
-//             } else {
-//                 // Si le client n'est pas trouvé, ajouter un message d'erreur
-//                 $this->addFlash('error', 'Client non trouvé avec cet email.');
-//             }
-//         }
-//         $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
-
-//         return $this->render('questionnaire/newback.html.twig', [
-//             'form' => $form->createView(),
-//         ], new Response(null, $status));
-//     }
-
-// #[Route('/backoffice/questionnaire/new', name: 'questionnaireback_new')]
-// public function newback(Request $request, ClientRepository $clientRepository, EntityManagerInterface $em): Response
-// {
-//     $questionnaire = new Questionnaire();
-//     $form = $this->createForm(CreateQuestionnaireBackType::class, $questionnaire);
-//     $form->handleRequest($request);
-//     // --- DIAGNOSTIC DES ERREURS 422 ---
-//     if ($form->isSubmitted() && !$form->isValid()) {
-//         // Affiche toutes les erreurs de tous les champs, même cachés
-//         dump($form->getErrors(true, false)); 
-        
-//         // Affiche les données qui ont été soumises pour voir s'il manque quelque chose
-//         dump($form->getData());
-        
-//         // Optionnel : arrête tout pour lire confortablement
-//         // dd($form->getErrors(true, false)); 
-//     }
-
-//     // 1. On check si le formulaire est soumis mais invalide (cause du 422)
-//     if ($form->isSubmitted() && !$form->isValid()) {
-//         dump("FORMULAIRE INVALIDE");
-//         dump($form->getErrors(true, false)); // Affiche les erreurs de validation précises
-//     }
-
-//     if ($form->isSubmitted() && $form->isValid()) {
-//         dump("FORMULAIRE VALIDE");
-
-//         $campagne = $form->get('Campagne')->getData();
-//         $clientEmail = $form->get('client')->getData();
-//         $client = $clientRepository->findOneBy(['email' => $clientEmail]);
-
-//         // 2. On check le contenu des objets récupérés
-//         dump(['Campagne' => $campagne, 'Client' => $client, 'Email saisi' => $clientEmail]);
-
-//         if ($client) {
-//             $questionnaire->setClient($client);
-//             $questionnaire->setNom($client->getNom());
-//             $questionnaire->setPrenom($client->getPrenom());
-//             $questionnaire->setCampagne($campagne);
-//             $questionnaire->setDate(new \DateTime('now', new \DateTimeZone('Africa/Tunis')));
-//             $questionnaire->setGroupSanguin($client->getTypeSang());
-
-//             // 3. On check l'objet Questionnaire final avant la session
-//             dump("Objet Questionnaire prêt :", $questionnaire);
-
-//             $em->persist($questionnaire);
-//             $request->getSession()->set('pending_questionnaireback', $questionnaire);
-
-//             // Si tu veux arrêter l'exécution ici pour lire les dumps :
-//             // dd("Arrêt avant redirection", $questionnaire);
-
-//             return $this->redirectToRoute('rendezvousback_new');
-//         } else {
-//             dump("ERREUR : Client introuvable en base de données");
-//             $this->addFlash('error', 'Client non trouvé avec cet email.');
-//         }
-//     }
-
-//     $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
-
-//     return $this->render('questionnaire/newback.html.twig', [
-//         'form' => $form->createView(),
-//     ], new Response(null, $status));
-// }
-
-//     public function index(Request $request, QuestionnaireRepository $repo): Response
-// {
-//     $form = $this->createForm(QuestionnaireFilterType::class);
-//     $form->handleRequest($request);
-
-//     // On prépare le QueryBuilder de base
-//     $queryBuilder = $repo->createQueryBuilder('q')
-//                          ->leftJoin('q.campagne', 'c')
-//                          ->orderBy('q.date', 'DESC');
-
-//     // Si le formulaire est soumis via GET
-//     if ($form->isSubmitted() && $form->isValid()) {
-//         $data = $form->getData();
-
-//         if ($data['nom']) {
-//             $queryBuilder->andWhere('q.nom LIKE :nom')
-//                          ->setParameter('nom', '%' . $data['nom'] . '%');
-//         }
-
-//         if ($data['campagne']) {
-//             $queryBuilder->andWhere('q.campagne = :campagne')
-//                          ->setParameter('campagne', $data['campagne']);
-//         }
-
-//         if ($data['groupSanguin']) {
-//             $queryBuilder->andWhere('q.group_sanguin = :gs')
-//                          ->setParameter('gs', $data['groupSanguin']);
-//         }
-//     }
-
-//     return $this->render('questionnaire/index.html.twig', [
-//         'questionnaires' => $queryBuilder->getQuery()->getResult(),
-//         'filterForm' => $form->createView(),
-//     ]);
-// }
-
+    return $this->render('questionnaire/newback.html.twig', [
+      'form' => $form->createView(),
+    ], new Response(null, $status));
+  }
 }
