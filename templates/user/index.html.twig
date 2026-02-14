@@ -1,0 +1,62 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Utilisateurs | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Utilisateurs</h1>
+        <p class="text-white-50 mb-0">Gérez les comptes utilisateurs, leurs rôles et leurs accès.</p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_user_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> AJOUTER UN UTILISATEUR
+        </a>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    {# Search & Filters Bar #}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
+        <form action="{{ path('app_user_index') }}" method="get" class="d-flex gap-2 flex-grow-1 w-100 js-filter-form">
+            <div class="input-group" style="max-width: 500px;">
+                <span class="input-group-text bg-transparent border-0 ps-3">
+                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                </span>
+                <input type="text" name="q" value="{{ current_query }}" 
+                       class="form-control form-control-premium border-0" 
+                       placeholder="Rechercher par nom, email ou ID...">
+                {% if current_sort != 'id' %}
+                    <input type="hidden" name="sort" value="{{ current_sort }}">
+                    <input type="hidden" name="order" value="{{ current_order }}">
+                {% endif %}
+            </div>
+            
+            {% set next_order = (current_sort == 'id' and current_order == 'ASC') ? 'DESC' : 'ASC' %}
+            <a href="{{ path('app_user_index', { 'q': current_query, 'sort': 'id', 'order': next_order }) }}" 
+               class="btn btn-outline-light rounded-pill px-4 d-flex align-items-center gap-2"
+               style="border-color: var(--border); background: rgba(255,255,255,0.03);">
+                ID 
+                {% if current_sort == 'id' %}
+                    <i class="fa-solid fa-arrow-{{ current_order == 'ASC' ? 'up' : 'down' }}"></i>
+                {% else %}
+                    <i class="fa-solid fa-sort"></i>
+                {% endif %}
+            </a>
+
+            {% if current_query %}
+                <a href="{{ path('app_user_index') }}" class="btn btn-outline-danger rounded-pill px-3 d-flex align-items-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    {# Table #}
+    <div id="list-content">
+        {% include 'user/_user_table.html.twig' %}
+    </div>
+</div>
+{% endblock %}
+

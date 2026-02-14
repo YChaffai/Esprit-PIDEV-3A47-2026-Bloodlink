@@ -1,0 +1,67 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Rendez-vous | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Rendez-vous</h1>
+        <p class="text-white-50 mb-0">Gérez les rendez-vous des donneurs et leur statut.</p>
+    </div>
+    <div class="d-flex gap-2">
+         <span class="badge bg-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0" style="font-size: 0.9rem;">
+            <i class="fa-solid fa-calendar-check me-2"></i> {{ rendezvous|length }} RÉS.
+         </span>
+    </div>
+</div>
+
+<div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
+    {# Filtres #}
+    <div class="mb-4">
+        {{ form_start(filterForm, {'attr': {'id': 'rv-filter-form', 'class': 'js-filter-form'}}) }}
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Recherche</label>
+                    <input type="text" name="search" class="form-control form-control-premium border-0" placeholder="Nom ou Prénom..." value="{{ app.request.query.get('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Campagne</label>
+                     {{ form_widget(filterForm.campagne, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Entité</label>
+                     {{ form_widget(filterForm.entite, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date</label>
+                    {{ form_widget(filterForm.filter_date, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                 <div class="col-md-2">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Heure</label>
+                    {{ form_widget(filterForm.filter_time, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Statut</label>
+                    {{ form_widget(filterForm.status, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Tri</label>
+                    {{ form_widget(filterForm.tri, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                
+                <div class="col-md-2">
+                    <a href="{{ path('rendezvousback_list') }}" class="btn btn-outline-danger w-100 py-3 fw-bold rounded-pill">
+                        <i class="fa-solid fa-rotate-left me-2"></i> RESET
+                    </a>
+                </div>
+            </div>
+        {{ form_end(filterForm, {'render_rest': false}) }}
+    </div>
+
+    {# Table #}
+    <div id="list-content">
+        {% include 'rendez_vous/_listback_table.html.twig' %}
+    </div>
+</div>
+{% endblock %}

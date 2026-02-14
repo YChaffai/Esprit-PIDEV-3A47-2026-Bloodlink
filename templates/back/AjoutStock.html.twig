@@ -1,0 +1,123 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Nouveau Stock | BloodLink Admin{% endblock %}
+
+{% block stylesheets %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <style>
+    .choices__inner {
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      color: var(--text) !important;
+      padding: .6rem .9rem !important;
+      min-height: calc(1.5em + 1.2rem + 2px);
+    }
+    .choices__list--dropdown, .choices__list[aria-expanded] {
+      background: #111 !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 16px !important;
+      color: var(--text) !important;
+    }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+      background: rgba(230,57,57,.20) !important;
+    }
+    .bl-label { display:block; margin-bottom: 8px; font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.65); font-weight: 800; }
+    .bl-control { width: 100%; background: rgba(255,255,255,.03) !important; border: 1px solid var(--border) !important; color: var(--text) !important; border-radius: 18px !important; padding: 14px 16px !important; outline: none !important; }
+    .bl-control:focus { border-color: rgba(230,57,57,.55) !important; box-shadow: 0 0 0 .2rem rgba(230,57,57,.15) !important; }
+    .bl-error { margin-top: 8px; color: #ff4d4d; font-size: .85rem; font-weight: 600; }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+  <div>
+    <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Nouveau Stock</h1>
+    <p class="text-white-50 mb-0">Ajouter un nouveau stock de sang à l'inventaire.</p>
+  </div>
+
+  <a href="{{ path('back_stock_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+    <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+  </a>
+</div>
+
+<div class="glass-card p-4 p-md-5">
+  {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      {{ form_label(form.orgType, 'TYPE ORGANISATION', { label_attr: { class: 'bl-label' } }) }}
+      {{ form_widget(form.orgType, { attr: { class: 'bl-control js-choices' } }) }}
+      <div class="bl-error">{{ form_errors(form.orgType) }}{{ form_errors(form.type_org) }}</div>
+    </div>
+
+    <div class="col-md-6">
+      {{ form_label(form.orgId, 'ORGANISATION', { label_attr: { class: 'bl-label' } }) }}
+      {{ form_widget(form.orgId, { attr: { class: 'bl-control js-choices' } }) }}
+      <div class="bl-error">{{ form_errors(form.orgId) }}{{ form_errors(form.type_orgid) }}</div>
+    </div>
+
+    <div class="col-md-6">
+      {{ form_label(form.type_sang, 'TYPE SANG', { label_attr: { class: 'bl-label' } }) }}
+      {{ form_widget(form.type_sang, { attr: { class: 'bl-control js-choices' } }) }}
+      <div class="bl-error">{{ form_errors(form.type_sang) }}</div>
+    </div>
+
+    <div class="col-md-6">
+      {{ form_label(form.quantite, 'QUANTITÉ (UNITÉS)', { label_attr: { class: 'bl-label' } }) }}
+      {{ form_widget(form.quantite, { attr: { class: 'bl-control', placeholder: 'Ex: 50' } }) }}
+      <div class="bl-error">{{ form_errors(form.quantite) }}</div>
+    </div>
+  </div>
+
+  <div class="d-none">
+    {{ form_rest(form) }}
+  </div>
+
+  <div class="d-flex justify-content-end gap-3 mt-5">
+    <a href="{{ path('back_stock_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">ANNULER</a>
+    <button type="submit" class="btn btn-premium d-flex align-items-center gap-2">
+      <i class="fa-solid fa-floppy-disk"></i> ENREGISTRER LE STOCK
+    </button>
+  </div>
+
+  {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const orgTypeSelect = document.getElementById('stock_orgType');
+        const orgIdSelect = document.getElementById('stock_orgId');
+        
+        let choicesOrgType, choicesOrgId;
+
+        try {
+            choicesOrgType = new Choices(orgTypeSelect, { searchEnabled: false, shouldSort: false, itemSelectText: '' });
+            choicesOrgId = new Choices(orgIdSelect, { searchEnabled: true, shouldSort: true, itemSelectText: '', placeholder: true, placeholderValue: 'Sélectionnez un type' });
+            const typeSangSelect = document.getElementById('stock_type_sang');
+            if (typeSangSelect) new Choices(typeSangSelect, { searchEnabled: false, shouldSort: false, itemSelectText: '' });
+        } catch (e) { console.error(e); }
+
+        orgTypeSelect.addEventListener('change', function(e) {
+            const type = e.target.value;
+            choicesOrgId.clearStore();
+            choicesOrgId.setChoices([{ value: '', label: 'Chargement...', disabled: true }], 'value', 'label', true);
+
+            fetch(`{{ path('ajax_orgs') }}?type=${type}`)
+                .then(res => res.json())
+                .then(data => {
+                    choicesOrgId.clearStore();
+                    if (data.length === 0) {
+                        choicesOrgId.setChoices([{ value: '', label: 'Aucune organisation trouvée', disabled: true }], 'value', 'label', true);
+                    } else {
+                        choicesOrgId.setChoices(data.map(item => ({ value: item.id, label: item.label })), 'value', 'label', true);
+                    }
+                });
+        });
+    });
+  </script>
+{% endblock %}

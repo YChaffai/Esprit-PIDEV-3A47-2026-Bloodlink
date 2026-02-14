@@ -1,0 +1,12 @@
+{% extends 'base_front.html.twig' %}
+{% block title %}Modifier Don | BloodLink{% endblock %}
+
+{% block body %}
+  {% include 'front/don/_form.html.twig' with {
+    title: 'Modifier Don',
+    subtitle: 'Mettez à jour les informations de votre don.',
+    back_path: path('front_don_index'),
+    button_label: 'Mettre à jour',
+    form: form
+  } %}
+{% endblock %}

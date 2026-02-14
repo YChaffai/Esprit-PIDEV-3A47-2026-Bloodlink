@@ -1,0 +1,150 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .login-wrapper{
+      min-height: calc(100vh - 120px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .login-card{
+      width:100%;
+      max-width:460px;
+      padding: 34px;
+    }
+    .form-control{
+      background: rgba(255,255,255,.06) !important;
+      border: 1px solid rgba(255,255,255,.10) !important;
+      color: white !important;
+      border-radius: 12px;
+      padding: 12px 15px;
+    }
+    .form-control:focus{
+      background: rgba(255,255,255,.08) !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 0.25rem rgba(230,57,57,.25);
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+      padding-left: 4px;
+    }
+    .form-check-label{ color: var(--muted); cursor: pointer; }
+    .btn-submit{
+      background: var(--primary);
+      border: none;
+      font-weight: 800;
+      padding: 16px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all .25s ease;
+    }
+    .btn-submit:hover{
+      background: #ff4d4d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(230,57,57,.28);
+    }
+    .login-title{
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      text-transform: uppercase;
+    }
+    .muted-link{ color: var(--muted); text-decoration:none; font-weight: 600; }
+    .muted-link:hover{ color: #fff; text-decoration: underline; }
+    input::placeholder { color: rgba(255,255,255,.25) !important; }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="login-wrapper">
+    <div class="glass-card login-card">
+
+      <div class="text-center mb-5">
+        <i class="fas fa-user-circle fa-3x mb-3" style="color: var(--primary);"></i>
+        <h2 class="login-title m-0">Connexion</h2>
+        <p class="mt-2 mb-0 opacity-50">Accédez à votre compte BloodLink</p>
+      </div>
+
+      {% if error %}
+        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card p-3">
+          <i class="fas fa-triangle-exclamation me-2"></i>
+          {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="needs-validation" novalidate>
+        <div class="mb-4">
+          <label class="form-label" for="inputEmail">Adresse email</label>
+          <input type="email"
+                 class="form-control"
+                 id="inputEmail"
+                 name="email"
+                 value="{{ last_username }}"
+                 placeholder="nom@exemple.com"
+                 autocomplete="email"
+                 required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="inputPassword">Mot de passe</label>
+          <input type="password"
+                 class="form-control"
+                 id="inputPassword"
+                 name="password"
+                 placeholder="••••••••"
+                 autocomplete="current-password"
+                 required>
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <div class="d-flex justify-content-between align-items-center mb-5">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe" name="_remember_me">
+            <label class="form-check-label" for="rememberMe">Se souvenir de moi</label>
+          </div>
+          <small>
+            <a class="muted-link" href="{{ path('app_password_reset_request') }}">Mot de passe oublié ?</a>
+          </small>
+        </div>
+
+        <button class="btn btn-submit w-100" type="submit">Se connecter</button>
+      </form>
+
+      {# New link to register page #}
+      <p class="mt-3 text-center" style="color: var(--muted);">
+        Pas encore de compte ? <a href="{{ path('app_register') }}" class="muted-link">S’inscrire</a>
+      </p>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    (() => {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+{% endblock %}

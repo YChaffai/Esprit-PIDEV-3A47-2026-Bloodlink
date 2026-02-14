@@ -1,0 +1,59 @@
+    <div class="table-responsive">
+        <table class="table table-premium align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Donneur</th>
+                    <th scope="col">Groupe</th>
+                    <th scope="col">Campagne</th>
+                    <th scope="col">Date</th>
+                    <th class="text-end" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for quest in questionnaires %}
+                <tr>
+                    <td><span class="fw-bold text-white">#{{ quest.id }}</span></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-10 text-white fw-bold" style="width: 40px; height: 40px;">
+                                {{ quest.prenom|first|upper }}{{ quest.nom|first|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold text-white">{{ quest.nom|upper }} {{ quest.prenom }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger rounded-pill px-3">{{ quest.getGroupSanguin() }}</span>
+                    </td>
+                    <td>
+                         <span class="badge bg-dark border border-secondary text-white-50 fw-normal">
+                            {{ quest.campagne.titre }}
+                        </span>
+                    </td>
+                    <td class="text-white-50">
+                        {{ quest.date | date("d/m/Y H:i") }}
+                    </td>
+                    <td class="text-end">
+                        <a href="{{ path('questionnaireback_details', { id : quest.id }) }}" 
+                           class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
+                           title="Voir détails">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-clipboard-question fa-2x mb-3 d-block opacity-25"></i>
+                        Aucun questionnaire trouvé.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        
+        {# Pagination if applicable #}
+
+    </div>

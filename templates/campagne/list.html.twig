@@ -1,0 +1,111 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Campagnes | BloodLink{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-bullhorn me-2" style="color:var(--primary);"></i>
+                Campagnes de Collecte
+            </h1>
+            <div style="color:var(--muted);">
+                Sélectionnez une campagne pour participer et sauver des vies.
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for camp in campagne %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="glass-card h-100 d-flex flex-column overflow-hidden position-relative group transition-all" 
+                     style="padding: 30px; border-radius: 24px;">
+                    
+                    {# Decorative background icon #}
+                    <div class="position-absolute bottom-0 end-0 opacity-05 mb-n3 me-n3 transition-all group-hover:opacity-10" style="transform: rotate(-15deg);">
+                        <i class="fa-solid fa-heart-pulse fa-10x"></i>
+                    </div>
+
+                    <div class="position-relative z-1">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-4"
+                             style="width:56px; height:56px; background:rgba(230,57,57,.1); border:1px solid rgba(230,57,57,.2);">
+                            <i class="fa-solid fa-calendar-check fs-4" style="color:var(--primary);"></i>
+                        </div>
+
+                        <h3 class="h4 fw-black text-white mb-3" style="letter-spacing: -0.5px;">{{ camp.titre }}</h3>
+                        
+                        <div class="d-flex flex-column gap-2 mb-4">
+                            <div class="d-flex align-items-center gap-2 small text-white-50">
+                                <i class="fa-regular fa-calendar fa-fw" style="color:var(--primary);"></i>
+                                <span>Du <b>{{ camp.dateDebut|date('d/m/Y') }}</b> au <b>{{ camp.dateFin|date('d/m/Y') }}</b></span>
+                            </div>
+                            {% if camp.typeSang %}
+                            <div class="d-flex align-items-center gap-2 small text-white-50">
+                                <i class="fa-solid fa-droplet fa-fw text-danger"></i>
+                                <span>Besoin : <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border-0">{{ camp.typeSang }}</span></span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-white-50 small mb-4 line-clamp-3">
+                            Participez à cette campagne de collecte vitale. Votre don peut faire une différence immense pour ceux qui en ont besoin.
+                        </p>
+                    </div>
+
+                    <div class="mt-auto position-relative z-1">
+                        <a href="{{ path('questionnaire_new', { id : camp.id, client_id: client.user.id }) }}" 
+                           class="btn btn-primary w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 transition-all" 
+                           style="height: 52px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(230,57,57,.2);">
+                           <span>Participer</span>
+                           <i class="fa-solid fa-arrow-right-long transition-all"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="glass-card p-5 text-center">
+                    <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:80px;height:80px;background: rgba(230,57,57,.1); border: 1px solid rgba(230,57,57,.2);">
+                        <i class="fa-solid fa-hourglass-empty fs-2" style="color:var(--primary);"></i>
+                    </div>
+                    <h4 class="fw-black text-white mb-2">Aucune campagne active</h4>
+                    <p class="text-white-50 mb-0">Revenez plus tard pour voir les nouvelles opportunités de don.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .group:hover {
+        transform: translateY(-8px);
+        background: rgba(255,255,255,0.08) !important;
+        border-color: rgba(230,57,57,0.3) !important;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .group:hover .btn-primary {
+        background: #ff4d4d;
+        transform: scale(1.02);
+    }
+    .group:hover .fa-arrow-right-long {
+        transform: translateX(5px);
+    }
+    .group-hover\:opacity-10 {
+        transition: opacity 0.3s ease;
+    }
+    .group:hover .group-hover\:opacity-10 {
+        opacity: 0.1 !important;
+    }
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
