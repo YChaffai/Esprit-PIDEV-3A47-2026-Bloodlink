@@ -9,12 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\User;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/campagne')]
+#[Route('/compagne')]
 #[IsGranted('ROLE_CLIENT')]
-final class CampagneController extends AbstractController
+final class compagneController extends AbstractController
 {
-  #[Route('/list', name: 'campagne_list')]
-  public function list(CompagneRepository $campagneRepository): Response
+  #[Route('/list', name: 'compagne_list')]
+  public function list(compagneRepository $compagneRepository): Response
   {
     /** @var User $user */
     $user = $this->getUser();
@@ -25,10 +25,10 @@ final class CampagneController extends AbstractController
       throw $this->createAccessDeniedException('Client profile not completed.');
     }
 
-    $campagnes = $campagneRepository->findCompatibleForClient($client);
+    $compagnes = $compagneRepository->findCompatibleForClient($client);
 
     return $this->render('campagne/list.html.twig', [
-      'campagne' => $campagnes,
+      'compagne' => $compagnes,
       'client' => $client,
     ]);
   }
