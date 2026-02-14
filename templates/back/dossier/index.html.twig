@@ -1,0 +1,59 @@
+{% extends 'back/baseBack.html.twig' %}
+{% block title %}Dossiers médicaux | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+  <div>
+    <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Dossiers médicaux</h1>
+    <p class="text-white-50 mb-0">Gestion des dossiers médicaux des donneurs.</p>
+  </div>
+
+  <a href="{{ path('back_dossier_new') }}" class="btn btn-premium rounded-pill px-4 fw-bold">
+    <i class="fa-solid fa-plus me-2"></i> AJOUTER
+  </a>
+</div>
+
+<div class="glass-card p-4 p-md-5">
+  <div class="table-responsive">
+    <table class="table table-premium align-middle mb-0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nom</th>
+          <th>Âge</th>
+          <th>Sexe</th>
+          <th>Groupe</th>
+          <th>Don lié</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for d in dossiers %}
+        <tr>
+          <td class="fw-bold">#{{ d.id }}</td>
+          <td class="text-white-50">{{ d.nom }} {{ d.prenom }}</td>
+          <td class="text-white-50">{{ d.age }}</td>
+          <td><span class="badge badge-premium">{{ d.sexe }}</span></td>
+          <td><span class="badge badge-admin">{{ d.typeSang }}</span></td>
+          <td class="text-white-50">#{{ d.don ? d.don.id : '—' }}</td>
+          <td class="text-end">
+            <a class="btn btn-outline-light btn-sm rounded-pill px-3 me-2"
+               href="{{ path('back_dossier_show', {id: d.id}) }}">
+              <i class="fa-solid fa-eye me-1"></i> Voir
+            </a>
+            <a class="btn btn-outline-light btn-sm rounded-pill px-3"
+               href="{{ path('back_dossier_edit', {id: d.id}) }}">
+              <i class="fa-solid fa-pen me-1"></i> Modifier
+            </a>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-white-50 py-5">Aucun dossier trouvé.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

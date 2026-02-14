@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+{# templates/front/home.html.twig #}
+>>>>>>> e5190a8 (JEW)
 {% extends 'base_front.html.twig' %}
 
 {% block title %}Accueil | BloodLink - Votre Hub de Don de Sang{% endblock %}
@@ -5,11 +9,21 @@
 {% block body %}
 <div class="container-fluid py-4 px-md-5">
 
+<<<<<<< HEAD
   {# --- HERO SECTION --- #}
   <div class="row align-items-center min-vh-75 g-5 mb-5 pt-4">
     <div class="col-12 col-lg-7 order-2 order-lg-1">
       <div class="pe-lg-5">
         <div class="d-inline-flex align-items-center rounded-pill px-3 py-1 mb-4 border border-danger border-opacity-25 animate-hero" 
+=======
+  {# =========================
+     HERO SECTION
+     ========================= #}
+  <div class="row align-items-center min-vh-75 g-5 mb-5 pt-4">
+    <div class="col-12 col-lg-7 order-2 order-lg-1">
+      <div class="pe-lg-5">
+        <div class="d-inline-flex align-items-center rounded-pill px-3 py-1 mb-4 border border-danger border-opacity-25 animate-hero"
+>>>>>>> e5190a8 (JEW)
              style="background: rgba(230,57,57,0.1);">
           <span class="badge bg-danger rounded-pill me-2">LIVE</span>
           <span class="small fw-bold text-danger">Chaque don est un nouvel espoir.</span>
@@ -19,13 +33,22 @@
           Sauvez des vies,<br>
           <span style="color:var(--primary); text-shadow: 0 0 40px rgba(230,57,57,0.3);">Une goutte à la fois.</span>
         </h1>
+<<<<<<< HEAD
         
         <p class="lead mb-5 animate-hero" style="color:var(--muted); max-width: 600px; font-size: 1.25rem;">
+=======
+
+        <p class="lead mb-5 animate-hero" style="color:var(--muted); max-inline-size: 600px; font-size: 1.25rem;">
+>>>>>>> e5190a8 (JEW)
           Bienvenue sur votre espace BloodLink. Gérez vos dons, suivez vos commandes de sang et restez informé des campagnes de collecte en temps réel.
         </p>
 
         <div class="d-flex flex-wrap gap-3 animate-hero">
+<<<<<<< HEAD
           {% if isLogged %}
+=======
+          {% if isLogged is defined and isLogged %}
+>>>>>>> e5190a8 (JEW)
             <a href="{{ path('front_don_new') }}" class="btn btn-lg rounded-pill fw-bold px-5 py-3 main-cta">
               <i class="fa-solid fa-hand-holding-droplet me-2"></i> Faire un don
             </a>
@@ -41,6 +64,7 @@
       </div>
     </div>
 
+<<<<<<< HEAD
     {# --- 3D-ISH VISUAL RIGHT SIDE --- #}
     <div class="col-12 col-lg-5 order-1 order-lg-2">
       <div class="position-relative hero-visual">
@@ -69,17 +93,57 @@
                 </div>
             </div>
         </div>
+=======
+    {# --- VISUAL RIGHT SIDE --- #}
+    <div class="col-12 col-lg-5 order-1 order-lg-2">
+      <div class="position-relative hero-visual">
+        <div class="glow-sphere"></div>
+
+        <div class="glass-card p-4 floating-card-1">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-circle">
+              <i class="fa-solid fa-heart-pulse fs-4"></i>
+            </div>
+            <div>
+              <div class="h4 fw-black mb-0">Direct Impact</div>
+              <div class="small" style="color:var(--muted);">1 don = 3 vies sauvées</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card p-4 floating-card-2">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-circle primary">
+              <i class="fa-solid fa-droplet fs-4"></i>
+            </div>
+            <div>
+              <div class="h4 fw-black mb-0">Besoin Urgent</div>
+              <div class="small" style="color:var(--muted);">Stocks critiques : O-</div>
+            </div>
+          </div>
+        </div>
+
+>>>>>>> e5190a8 (JEW)
       </div>
     </div>
   </div>
 
+<<<<<<< HEAD
   {# --- FEATURES HUB GRID --- #}
   <div class="row g-4 mt-5 pt-5 mb-5">
+=======
+
+  {# =========================
+     FEATURES HUB GRID
+     ========================= #}
+  <div class="row g-4 mt-5 pt-5 mb-5 features-grid">
+>>>>>>> e5190a8 (JEW)
     <div class="col-12 mb-3">
       <h2 class="fw-black mb-0" style="letter-spacing:-1px;">Explorez <span style="color:var(--primary);">votre espace</span></h2>
       <p style="color:var(--muted);">Accédez rapidement à toutes les fonctionnalités clés de BloodLink.</p>
     </div>
 
+<<<<<<< HEAD
     {# Campagnes #}
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('campagne_list') }}" class="text-decoration-none feature-card-link">
@@ -87,10 +151,19 @@
           <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-bullhorn"></i></div>
           <h4 class="fw-bold text-white">Campagnes</h4>
           <p class="small mb-0" style="color:var(--muted);">Découvrez les collectes proches de chez vous et inscrivez-vous.</p>
+=======
+    <div class="col-12 col-md-6 col-lg-3">
+      <a href="{{ path('campagne_list') }}" class="text-decoration-none feature-card-link">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon mb-4"><i class="fa-solid fa-bullhorn"></i></div>
+          <h4 class="fw-bold text-white">Campagnes</h4>
+          <p class="small mb-0" style="color:var(--muted);">Découvrez les collectes et inscrivez-vous.</p>
+>>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
 
+<<<<<<< HEAD
     {# Mes Dons #}
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('front_don_index') }}" class="text-decoration-none feature-card-link">
@@ -98,10 +171,19 @@
           <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-history"></i></div>
           <h4 class="fw-bold text-white">Mes Dons</h4>
           <p class="small mb-0" style="color:var(--muted);">Historique complet de vos dons et suivi de votre impact social.</p>
+=======
+    <div class="col-12 col-md-6 col-lg-3">
+      <a href="{{ path('front_don_index') }}" class="text-decoration-none feature-card-link">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon mb-4"><i class="fa-solid fa-history"></i></div>
+          <h4 class="fw-bold text-white">Mes Dons</h4>
+          <p class="small mb-0" style="color:var(--muted);">Historique complet de vos dons et impact.</p>
+>>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
 
+<<<<<<< HEAD
     {# Commandes #}
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('front_commandes_index') }}" class="text-decoration-none feature-card-link">
@@ -109,10 +191,19 @@
           <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-box-open"></i></div>
           <h4 class="fw-bold text-white">Commandes</h4>
           <p class="small mb-0" style="color:var(--muted);">Demandez des poches de sang pour vos besoins urgents.</p>
+=======
+    <div class="col-12 col-md-6 col-lg-3">
+      <a href="{{ path('front_commandes_index') }}" class="text-decoration-none feature-card-link">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon mb-4"><i class="fa-solid fa-box-open"></i></div>
+          <h4 class="fw-bold text-white">Commandes</h4>
+          <p class="small mb-0" style="color:var(--muted);">Demandez des poches de sang pour vos besoins.</p>
+>>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
 
+<<<<<<< HEAD
     {# Dossier #}
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('front_dossier_show') }}" class="text-decoration-none feature-card-link">
@@ -120,11 +211,20 @@
           <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-file-waveform"></i></div>
           <h4 class="fw-bold text-white">Dossier Médical</h4>
           <p class="small mb-0" style="color:var(--muted);">Accès sécurisé à vos constantes et analyses médicales.</p>
+=======
+    <div class="col-12 col-md-6 col-lg-3">
+      <a href="{{ path('front_dossier_show') }}" class="text-decoration-none feature-card-link">
+        <div class="glass-card p-4 h-100 feature-card">
+          <div class="feature-icon mb-4"><i class="fa-solid fa-file-waveform"></i></div>
+          <h4 class="fw-bold text-white">Dossier Médical</h4>
+          <p class="small mb-0" style="color:var(--muted);">Accès sécurisé à vos analyses médicales.</p>
+>>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
   </div>
 
+<<<<<<< HEAD
 </div>
 
 <style>
@@ -196,10 +296,310 @@
 
   .feature-card {
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+=======
+
+  {# =========================
+     UI CRAFT INTERACTIVE GRID
+     ========================= #}
+  <section id="ui-craft" class="py-5 mt-4 mb-5 pb-5">
+    <div class="text-center mb-4">
+      <h2 class="ui-craft-title mb-2">
+        L'art de <span class="ui-craft-brand">BloodLink</span>
+      </h2>
+      <p class="ui-craft-lead">
+        1 clic = ouvrir la carte, 2ème clic = naviguer.
+      </p>
+    </div>
+
+    <ul class="ui-craft-list" style="--items: 5;">
+      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Faire un don"
+          data-active="true" data-href="{{ path('front_don_new') }}">
+        <article>
+          <h3>Faire un don</h3>
+          <p class="ui-craft-body">Prenez rendez-vous rapidement et suivez votre contribution.</p>
+          <i class="fa-solid fa-hand-holding-droplet ui-craft-icon"></i>
+          <a class="ui-craft-link" href="{{ path('front_don_new') }}"><span>Ouvrir</span></a>
+          <img src="https://health.osu.edu/-/media/health/images/stories/2025/02/donating-blood.jpg" alt="">
+        </article>
+      </li>
+
+      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Campagnes"
+          data-active="false" data-href="{{ path('campagne_list') }}">
+        <article>
+          <h3>Campagnes</h3>
+          <p class="ui-craft-body">Découvrez les collectes et inscrivez-vous en un clic.</p>
+          <i class="fa-solid fa-bullhorn ui-craft-icon"></i>
+          <a class="ui-craft-link" href="{{ path('campagne_list') }}"><span>Ouvrir</span></a>
+          <img src="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/615034246_1506622881146232_1311108811290700629_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_ohc=rhaVcKxYqLUQ7kNvwGf-Nxu&_nc_oc=Adljz8ME-HRJiRgb3ZOOrPrAyplITJTgKYoOUSosUESanMu_wBu_YLekasOBPk37UVE&_nc_zt=23&_nc_ht=scontent.ftun14-1.fna&_nc_gid=WCqN3VFGhzdbajvG9WfG0Q&oh=00_AfspHh6NDhg4hf-GZW3meI8DJDcu1apKJnjzaPiMYQHJ4Q&oe=699640DE" alt="">
+        </article>
+      </li>
+
+      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Mes dons"
+          data-active="false" data-href="{{ path('front_don_index') }}">
+        <article>
+          <h3>Mes dons</h3>
+          <p class="ui-craft-body">Historique complet, dates, et impact de vos dons.</p>
+          <i class="fa-solid fa-history ui-craft-icon"></i>
+          <a class="ui-craft-link" href="{{ path('front_don_index') }}"><span>Ouvrir</span></a>
+          <img src="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/613100953_1503973751411145_3733919481978742877_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=833d8c&_nc_ohc=i_AZePasFL4Q7kNvwHbnTPC&_nc_oc=Adn1tmAWeVthh5ENxvr8ZeUrZS-9jycx5jDGgzx_mJWOtQG4BZKcp6zb0WkQN97VIZI&_nc_zt=23&_nc_ht=scontent.ftun14-1.fna&_nc_gid=33BWWUzjbwA5CdtrB28-TQ&oh=00_AftO2KFZ0GIKLTRfusoetV1f29AogGunrxsQratNdarxHQ&oe=69962B38" alt="">
+        </article>
+      </li>
+
+      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Commandes"
+          data-active="false" data-href="{{ path('front_commandes_index') }}">
+        <article>
+          <h3>Commandes</h3>
+          <p class="ui-craft-body">Demandez des poches de sang et suivez l’état de vos demandes.</p>
+          <i class="fa-solid fa-box-open ui-craft-icon"></i>
+          <a class="ui-craft-link" href="{{ path('front_commandes_index') }}"><span>Ouvrir</span></a>
+          <img src="https://www.mayoclinic.org/-/media/kcms/gbs/medical-professionals/images/2022/04/29/13/32/whole-blood-767x535.jpg" alt="">
+        </article>
+      </li>
+
+      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Dossier médical"
+          data-active="false" data-href="{{ path('front_dossier_show') }}">
+        <article>
+          <h3>Dossier médical</h3>
+          <p class="ui-craft-body">Accès sécurisé à vos analyses et informations médicales.</p>
+          <i class="fa-solid fa-file-waveform ui-craft-icon"></i>
+          <a class="ui-craft-link" href="{{ path('front_dossier_show') }}"><span>Ouvrir</span></a>
+          <img src="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/605540721_1493984215743432_3193429798547041132_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=LDIsoK8iufkQ7kNvwE3X5sQ&_nc_oc=Adlkp-KlyRtBMZU_hAp3RcFsvf7ffxN1GWIzIufXAjpUi_TSqlzsfZENHo_mdquyprs&_nc_zt=23&_nc_ht=scontent.ftun14-1.fna&_nc_gid=EWRS9qw36juc76fzO5cJpQ&oh=00_AftE30KDq3197bbEJNu3c4ViAQVQ73tJfBkpYWp_U651CA&oe=69963E21" alt="">
+        </article>
+      </li>
+    </ul>
+  </section>
+
+
+  {# =========================
+     KEYPAD CTA (QUICK ACTIONS)
+     ========================= #}
+  <section id="keypad-cta" class="py-5 mt-4 mb-5">
+    <div class="row align-items-center g-5">
+      <div class="col-12 col-lg-6">
+        <div class="pe-lg-4">
+          <h2 class="fw-black mb-3" style="letter-spacing:-1px;">
+            Jus’ <span style="color:var(--primary);">agissez</span>.<br>Et sauvez des vies.
+          </h2>
+
+          <p class="mb-4" style="color:var(--muted); max-inline-size: 52ch;">
+            Utilisez le keypad pour accéder rapidement aux actions clés.
+            <span class="d-block mt-2 opacity-75">Clavier: O = Don, G = Campagnes, Entrée = Commandes</span>
+          </p>
+
+          <form class="keypad-form" action="#" method="post">
+            <input type="email" required placeholder="email@exemple.com" />
+            <button type="submit">Recevoir alertes</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6 d-flex justify-content-center justify-content-lg-end">
+        <div class="keypad" aria-label="Quick actions keypad">
+
+          <div class="keypad__base">
+            <img src="https://assets.codepen.io/605876/keypad-base.png?format=auto&quality=86" alt="" />
+          </div>
+
+          <button
+            id="one"
+            class="key keypad__single keypad__single--left"
+            type="button"
+            data-href="{{ path('front_don_new') }}"
+            aria-label="Faire un don"
+            style="--travel: 26; --hue: 90; --saturate: 1.8; --brightness: 0.95;"
+
+          >
+            <span class="key__mask">
+              <span class="key__content">
+                <span class="key__text">ok</span>
+                <img src="https://assets.codepen.io/605876/keypad-single.png?format=auto&quality=86" alt="" />
+              </span>
+            </span>
+          </button>
+
+          <button
+            id="two"
+            class="key keypad__single"
+            type="button"
+            data-href="{{ path('campagne_list') }}"
+            aria-label="Voir les campagnes"
+            style="--travel: 26; --hue: 0; --saturate: 0; --brightness: 1.25;"
+          >
+            <span class="key__mask">
+              <span class="key__content">
+                <span class="key__text">go</span>
+                <img src="https://assets.codepen.io/605876/keypad-single.png?format=auto&quality=86" alt="" />
+              </span>
+            </span>
+          </button>
+
+          <button
+            id="three"
+            class="key keypad__double"
+            type="button"
+            data-href="{{ path('front_commandes_index') }}"
+            aria-label="Accéder aux commandes"
+            style="--travel: 18; --hue: 0; --saturate: 0; --brightness: 0.9;"
+          >
+            <span class="key__mask">
+              <span class="key__content">
+                <span class="key__text">rdv.</span>
+                <img src="https://assets.codepen.io/605876/keypad-double.png?format=auto&quality=86" alt="" />
+              </span>
+            </span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  {# =========================
+     MYTHBUSTER SECTION
+     ========================= #}
+  <section class="py-5 mt-5" id="myth-buster-section">
+    <div class="text-center mb-5">
+      <h2 class="fw-black mb-0" style="letter-spacing:-1px;">Mythe ou <span style="color:var(--primary);">Réalité ?</span></h2>
+      <p style="color:var(--muted);">Testez vos connaissances sur le don de sang.</p>
+    </div>
+
+    <div class="row justify-content-center text-start">
+      <div class="col-lg-6 d-flex justify-content-center mb-5 mb-lg-0">
+        <div class="card-game-container">
+          <input type="checkbox" id="myth-choice-1">
+          <label for="myth-choice-1" class="myth-card myth-card--answer">
+            <span class="text-success">RÉALITÉ</span><br><br>
+            Vous POUVEZ donner votre sang <strong>4 mois</strong> après un tatouage ou un piercing.
+            <div class="myth-card-footer"><i class="fas fa-check-circle text-success"></i> C'est une simple précaution !</div>
+          </label>
+          <label for="myth-choice-1" class="myth-card myth-card--question">
+            Mythe:<br><br> "Je ne peux pas donner si j'ai un <strong>tatouage</strong>."
+            <div class="myth-card-footer"><i class="fas fa-hand-pointer"></i> Cliquez pour la réponse.</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="col-lg-6 d-flex justify-content-center">
+        <div class="card-game-container">
+          <input type="checkbox" id="myth-choice-2">
+          <label for="myth-choice-2" class="myth-card myth-card--answer">
+            <span class="text-success">RÉALITÉ</span><br><br>
+            Votre corps remplace le plasma en <strong>quelques heures</strong>, globules rouges en semaines.
+            <div class="myth-card-footer"><i class="fas fa-check-circle text-success"></i> Une bonne hydratation suffit !</div>
+          </label>
+          <label for="myth-choice-2" class="myth-card myth-card--question">
+            Mythe:<br><br> "Donner son sang <strong>affaiblit</strong> le corps pour longtemps."
+            <div class="myth-card-footer"><i class="fas fa-hand-pointer"></i> Cliquez pour la réponse.</div>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="blood-footer">
+  <div class="container-fluid px-md-5">
+    <div class="blood-footer__inner">
+      <div class="blood-footer__brand"  style="color:rgba(255,255,255,0.85);">
+        <span class="blood-footer__dot"  style="color:rgba(255,255,255,0.85);"></span>
+        <strong>BloodLink</strong>
+        <span class="blood-footer__sep">—</span>
+        <span class="blood-footer__muted"  style="color:rgba(255,255,255,0.85);" >Chaque don compte.</span>
+      </div>
+
+    <div class="blood-footer__made" style="color:rgba(255,255,255,0.85);">
+
+        Made by 6 people: <strong>Youssef</strong>, <strong>Wajd</strong>, <strong>Yassine</strong>, <strong>Eya</strong>, <strong>Rami</strong>, <strong>Khalil</strong>.
+      </div>
+
+      <div class="blood-footer__copy"  style="color:rgba(255,255,255,0.85);">
+        © {{ "now"|date("Y") }} BloodLink. Tous droits réservés.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* =========================
+     HERO + BUTTONS
+     ========================= */
+  .main-cta{
+    background: var(--primary);
+    color: #fff;
+    border: 0;
+    box-shadow: 0 10px 40px rgba(230,57,57,0.4);
+    transition: all .3s cubic-bezier(.175,.885,.32,1.275);
+  }
+  .main-cta:hover{
+    transform: translateY(-5px) scale(1.05);
+    background: #ff4d4d;
+    box-shadow: 0 15px 50px rgba(230,57,57,0.5);
+    color: #fff;
+  }
+  .outline-cta{
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border: 1px solid var(--border);
+    transition: all .3s ease;
+  }
+  .outline-cta:hover{
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+  }
+  .glow-sphere{
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+    inline-size: 350px;
+    block-size: 350px;
+    background: var(--primary);
+    filter: blur(140px);
+    opacity: .15;
+    border-radius: 50%;
+    z-index: 1;
+  }
+  .icon-circle{
+    inline-size: 55px;
+    block-size: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+  }
+  .icon-circle.primary{
+    background: rgba(230,57,57,0.15);
+    color: var(--primary);
+  }
+  .floating-card-1{ z-index: 2; animation: float1 6s infinite ease-in-out; }
+  .floating-card-2{ z-index: 3; animation: float2 7s infinite ease-in-out; }
+  @keyframes float1{
+    0%,100%{ transform: rotate(-3deg) translateX(-20px) translateY(0); }
+    50%{ transform: rotate(-1deg) translateX(-20px) translateY(-15px); }
+  }
+  @keyframes float2{
+    0%,100%{ transform: rotate(4deg) translateX(40px) translateY(20px); }
+    50%{ transform: rotate(6deg) translateX(40px) translateY(40px); }
+  }
+
+  /* =========================
+     FEATURE CARDS
+     ========================= */
+  .feature-card{
+    transition: all .4s cubic-bezier(.165,.84,.44,1);
+>>>>>>> e5190a8 (JEW)
     border: 1px solid var(--border);
     position: relative;
     overflow: hidden;
   }
+<<<<<<< HEAD
   .feature-card::after {
     content: '';
     position: absolute;
@@ -209,10 +609,22 @@
     transition: opacity 0.4s ease;
   }
   .feature-card:hover {
+=======
+  .feature-card::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background: linear-gradient(135deg, transparent, rgba(230,57,57,0.05));
+    opacity:0;
+    transition: opacity .4s ease;
+  }
+  .feature-card:hover{
+>>>>>>> e5190a8 (JEW)
     transform: translateY(-10px);
     border-color: rgba(230,57,57,0.4);
     box-shadow: 0 20px 50px rgba(0,0,0,0.4);
   }
+<<<<<<< HEAD
   .feature-card:hover::after { opacity: 1; }
 
   .feature-icon {
@@ -240,3 +652,884 @@
   });
 </script>
 {% endblock %}
+=======
+  .feature-card:hover::after{ opacity:1; }
+  .feature-icon{
+    font-size: 2.2rem;
+    color: var(--primary);
+    transition: transform .4s ease;
+  }
+  .feature-card:hover .feature-icon{ transform: scale(1.1) rotate(5deg); }
+
+  /* Initial state for GSAP hero reveal */
+  .animate-hero{ opacity:0; transform: translateY(30px); }
+
+  /* =========================
+     MYTHBUSTER CARDS
+     ========================= */
+  .card-game-container{ position: relative; inline-size: 320px; block-size: 450px; }
+  .card-game-container input[type="checkbox"]{ display:none; }
+  .myth-card{
+    background: #fff;
+    border-radius: 18px;
+    color: #111;
+    filter: drop-shadow(5px 5px 25px rgba(0,0,0,0.4));
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    block-size: 420px;
+    inline-size: 300px;
+    padding: 30px;
+    position: absolute;
+    transition: transform .6s cubic-bezier(.25,1,.5,1), opacity .4s ease;
+    user-select:none;
+    cursor:pointer;
+  }
+  .myth-card--question{ background:#222; color:#fff; transform: translate(-5%,0) rotate(-3deg); z-index:2; }
+  .myth-card--answer{ transform: translate(5%,0) rotate(3deg); z-index:1; }
+  .myth-card strong{ color: var(--primary); }
+  .myth-card-footer{
+    align-items:center;
+    inset-block-end:30px;
+    display:flex;
+    font-size:.9rem;
+    inset-inline-start:30px;
+    position:absolute;
+    inset-inline-end:30px;
+    font-weight:600;
+  }
+  .myth-card-footer i{ color: var(--primary); font-size: 1.5rem; margin-inline-end: 10px; }
+  #myth-choice-1:checked ~ .myth-card--question,
+  #myth-choice-2:checked ~ .myth-card--question{
+    transform: translate(-80vw,-10vh) rotate(-25deg);
+    opacity:0;
+    pointer-events:none;
+  }
+  #myth-choice-1:checked ~ .myth-card--answer,
+  #myth-choice-2:checked ~ .myth-card--answer{
+    transform: translate(-5%,0) rotate(-3deg);
+    z-index:2;
+  }
+
+  /* =========================
+     UI CRAFT GRID
+     ========================= */
+  #ui-craft { overflow: visible; }
+
+  /* Fix title alignment */
+  #ui-craft .ui-craft-title{
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: .35ch;
+    line-height: 1.05;
+    font-weight: 400;
+    letter-spacing: -1px;
+    font-size: clamp(1.7rem, 3.2vw, 2.6rem);
+    margin: 0;
+  }
+  #ui-craft .ui-craft-brand{
+    display:inline-block;
+    line-height: 1.05;
+    color: var(--primary);
+  }
+  #ui-craft .ui-craft-lead{
+    margin: 0 auto;
+    max-inline-size: 75ch;
+    color: var(--muted);
+  }
+  #ui-craft .ui-craft-list{
+    --gap: 10px;
+    --base: clamp(52px, 7vw, 80px);
+    --speed: 700ms;
+    --easing: cubic-bezier(0.05, 0.61, 0.41, 0.95);
+
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem auto 0;
+    inline-size: min(1100px, 100%);
+    max-inline-size: calc(100% - 1rem);
+
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: 10fr 1fr 1fr 1fr 1fr;
+
+    block-size: clamp(380px, 48vh, 540px);
+    border-radius: 18px;
+
+    transition: grid-template-columns var(--speed) var(--easing);
+    will-change: grid-template-columns;
+  }
+  #ui-craft .ui-craft-item{
+    position: relative;
+    overflow: hidden;
+    min-inline-size: var(--base);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    transition: border-color .25s ease, transform .25s ease;
+    transform: translateZ(0);
+  }
+  #ui-craft .ui-craft-item:hover{ border-color: rgba(230,57,57,0.35); }
+  #ui-craft .ui-craft-item:focus-visible{ outline: 2px solid rgba(230,57,57,0.55); outline-offset: 3px; }
+  #ui-craft .ui-craft-item[data-active="true"]{ border-color: rgba(230,57,57,0.45); transform: scale(1.01); }
+
+  #ui-craft article{
+    inline-size: var(--article-width, 420px);
+    block-size: 100%;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: .9rem;
+    padding: 1rem;
+    padding-block-end: 3.2rem;
+    color: #fff;
+    font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+  #ui-craft article h3{
+    position:absolute;
+    inset-block-start:1rem; inset-inline-start:1rem;
+    transform-origin: 0 50%;
+    rotate: 90deg;
+    font-size: .95rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .65;
+    margin:0;
+    white-space: nowrap;
+  }
+  #ui-craft .ui-craft-icon{
+    font-size: 18px;
+    opacity: .65;
+    transition: opacity calc(var(--speed) * .8) var(--easing);
+  }
+  #ui-craft .ui-craft-body{
+    font-size: 13px;
+    line-height: 1.35;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity calc(var(--speed) * .85) var(--easing),
+                transform calc(var(--speed) * .85) var(--easing);
+    max-inline-size: 46ch;
+  }
+  #ui-craft .ui-craft-link{
+    position:absolute;
+    inset-inline-start:1rem; inset-block-end:1rem;
+    block-size: 18px;
+    line-height: 18px;
+    color:#fff;
+    text-decoration:none;
+    opacity: 0;
+    transition: opacity calc(var(--speed) * .85) var(--easing);
+  }
+  #ui-craft .ui-craft-link span{
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    font-weight: 800;
+  }
+  #ui-craft img{
+    position:absolute;
+    inset:0;
+    inline-size:100%;
+    block-size:100%;
+    object-fit: cover;
+    filter: grayscale(1) brightness(1.25);
+    transform: scale(1.1);
+    transition: filter calc(var(--speed) * .9) var(--easing),
+                transform calc(var(--speed) * .9) var(--easing);
+    -webkit-mask: radial-gradient(120% 120% at 100% 0%, #fff 35%, #0000 100%);
+    mask: radial-gradient(120% 120% at 100% 0%, #fff 35%, #0000 100%);
+  }
+  #ui-craft [data-active="true"] .ui-craft-body,
+  #ui-craft [data-active="true"] .ui-craft-link{
+    opacity: .95;
+    transform: translateY(0);
+    transition-delay: 120ms;
+  }
+  #ui-craft [data-active="true"] .ui-craft-icon{ opacity: .95; }
+  #ui-craft [data-active="true"] img{
+    filter: grayscale(0) brightness(1);
+    transform: scale(1);
+    transition-delay: 120ms;
+  }
+  @media (max-inline-size: 992px){
+    #ui-craft .ui-craft-list{ block-size: clamp(340px, 46vh, 480px); }
+    #ui-craft .ui-craft-list li:nth-child(5){ display:none; }
+  }
+  @media (max-inline-size: 768px){
+    #ui-craft .ui-craft-list{ block-size: 340px; }
+    #ui-craft article{ padding-block-end: 2.8rem; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #ui-craft .ui-craft-list,
+    #ui-craft .ui-craft-item,
+    #ui-craft .ui-craft-body,
+    #ui-craft .ui-craft-link,
+    #ui-craft img{ transition: none !important; }
+  }
+
+  /* =========================
+     KEYPAD CTA (SCOPED)
+     ========================= */
+  #keypad-cta { overflow: visible; }
+  #keypad-cta .keypad-form{
+    display:flex;
+    gap:.6rem;
+    flex-wrap: wrap;
+    max-inline-size: 520px;
+  }
+  #keypad-cta .keypad-form input{
+    flex:1;
+    min-inline-size: 220px;
+    padding: .75rem .9rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    color:#fff;
+    outline:none;
+  }
+  #keypad-cta .keypad-form input:focus{
+    border-color: rgba(230,57,57,.5);
+    box-shadow: 0 0 0 4px rgba(230,57,57,.12);
+  }
+  #keypad-cta .keypad-form button{
+    padding: .75rem 1.1rem;
+    border-radius: 999px;
+    border:0;
+    background: var(--primary);
+    color:#fff;
+    font-weight: 800;
+    cursor:pointer;
+    box-shadow: 0 12px 35px rgba(230,57,57,.35);
+    transition: transform .15s ease, filter .15s ease;
+  }
+  #keypad-cta .keypad-form button:hover{
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+  }
+
+  #keypad-cta .keypad{
+    position: relative;
+    aspect-ratio: 400 / 310;
+    inline-size: clamp(280px, 36vw, 420px);
+    transform-style: preserve-3d;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #keypad-cta .keypad img{ inline-size:100%; block-size:auto; display:block; pointer-events:none; }
+  #keypad-cta .keypad__base{ position:absolute; inset: auto 0 0 0; inline-size:100%; z-index:1; }
+  #keypad-cta .key{
+    position:absolute;
+    border:0;
+    background: transparent;
+    padding:0;
+    cursor:pointer;
+    outline:none;
+    transform-style: preserve-3d;
+    z-index:2;
+  }
+  #keypad-cta .key:focus-visible{
+    outline: 2px solid rgba(230,57,57,.55);
+    outline-offset: 6px;
+    border-radius: 16px;
+  }
+  #keypad-cta .key__mask{ display:inline-block; inline-size:100%; block-size:100%; }
+  #keypad-cta .key__content{
+    position: relative;
+    display:inline-block;
+    inline-size:100%;
+    block-size:100%;
+    transition: transform 120ms ease-out;
+  }
+  #keypad-cta .key[data-pressed="true"] .key__content,
+  #keypad-cta .key:active .key__content{
+    transform: translateY(calc(var(--travel, 18) * 1%));
+  }
+  #keypad-cta .key__text{
+    position:absolute;
+    z-index:5;
+    inset-block-start:5%;
+    inset-inline-start:0;
+    block-size:46%;
+    inline-size:86%;
+    padding: 1ch;
+    color: hsl(0 0% 94%);
+    font-weight: 900;
+    letter-spacing: .02em;
+    text-transform: lowercase;
+    transform: rotateX(36deg) rotateY(45deg) rotateX(-90deg);
+    translate: 8% 10%;
+    font-size: clamp(14px, 2.2vw, 22px);
+  }
+  #keypad-cta .keypad__single{
+    inline-size: 40.5%;
+    block-size: 46%;
+    inset-inline-start: 54%;
+    inset-block-end: 36%;
+    clip-path: polygon(0 0,54% 0,89% 24%,100% 70%,54% 100%,46% 100%,0 69%,12% 23%,47% 0%);
+    -webkit-mask: url(https://assets.codepen.io/605876/keypad-single.png?format=auto&quality=86) 50% 50% / 100% 100%;
+    mask: url(https://assets.codepen.io/605876/keypad-single.png?format=auto&quality=86) 50% 50% / 100% 100%;
+  }
+  #keypad-cta .keypad__single--left{ inset-inline-start: 29.3%; inset-block-end: 54.2%; }
+  #keypad-cta .keypad__single img{
+    position:absolute;
+    inset-inline-start:50%;
+    inset-block-start:0;
+    translate: -50% 1%;
+    inline-size:96%;
+  }
+  #keypad-cta .keypad__double{
+    inline-size: 64%;
+    block-size: 65%;
+    inset-inline-start: 6%;
+    inset-block-end: 17.85%;
+    clip-path: polygon(34% 0,93% 44%,101% 78%,71% 100%,66% 100%,0 52%,0 44%,7% 17%,30% 0);
+    -webkit-mask: url(https://assets.codepen.io/605876/keypad-double.png?format=auto&quality=86) 50% 50% / 100% 100%;
+    mask: url(https://assets.codepen.io/605876/keypad-double.png?format=auto&quality=86) 50% 50% / 100% 100%;
+  }
+  #keypad-cta .keypad__double img{
+    position:absolute;
+    inset-inline-start:50%;
+    inset-block-start:0;
+    translate: -50% 1%;
+    inline-size:99%;
+  }
+  #keypad-cta .key img{
+    filter: hue-rotate(calc(var(--hue, 0) * 1deg))
+            saturate(var(--saturate, 1))
+            brightness(var(--brightness, 1));
+  }
+
+  /* =========================
+     TEAM MASKING (SCOPED)
+     ========================= */
+  #team-mask{ overflow: visible; }
+  #team-mask .team-wrap{ inline-size: 100%; }
+  #team-mask .team-container{
+    /* config (easy to tweak) */
+    --size: 108;     /* avatar size */
+    --border: 8;     /* avatar border ring */
+    --column: 60;    /* grid column width (overlap) */
+    --movement: 0.72;/* how far avatar moves up */
+    --transition: .18s;
+    --ease: ease-out;
+
+    inline-size: fit-content;
+    block-size: calc((var(--size) + (var(--size) * 0.5)) * 1px);
+    padding-inline: calc(var(--size) * 0.25px);
+    border-radius: calc(var(--size) * 2px);
+    display:flex;
+    align-items:center;
+    gap: calc(var(--size) * 0.5px);
+    position: relative;
+  }
+
+  /* animated border bg */
+  #team-mask[data-animate-bg="true"] .team-container{
+    --bd: 2;
+  }
+  #team-mask[data-animate-bg="true"] .team-container::before,
+  #team-mask[data-animate-bg="true"] .team-container::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+    border-radius: calc(var(--size) * 2px);
+    background:
+      linear-gradient(in hsl longer hue 90deg, hsl(10 100% 70%) 0 100%)
+      calc(var(--bd) * -1px) 0 / 400% 100%;
+    animation: teamScaleBg 8s linear infinite;
+  }
+  #team-mask[data-animate-bg="true"] .team-container::before{ opacity:.25; }
+  #team-mask[data-animate-bg="true"] .team-container::after{
+    opacity:.9;
+    border: calc(var(--bd) * 1px) solid #0000;
+    -webkit-mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+    mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+    -webkit-mask-clip: padding-box, border-box;
+    mask-clip: padding-box, border-box;
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  @keyframes teamScaleBg { to { background-position: 400% 0; } }
+
+  #team-mask .team-more{
+    inline-size: calc(var(--size) * 0.5px);
+    aspect-ratio: 1;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding:0;
+    border:0;
+    background: transparent;
+    margin-inline-start:.5rem;
+    color: color-mix(in hsl, currentColor, #0000 10%);
+    cursor: pointer;
+    opacity:.85;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  #team-mask .team-more:hover{ opacity:1; transform: translateY(-1px); }
+  #team-mask .team-more svg{ inline-size:100%; }
+
+  #team-mask .team-items{
+    align-content: end;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(var(--column) * 1px);
+    block-size: calc(var(--column) * 1px);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    translate: calc((var(--size) - (var(--column))) * 0.5px) 0;
+  }
+
+  #team-mask .team-item{
+    align-content: end;
+    aspect-ratio: 1 / 3;
+    display: grid;
+    position: relative;
+    inline-size: calc(var(--size) * 1px);
+    translate: calc((var(--size) - (var(--column)) ) * -0.5px)
+              calc((var(--size) - (var(--column)) ) * 0.5px);
+  }
+
+  #team-mask .avatar-holder{
+    position:absolute;
+    inset:0;
+    align-content:end;
+    display:grid;
+  }
+
+  /* mask (LTR version) */
+  #team-mask .team-item:not(:first-child) .avatar-holder{
+    --circle: calc(((var(--border) * 2px) + (var(--size) * 1px)) * 0.5);
+    --rad-x: calc(var(--circle) - (var(--column) * 1px) - (var(--border) * 1px));
+    -webkit-mask-image: radial-gradient(
+      var(--circle) var(--circle) at var(--rad-x) 50%,
+      #0000 calc(var(--circle) - .5px),
+      #fff var(--circle)
+    );
+    mask-image: radial-gradient(
+      var(--circle) var(--circle) at var(--rad-x) 50%,
+      #0000 calc(var(--circle) - .5px),
+      #fff var(--circle)
+    );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-position: 0 calc(var(--size) * 1px);
+    mask-position: 0 calc(var(--size) * 1px);
+    transition: mask-position calc(var(--transition) * 1s) var(--ease),
+                -webkit-mask-position calc(var(--transition) * 1s) var(--ease);
+  }
+
+  /* when hovering item i, we animate the NEXT item's mask up */
+  #team-mask .team-item.is-next .avatar-holder{
+    -webkit-mask-position: 0 calc(var(--size) * ((1 - var(--movement)) * 1px));
+    mask-position: 0 calc(var(--size) * ((1 - var(--movement)) * 1px));
+  }
+
+  #team-mask .avatar{
+    display:inline-block;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    pointer-events: all;
+    transition: translate calc(var(--transition) * 1s) var(--ease);
+    box-shadow: 0 18px 45px rgba(0,0,0,.30);
+  }
+
+  #team-mask .avatar img{
+    position:absolute;
+    inset:0;
+    inline-size:100%;
+    block-size:100%;
+    object-fit: cover;
+    background: color-mix(in hsl, canvas, canvasText);
+  }
+
+  /* invisible hover trigger */
+  #team-mask .team-item::before{
+    content:'';
+    inline-size:100%;
+    aspect-ratio: 1;
+    inset-block-end:0;
+    position:absolute;
+    pointer-events: all;
+  }
+
+  #team-mask .team-item.is-hover .avatar{
+    translate: 0 calc(var(--movement) * -100%);
+  }
+
+  #team-mask .name{
+    transition-property: filter, opacity, translate;
+    transition-timing-function: var(--ease);
+    transition-duration: calc(var(--transition) * 1s);
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    position: absolute;
+    inset-inline-start: 50%;
+    filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    color: color-mix(in hsl, currentColor, #0000 15%);
+  }
+
+  /* ringed mode (text around the circle) */
+  #team-mask[data-ringed="true"] .name{
+    inline-size: calc(var(--size) * 1px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    inset-block-end: 0;
+    translate: -50% calc(var(--movement) * -100%);
+  }
+  #team-mask[data-ringed="true"] .name span{
+    offset-path: border-box;
+    offset-distance: calc((var(--offset, -3) + var(--i)) * 1ch);
+    offset-anchor: 50% 150%;
+    position: absolute;
+    transition: translate calc(var(--transition) * 1s) var(--ease);
+    translate: 0 100%;
+  }
+  #team-mask[data-ringed="true"] .team-item.is-hover .name span{
+    translate: 0 0;
+  }
+
+  /* not ringed */
+  #team-mask[data-ringed="false"] .name{
+    inset-block-end: calc((var(--size) * (1 + var(--movement))) * 1px);
+    translate: -50% 50%;
+  }
+  #team-mask[data-ringed="false"] .name span{ translate: 0 -150%; }
+  #team-mask[data-ringed="false"] .team-item.is-hover .name{ translate: -50% -50%; }
+
+  #team-mask .team-item.is-hover .name{
+    filter: blur(0px);
+    opacity: 1;
+  }
+
+  @media (max-inline-size: 768px){
+    #team-mask .team-container{
+      --size: 92;
+      --column: 52;
+    }
+  }
+
+  /* =========================
+     FOOTER
+     ========================= */
+  .blood-footer{
+    border-block-start: 1px solid var(--border);
+    background: rgba(0,0,0,0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 24px 0;
+  }
+  .blood-footer__inner{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    align-items:center;
+    justify-content: space-between;
+    color: color-mix(in hsl, canvasText, #0000 18%);
+  }
+  .blood-footer__brand{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .blood-footer__dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--primary);
+    box-shadow: 0 0 18px rgba(230,57,57,.45);
+  }
+  .blood-footer__sep{ opacity:.5; }
+  .blood-footer__muted{ opacity:.75; }
+  .blood-footer__made{ opacity:.9; }
+  .blood-footer__copy{ opacity:.65; }
+
+</style>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      /* =========================
+         GSAP
+         ========================= */
+      if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to('.animate-hero', {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'power3.out',
+          delay: 0.2
+        });
+
+        gsap.from('.feature-card-link', {
+          scrollTrigger: { trigger: '.features-grid', start: 'top 80%', toggleActions: 'play none none none' },
+          opacity: 0,
+          y: 40,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: 'power3.out'
+        });
+
+        gsap.from('#ui-craft .ui-craft-item', {
+          scrollTrigger: { trigger: '#ui-craft', start: 'top 80%', toggleActions: 'play none none none' },
+          opacity: 0,
+          y: 30,
+          stagger: 0.06,
+          duration: 0.7,
+          ease: 'power3.out'
+        });
+
+        gsap.from('#team-mask .team-container', {
+          scrollTrigger: { trigger: '#team-mask', start: 'top 85%', toggleActions: 'play none none none' },
+          opacity: 0,
+          y: 24,
+          duration: 0.7,
+          ease: 'power3.out'
+        });
+
+        gsap.from('.card-game-container', {
+          scrollTrigger: { trigger: '#myth-buster-section', start: 'top 75%', toggleActions: 'play none none none' },
+          opacity: 0,
+          y: 50,
+          stagger: 0.2,
+          duration: 1,
+          ease: 'power3.out'
+        });
+      }
+
+      /* =========================
+         UI CRAFT: 1st click expand, 2nd click navigate
+         ========================= */
+      const uiCraft = document.querySelector('#ui-craft');
+      if (uiCraft) {
+        const list  = uiCraft.querySelector('.ui-craft-list');
+        const items = [...uiCraft.querySelectorAll('.ui-craft-item')];
+
+        const getVisible = () => items.filter(li => li.offsetParent !== null);
+
+        const setActive = (li) => {
+          const visible = getVisible();
+          if (!visible.length) return;
+          if (!li || visible.indexOf(li) === -1) li = visible[0];
+
+          items.forEach(x => x.dataset.active = (x === li).toString());
+          list.style.gridTemplateColumns = visible.map(x => (x === li ? '10fr' : '1fr')).join(' ');
+        };
+
+        const resync = () => {
+          const visible = getVisible();
+          if (!visible.length) return;
+          const w = Math.max(...visible.map(li => li.offsetWidth));
+          list.style.setProperty('--article-width', w);
+
+          const active = visible.find(li => li.dataset.active === 'true') || visible[0];
+          setActive(active);
+        };
+
+        let raf = null;
+        list.addEventListener('pointermove', (e) => {
+          const li = e.target.closest('.ui-craft-item');
+          if (!li) return;
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => setActive(li));
+        });
+
+        list.addEventListener('focusin', (e) => {
+          const li = e.target.closest('.ui-craft-item');
+          if (li) setActive(li);
+        });
+
+        list.addEventListener('click', (e) => {
+          const li = e.target.closest('.ui-craft-item');
+          if (!li) return;
+
+          const isActive = li.dataset.active === 'true';
+          const href = li.dataset.href;
+
+          const clickedLink = e.target.closest('.ui-craft-link');
+          if (clickedLink && !isActive) {
+            e.preventDefault();
+            setActive(li);
+            return;
+          }
+
+          if (!isActive) {
+            e.preventDefault();
+            setActive(li);
+            return;
+          }
+
+          if (href) window.location.href = href;
+        });
+
+        list.addEventListener('keydown', (e) => {
+          const li = e.target.closest('.ui-craft-item');
+          if (!li) return;
+
+          const isActive = li.dataset.active === 'true';
+          const href = li.dataset.href;
+
+          if (e.key === ' ' || e.key === 'Spacebar') {
+            e.preventDefault();
+            setActive(li);
+          }
+          if (e.key === 'Enter') {
+            if (!isActive) {
+              e.preventDefault();
+              setActive(li);
+            } else if (href) {
+              window.location.href = href;
+            }
+          }
+        });
+
+        window.addEventListener('resize', resync);
+        setActive(getVisible()[0] || items[0]);
+        resync();
+      }
+
+      /* =========================
+         KEYPAD CTA: click + keyboard
+         ========================= */
+      const keypad = document.querySelector('#keypad-cta .keypad');
+      if (keypad) {
+        const keys = [
+          { el: document.querySelector('#keypad-cta #one'),   key: 'o' },
+          { el: document.querySelector('#keypad-cta #two'),   key: 'g' },
+          { el: document.querySelector('#keypad-cta #three'), key: 'Enter' },
+        ];
+
+        const clickAudio = new Audio('https://cdn.freesound.org/previews/378/378085_6260145-lq.mp3');
+        const playClick = () => { try { clickAudio.currentTime = 0; clickAudio.play(); } catch (e) {} };
+
+        const press = (btn, state) => { if (btn) btn.dataset.pressed = state ? 'true' : 'false'; };
+
+        keys.forEach(({ el }) => {
+          if (!el) return;
+
+          el.addEventListener('pointerdown', () => { press(el, true); playClick(); });
+          el.addEventListener('pointerup', () => press(el, false));
+          el.addEventListener('pointerleave', () => press(el, false));
+
+          el.addEventListener('click', () => {
+            const href = el.dataset.href;
+            if (href) window.location.href = href;
+          });
+        });
+
+        window.addEventListener('keydown', (e) => {
+          keys.forEach(({ el, key }) => {
+            if (!el) return;
+            if (key === 'Enter') {
+              if (e.key === 'Enter') { press(el, true); playClick(); }
+            } else {
+              if ((e.key || '').toLowerCase() === key) { press(el, true); playClick(); }
+            }
+          });
+        });
+
+        window.addEventListener('keyup', (e) => {
+          keys.forEach(({ el, key }) => {
+            if (!el) return;
+            if (key === 'Enter') {
+              if (e.key === 'Enter') press(el, false);
+            } else {
+              if ((e.key || '').toLowerCase() === key) press(el, false);
+            }
+          });
+        });
+
+        const form = document.querySelector('#keypad-cta form');
+        if (form) form.addEventListener('submit', (e) => e.preventDefault());
+      }
+
+      /* =========================
+         TEAM MASKING: generate + hover classes + toggle ringed
+         ========================= */
+      const teamSection = document.querySelector('#team-mask');
+      if (teamSection) {
+        const list = teamSection.querySelector('.team-items');
+        const toggleBtn = teamSection.querySelector('.team-more');
+
+        const buildNameSpans = (name) => {
+          return Array.from(name).map((ch, i) => `<span style="--i:${i}">${ch}</span>`).join('');
+        };
+
+        const render = () => {
+          list.innerHTML = peeps.map((p) => `
+            <li class="team-item">
+              <span class="name">${buildNameSpans(p.name)}</span>
+              <div class="avatar-holder">
+                <span class="avatar">
+                  <img src="${p.avatar}" alt="${p.name}">
+                </span>
+              </div>
+            </li>
+          `).join('');
+        };
+
+        const clearStates = () => {
+          const items = [...list.querySelectorAll('.team-item')];
+          items.forEach(li => li.classList.remove('is-hover','is-next'));
+        };
+
+        const setHover = (index) => {
+          const items = [...list.querySelectorAll('.team-item')];
+          clearStates();
+          if (!items[index]) return;
+
+          items[index].classList.add('is-hover');
+          if (items[index + 1]) items[index + 1].classList.add('is-next');
+        };
+
+        render();
+
+        // hover interactions
+        list.addEventListener('pointermove', (e) => {
+          const li = e.target.closest('.team-item');
+          if (!li) return;
+          const items = [...list.querySelectorAll('.team-item')];
+          const idx = items.indexOf(li);
+          if (idx >= 0) setHover(idx);
+        });
+
+        list.addEventListener('pointerleave', () => clearStates());
+
+        // toggle ringed mode with button
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            const ringed = teamSection.getAttribute('data-ringed') === 'true';
+            teamSection.setAttribute('data-ringed', ringed ? 'false' : 'true');
+          });
+        }
+      }
+
+    });
+  </script>
+{% endblock %}
+>>>>>>> e5190a8 (JEW)

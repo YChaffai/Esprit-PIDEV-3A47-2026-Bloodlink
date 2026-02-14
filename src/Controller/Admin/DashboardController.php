@@ -27,20 +27,43 @@ class DashboardController extends AbstractDashboardController
             ->renderContentMaximized()
             ->setFaviconPath('favicon.ico');
     }
+<<<<<<< HEAD
 
     public function configureAssets(): Assets
     {
         return Assets::new()->addCssFile('admin.css');
     }
+=======
+public function configureAssets(): Assets
+{
+    return Assets::new()
+        ->addCssFile('css/admin.css')   // ✅ if file is in public/css/admin.css
+        ->addHtmlContentToHead('
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+        ')
+        ->addJsFile('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js')
+        ->addJsFile('js/ajax-search.js'); // ✅ public/js/ajax-search.js
+}
+
+>>>>>>> e5190a8 (JEW)
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
         yield MenuItem::section('Gestion');
+<<<<<<< HEAD
         yield MenuItem::linkToCrud('Clients', 'fa fa-address-card', Client::class);
         yield MenuItem::linkToCrud('Dons', 'fa fa-hand-holding-heart', Don::class);
         yield MenuItem::linkToCrud('Dossier Médicaux', 'fa fa-notes-medical', DossierMed::class);
+=======
+yield MenuItem::linkToCrud('Clients', 'fa fa-address-card', Client::class);
+yield MenuItem::linkToCrud('Dons', 'fa fa-hand-holding-heart', Don::class);
+yield MenuItem::linkToCrud('Dossier Médicaux', 'fa fa-notes-medical', DossierMed::class);
+
+>>>>>>> e5190a8 (JEW)
 
         yield MenuItem::section('Utilisateurs & Banques');
         yield MenuItem::linkToRoute('Utilisateurs', 'fa fa-users', 'app_user_index');
