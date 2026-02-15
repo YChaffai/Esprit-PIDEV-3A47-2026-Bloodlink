@@ -1,195 +1,199 @@
-{# templates/questionnaire/new.html.twig #}
-{# 
-{% extends 'base.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
-{% block title %}Remplir le questionnaire{% endblock %} #}
+{% block title %}Questionnaire de Santé | BloodLink{% endblock %}
 
-{# {% block body %}
-    <h1>Remplir le questionnaire</h1>
+{% block body %}
+<div class="py-4 py-md-5" style="max-width: 800px; margin: 0 auto;">
 
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+  {# --- PAGE HEADER --- #}
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+      <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+        <i class="fa-solid fa-clipboard-question me-2" style="color:var(--primary);"></i>
+        Questionnaire de Santé
+      </h1>
+      <div style="color:var(--muted);">
+        {% if campagne %}
+          Campagne : <span class="text-white fw-bold">{{ campagne.titre }}</span>
+        {% else %}
+          Veuillez remplir les informations suivantes.
+        {% endif %}
+      </div>
+    </div>
+    
+    <a href="{{ path('campagne_list') }}"
+       class="btn btn-lg rounded-pill fw-bold"
+       style="background:transparent; color:white; border:1px solid var(--border); padding:.85rem 1.1rem;">
+      <i class="fa-solid fa-arrow-left me-2"></i> Annuler
+    </a>
+  </div>
 
-    <table> #}
-        {# <tr>
-            <td>{{ form_label(form.nom, "Nom") }}</td>
-            <td>{{ form_widget(form.nom) }}</td>
-            <td>{{ form_errors(form.nom) }}</td>
-            
+  <div class="glass-card p-4 p-md-5">
+    {{ form_start(form, { attr: { novalidate: 'novalidate', class: 'needs-validation' } }) }}
 
-        </tr>
+    {# Global Errors #}
+    {% if form.vars.errors|length > 0 %}
+        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card d-flex align-items-center">
+           <i class="fa-solid fa-triangle-exclamation me-3 fs-4"></i>
+           <div>
+               <strong>Erreur de validation</strong><br>
+               {{ form_errors(form) }}
+           </div>
+        </div>
+    {% endif %}
 
-        <tr>
-            <td>{{ form_label(form.prenom, "Prénom") }}</td>
-            <td>{{ form_widget(form.prenom) }}</td>
-            <td>{{ form_errors(form.prenom) }}</td>
+    <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px;">
+        Informations Personnelles
+    </h5>
 
-           
-        </tr> #}
-       
-        {# <tr>
-            <td>{{ form_label(form.age, "Âge") }}</td>
-            <td>{{ form_widget(form.age) }}</td>
-            <td>{{ form_errors(form.age) }}</td>
-           
-        </tr>
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <label class="form-label-premium">Âge</label>
+            <div class="input-group">
+                {{ form_widget(form.age, {'attr': {'class': 'form-control-premium border-end-0', 'placeholder': 'Ex: 25'}}) }}
+                <span class="input-group-text-premium">ans</span>
+            </div>
+            {% if form.age.vars.errors|length > 0 %}
+                <div class="bl-error"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ form_errors(form.age) }}</div>
+            {% endif %}
+        </div>
 
-        <tr>
-            <td>{{ form_label(form.sexe, "Sexe") }}</td>
-            <td>{{ form_widget(form.sexe) }}</td>
-            <td>{{ form_errors(form.sexe) }}</td>
-           
-        </tr>
+        <div class="col-md-6">
+            <label class="form-label-premium">Sexe</label>
+            {{ form_widget(form.sexe, {'attr': {'class': 'form-select-premium js-choices'}}) }}
+            {% if form.sexe.vars.errors|length > 0 %}
+                <div class="bl-error"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ form_errors(form.sexe) }}</div>
+            {% endif %}
+        </div>
 
-        <tr>
-            <td>{{ form_label(form.poids, "Poids") }}</td>
-            <td>{{ form_widget(form.poids) }}</td>
-            <td>{{ form_errors(form.poids) }}</td>
-           
-        </tr>
+        <div class="col-md-6">
+            <label class="form-label-premium">Poids (kg)</label>
+            <div class="input-group">
+                {{ form_widget(form.poids, {'attr': {'class': 'form-control-premium border-end-0', 'placeholder': 'Ex: 70'}}) }}
+                <span class="input-group-text-premium">kg</span>
+            </div>
+            {% if form.poids.vars.errors|length > 0 %}
+                <div class="bl-error"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ form_errors(form.poids) }}</div>
+            {% endif %}
+        </div>
+    </div>
 
-        <tr>
-            <td>{{ form_label(form.autres, "Autres") }}</td>
-            <td>{{ form_widget(form.autres) }}</td>
-            <td>{{ form_errors(form.autres) }}</td>
-           
-        </tr>
-        #}
+    <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px;">
+        Informations Complémentaires
+    </h5>
 
-    {# </table>
-    {{ form_widget(form.submit) }}
+    <div class="row g-4">
+        <div class="col-12">
+            <label class="form-label-premium">Autres Informations</label>
+            {{ form_widget(form.autres, {'attr': {'class': 'form-control-premium', 'placeholder': 'Antécédents médicaux, allergies, traitements en cours...', 'rows': '4'}}) }}
+            <div class="small mt-2" style="color:var(--muted);">Précisez toute information utile pour votre sécurité.</div>
+            {% if form.autres.vars.errors|length > 0 %}
+                <div class="bl-error"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ form_errors(form.autres) }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row gap-3 mt-5">
+        {{ form_widget(form.submit, {
+            'label': 'Continuer vers le rendez-vous',
+            'attr': {
+                'class': 'btn btn-lg rounded-pill fw-bold flex-fill btn-premium-submit'
+            }
+        }) }}
+    </div>
 
     {{ form_end(form) }}
-{% endblock %} #}
-
-
-{# templates/questionnaire/new.html.twig
-{% extends 'base.html.twig' %}
-
-{% block title %}Remplir le questionnaire{% endblock %}
-
-{% block body %}
-<div class="container" style="max-width: 800px;">
-    <h1>Remplir le questionnaire</h1>
-
-    <div class="glass-card">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
-            {# Style commun pour les inputs #}
-            {# {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px;' %}
-            
-            <div class="row"> #}
-                {# Âge #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">ÂGE</label>
-                    {{ form_widget(form.age, {'attr': {'style': inputStyle, 'placeholder': 'Votre âge'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.age) }}</div>
-                </div> #}
-
-                {# Sexe #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">SEXE</label>
-                    {{ form_widget(form.sexe, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.sexe) }}</div>
-                </div>
-            </div>
-
-            <div class="row"> #}
-                {# Poids #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">POIDS (KG)</label>
-                    {{ form_widget(form.poids, {'attr': {'style': inputStyle, 'placeholder': 'Ex: 70'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.poids) }}</div>
-                </div> #}
-
-                {# Autres #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">AUTRES INFORMATIONS</label>
-                    {{ form_widget(form.autres, {'attr': {'style': inputStyle, 'placeholder': 'Antécédents, allergies...'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.autres) }}</div>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                {{ form_widget(form.submit, {
-                    'label': 'Continuer vers le rendez-vous',
-                    'attr': {
-                        'class': 'btn btn-primary w-100 rounded-pill',
-                        'style': 'height: 55px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'
-                    }
-                }) }}
-            </div>
-
-        {{ form_end(form) }}
-    </div>
+  </div>
 </div>
-{% endblock %} #} 
-{# templates/questionnaire/new.html.twig #}
-{% extends 'base.html.twig' %}
 
-{% block title %}Remplir le questionnaire{% endblock %}
+<style>
+  .btn-premium-submit {
+      background: var(--primary);
+      color: white;
+      border: 0;
+      padding: .95rem 1.2rem;
+      transition: all 0.3s cubic-bezier(.175,.885,.32,1.275);
+      box-shadow: 0 10px 30px rgba(230,57,57,0.3);
+  }
+  .btn-premium-submit:hover {
+      transform: translateY(-3px);
+      background: #ff4d4d;
+      color: white;
+      box-shadow: 0 15px 40px rgba(230,57,57,0.4);
+  }
 
-{% block body %}
-<div class="container" style="max-width: 800px;">
-    <h1>Remplir le questionnaire</h1>
+  .form-label-premium {
+      text-transform: uppercase;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+  }
+  .form-control-premium {
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 14px !important;
+      padding: 0.8rem 1.2rem !important;
+      transition: all 0.2s ease;
+  }
+  .form-control-premium:focus {
+      background: rgba(255,255,255,.05) !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 4px rgba(230,57,57,0.1) !important;
+      outline: none;
+  }
+  .form-control-premium::placeholder {
+      color: rgba(255,255,255,0.4) !important;
+      opacity: 1;
+  }
+  
+  .form-select-premium {
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 14px !important;
+      padding: 0.8rem 1.2rem !important;
+      width: 100%;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 1.2rem center !important;
+      background-size: 16px 12px !important;
+  }
+  .form-select-premium:focus {
+      border-color: var(--primary) !important;
+      outline: none;
+  }
+  .form-select-premium option { background: #111; color: #fff; }
 
-    <div class="glass-card">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
-            {# Style commun pour les inputs avec largeur forcée à 100% #}
-            {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px; width: 100%;' %}
-            
-            <div class="row">
-                {# Âge #}
-                <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">ÂGE</label>
-                    {{ form_widget(form.age, {'attr': {'style': inputStyle, 'placeholder': 'Votre âge'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.age) }}</div>
-                </div>
+  .input-group-text-premium {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-left: none;
+      color: var(--muted);
+      padding: 0.8rem 1.2rem;
+      border-radius: 0 14px 14px 0;
+      font-weight: 600;
+  }
 
-                {# Sexe #}
-                <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">SEXE</label>
-                    {{ form_widget(form.sexe, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.sexe) }}</div>
-                </div>
-            </div>
-
-            <div class="row">
-                {# Poids #}
-                <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">POIDS (KG)</label>
-                    {{ form_widget(form.poids, {'attr': {'style': inputStyle, 'placeholder': 'Ex: 70'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.poids) }}</div>
-                </div>
-
-                {# Autres - AJUSTÉ EN PLEINE LARGEUR #}
-                <div class="col-12 mb-4">
-                    <label class="form-label text-white small fw-bold">AUTRES INFORMATIONS</label>
-                    {{ form_widget(form.autres, {'attr': {'style': inputStyle, 'placeholder': 'Antécédents, allergies, traitements en cours...'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.autres) }}</div>
-                </div>
-            </div>
-
-            {# BOUTONS ACTION #}
-            <div class="mt-4 d-flex gap-3">
-                <div class="flex-grow-1">
-                    {{ form_widget(form.submit, {
-                        'label': 'Continuer',
-                        'attr': {
-                            'class': 'btn btn-primary w-100 rounded-pill',
-                            'style': 'height: 55px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'
-                        }
-                    }) }}
-                </div>
-                
-                <a href="{{ path('campagne_list') }}" 
-                   class="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center" 
-                   style="height: 55px; padding: 0 35px; font-weight: 700; text-transform: uppercase;">
-                   Annuler
-                </a>
-            </div>
-
-        {{ form_end(form) }}
-    </div>
-</div>
+  .bl-error {
+      color: #ff4d4d;
+      font-size: .85rem;
+      font-weight: 600;
+      margin-top: 6px;
+      display: block;
+  }
+  
+  /* Fix for form_errors double rendering */
+  .bl-error > ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+  }
+</style>
 {% endblock %}

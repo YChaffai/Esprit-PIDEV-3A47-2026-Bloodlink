@@ -1,4 +1,4 @@
-{% extends 'front/base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Liste des Entités de Collecte{% endblock %}
 
@@ -115,6 +115,20 @@
         }
         .btn-action i { font-size: 0.9rem; }
         .btn-action.edit:hover { background: rgba(255, 193, 7, 0.3); color: #ffc107 !important; border-color: #ffc107; }
+        .btn-action.show:hover { background: rgba(230, 57, 57, 0.3); color: var(--primary) !important; border-color: var(--primary); }
+
+        .sortable {
+            color: #666 !important;
+            transition: all 0.2s ease;
+        }
+        .sortable:hover {
+            color: var(--primary) !important;
+        }
+        .sortable i {
+            font-size: 0.7rem;
+            margin-left: 5px;
+            opacity: 0.5;
+        }
     </style>
 {% endblock %}
 

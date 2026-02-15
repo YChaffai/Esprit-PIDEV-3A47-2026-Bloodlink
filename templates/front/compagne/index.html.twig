@@ -1,159 +1,195 @@
-{% extends 'front/base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block stylesheets %}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
     <style>
+        .page-header-premium {
+            margin-bottom: 3rem;
+        }
+        .section-subtitle {
+            color: var(--primary);
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-container-premium {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .form-control-premium, .form-select-premium {
+            background: rgba(255,255,255,0.02) !important;
+            border: 1px solid var(--border) !important;
+            color: white !important;
+            padding-top: 0.75rem !important;
+            padding-bottom: 0.75rem !important;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+            border-radius: 12px !important;
+            transition: all 0.2s ease;
+        }
+        .form-control-premium:focus, .form-select-premium:focus {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,0.05) !important;
+            box-shadow: 0 0 0 4px rgba(230,57,57,0.1) !important;
+        }
+
         .table-custom {
             --bs-table-bg: transparent !important;
             --bs-table-color: #fff !important;
             border-collapse: separate;
-            border-spacing: 0 10px;
-            margin-top: -10px;
+            border-spacing: 0 12px;
+            margin-top: -12px;
         }
         
         .table-custom thead th {
-            background: rgba(255,255,255,0.02) !important;
-            color: #666 !important;
+            color: rgba(255,255,255,0.5) !important;
             text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            padding: 15px 20px;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: 800;
+            padding: 1rem 1.5rem;
             border: none !important;
         }
 
         .table-custom tbody tr {
             background: rgba(255,255,255,0.02) !important;
-            transition: all 0.3s ease;
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .table-custom tbody tr:hover {
             background: rgba(255,255,255,0.05) !important;
-            transform: scale(1.005);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .table-custom tbody td {
-            padding: 20px !important;
+            padding: 1.5rem !important;
             border: none !important;
-            color: #ccc !important;
+            color: white !important;
         }
 
-        .btn-primary-custom {
+        .btn-create-premium {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 28px;
-            border-radius: 12px;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 8px 15px rgba(230, 57, 57, 0.2);
+            box-shadow: 0 8px 20px rgba(230, 57, 57, 0.2);
         }
-        .btn-primary-custom:hover {
+        .btn-create-premium:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 20px rgba(230, 57, 57, 0.3);
+            box-shadow: 0 12px 25px rgba(230, 57, 57, 0.4);
             color: white;
         }
 
-        .search-box {
-            background: rgba(255,255,255,0.02);
-            padding: 24px;
-            border-radius: 15px;
+        /* Calendar tweaks */
+        #calendar-card {
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
         }
-        .search-box .form-control, .search-box .form-select {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: white !important;
-            padding: 12px 20px;
+        .fc { --fc-border-color: rgba(255,255,255,0.05); }
+        .fc .fc-toolbar-title { color: white; font-weight: 900; letter-spacing: -0.5px; }
+        .fc .fc-button-primary { 
+            background-color: rgba(230,57,57,0.1) !important; 
+            border-color: rgba(230,57,57,0.2) !important; 
+            color: var(--primary) !important;
+            font-weight: 700; 
+            text-transform: uppercase; 
+            font-size: 0.75rem; 
+            letter-spacing: 1px; 
+            padding: 0.6rem 1.2rem; 
+            border-radius: 10px; 
         }
-        .search-box .form-control::placeholder { color: #666; }
-
-        .badge-custom {
-            background: rgba(230, 57, 57, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(230, 57, 57, 0.2);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+        .fc .fc-button-primary:hover { 
+            background-color: var(--primary) !important; 
             color: white !important;
         }
-        .btn-action i { font-size: 0.9rem; }
-        .btn-action.show:hover { background: rgba(0, 150, 255, 0.3); color: #0096ff !important; border-color: #0096ff; }
-        .btn-action.edit:hover { background: rgba(255, 193, 7, 0.3); color: #ffc107 !important; border-color: #ffc107; }
-
-        .italic { font-style: italic; }
-
-        /* FullCalendar Custom Styling */
-        #calendar {
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            border: 1px solid var(--border);
+        .fc .fc-button-active {
+            background-color: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
         }
-        .fc { --fc-border-color: rgba(255,255,255,0.05); --fc-button-bg-color: var(--primary); --fc-button-border-color: var(--primary); }
-        .fc .fc-toolbar-title { color: white; font-weight: 800; font-size: 1.5rem; }
-        .fc .fc-col-header-cell-cushion { color: #666; text-transform: uppercase; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
-        .fc .fc-daygrid-day-number { color: #999; text-decoration: none; font-weight: 600; }
-        .fc-event { background: rgba(230, 57, 57, 0.15) !important; border: 1px solid var(--primary) !important; border-radius: 6px !important; padding: 2px 5px !important; transition: all 0.3s ease; }
-        .fc-event:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(230, 57, 57, 0.2); }
-        .fc-event-title { color: white !important; font-weight: 600 !important; font-size: 0.8rem !important; }
-        .fc-theme-standard .fc-scrollgrid { border: none !important; }
-        .fc-day-today { background: rgba(255,255,255,0.03) !important; }
+        .fc .fc-col-header-cell-cushion { color: rgba(255,255,255,0.4); text-transform: uppercase; font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px; }
+        .fc .fc-daygrid-day-number { color: var(--primary) !important; font-weight: 800; text-decoration: none !important; padding: 10px; }
+        .fc .fc-daygrid-day-top { flex-direction: row; }
+        .fc-event { background: rgba(230,57,57,0.1) !important; border: 1px solid rgba(230,57,57,0.3) !important; border-left: 3px solid var(--primary) !important; }
+        .fc-event-title { color: white !important; font-weight: 700 !important; }
     </style>
 {% endblock %}
 
-
-{% block title %}Liste des Campagnes{% endblock %}
+{% block title %}Les Campagnes | BloodLink{% endblock %}
 
 {% block body %}
-    <div class="glass-card p-5">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <h1 class="display-5 fw-bold text-white mb-0">Les Campagnes</h1>
-            <a href="{{ path('app_compagne_new') }}" class="btn-primary-custom">+ Créer une campagne</a>
+<div class="container py-5">
+    
+    {# --- HEADER --- #}
+    <div class="page-header-premium d-flex justify-content-between align-items-center flex-wrap gap-4">
+        <div>
+            <div class="section-subtitle">Aperçu Global</div>
+            <h1 class="display-5 fw-black text-white mb-0" style="letter-spacing: -1px;">Les Campagnes</h1>
         </div>
+        <a href="{{ path('app_compagne_new') }}" class="btn-create-premium">
+            <i class="fa-solid fa-plus me-2"></i> Nouvelle Campagne
+        </a>
+    </div>
 
-        <form method="get" class="search-box mb-5" id="search-form">
-            <div class="row g-3">
-                <div class="col-md-9">
-                    <div class="input-group">
-                        <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-search"></i></span>
-                        <input type="text" name="q" class="form-control" placeholder="Rechercher une campagne..." value="{{ currentSearch }}" autocomplete="off">
+    {# --- SEARCH & FILTERS --- #}
+    <div class="search-container-premium shadow-lg">
+        <form method="get" id="search-form">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-8">
+                    <div class="position-relative">
+                        <i class="fa-solid fa-search position-absolute top-50 translate-middle-y ms-3" style="color:var(--primary); opacity: 0.7;"></i>
+                        <input type="text" name="q" class="form-control-premium w-100 ps-5" 
+                               placeholder="Rechercher une campagne par titre, ville..." 
+                               value="{{ currentSearch }}" autocomplete="off">
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <select name="sort" class="form-select">
-                        <option value="titre" {% if currentSort == 'titre' %}selected{% endif %}>Trier par Titre</option>
-                        <option value="date_debut" {% if currentSort == 'date_debut' %}selected{% endif %}>Trier par Date Début</option>
-                    </select>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <select name="sort" class="form-select-premium flex-grow-1">
+                            <option value="titre" {% if currentSort == 'titre' %}selected{% endif %}>Trier par Nom</option>
+                            <option value="date_debut" {% if currentSort == 'date_debut' %}selected{% endif %}>Trier par Date</option>
+                        </select>
+                        <input type="hidden" name="direction" value="{{ currentDirection }}">
+                    </div>
                 </div>
-                <input type="hidden" name="direction" value="{{ currentDirection }}">
             </div>
         </form>
+    </div>
 
+    {# --- TABLE --- #}
+    <div class="glass-card mb-5" style="border: none; background: transparent; box-shadow: none;">
         <div class="table-responsive" id="table-container">
             {{ include('front/compagne/_table.html.twig') }}
         </div>
     </div>
 
-    <div class="glass-card p-5 mt-5">
-        <h2 class="display-6 fw-bold text-white mb-5"><i class="far fa-calendar-alt me-3 text-primary"></i>Calendrier</h2>
+    {# --- CALENDAR --- #}
+    <div id="calendar-card" class="shadow-2xl">
+        <div class="d-flex align-items-center gap-3 mb-5">
+            <div style="width: 40px; height: 40px; background: rgba(230,57,57,0.12); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <h2 class="h4 fw-black text-white mb-0" style="text-transform: uppercase; letter-spacing: 1px;">Planning des Collectes</h2>
+        </div>
         <div id="calendar"></div>
     </div>
+
+</div>
 {% endblock %}
 
 {% block javascripts %}

@@ -26,7 +26,8 @@
                      style="padding: 30px; border-radius: 24px;">
                     
                     {# Decorative background icon #}
-                    <div class="position-absolute bottom-0 end-0 opacity-05 mb-n3 me-n3 transition-all group-hover:opacity-10" style="transform: rotate(-15deg);">
+                    <div class="position-absolute bottom-0 end-0 opacity-10 group-hover:opacity-20 transition-all transform translate-x-10 translate-y-10"
+                         style="color: var(--primary); pointer-events: none;">
                         <i class="fa-solid fa-heart-pulse fa-10x"></i>
                     </div>
 
@@ -39,27 +40,27 @@
                         <h3 class="h4 fw-black text-white mb-3" style="letter-spacing: -0.5px;">{{ camp.titre }}</h3>
                         
                         <div class="d-flex flex-column gap-2 mb-4">
-                            <div class="d-flex align-items-center gap-2 small text-white-50">
+                            <div class="d-flex align-items-center gap-2 small text-white">
                                 <i class="fa-regular fa-calendar fa-fw" style="color:var(--primary);"></i>
                                 <span>Du <b>{{ camp.dateDebut|date('d/m/Y') }}</b> au <b>{{ camp.dateFin|date('d/m/Y') }}</b></span>
                             </div>
                             {% if camp.typeSang %}
-                            <div class="d-flex align-items-center gap-2 small text-white-50">
+                            <div class="d-flex align-items-center gap-2 small text-white">
                                 <i class="fa-solid fa-droplet fa-fw text-danger"></i>
-                                <span>Besoin : <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border-0">{{ camp.typeSang }}</span></span>
+                                <span>Besoin : <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border-0">{{ camp.typeSang|join(', ') }}</span></span>
                             </div>
                             {% endif %}
                         </div>
 
-                        <p class="text-white-50 small mb-4 line-clamp-3">
+                        <p class="text-white small mb-4 line-clamp-3">
                             Participez à cette campagne de collecte vitale. Votre don peut faire une différence immense pour ceux qui en ont besoin.
                         </p>
                     </div>
 
                     <div class="mt-auto position-relative z-1">
-                        <a href="{{ path('questionnaire_new', { id : camp.id, client_id: client.user.id }) }}" 
+                        <a href="{{ path('questionnaire_new', { id : camp.id }) }}" 
                            class="btn btn-primary w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 transition-all" 
-                           style="height: 52px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(230,57,57,.2);">
+                           style="height: 52px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(230,57,57,.2); background: var(--primary); border: none;">
                            <span>Participer</span>
                            <i class="fa-solid fa-arrow-right-long transition-all"></i>
                         </a>
@@ -95,11 +96,11 @@
     .group:hover .fa-arrow-right-long {
         transform: translateX(5px);
     }
-    .group-hover\:opacity-10 {
+    .group-hover:opacity-10 {
         transition: opacity 0.3s ease;
     }
-    .group:hover .group-hover\:opacity-10 {
-        opacity: 0.1 !important;
+    .group-hover\:opacity-10 {
+        transition: opacity 0.3s ease;
     }
     .line-clamp-3 {
         display: -webkit-box;

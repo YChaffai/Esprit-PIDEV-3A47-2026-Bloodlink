@@ -22,12 +22,20 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class QuestionnaireController extends AbstractController
 {
   //-------------------------------------------frontoffice--------------------------------------------------------------//
-  #[Route('/questionnaire/new/{id}/{client_id}',  name: 'questionnaire_new')]
+  #[Route('/questionnaire/new/{id}',  name: 'questionnaire_new')]
   #[IsGranted('ROLE_CLIENT')]
-  public function new(int $id, int $client_id, Request $request, CampagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
+  public function new(int $id, Request $request, CampagneRepository $campagneRepo, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
   {
     $campagne = $campagneRepo->find($id);
-    $client = $clientRepository->find($client_id);
+    
+    /** @var User $user */
+    $user = $this->getUser();
+    $client = $user->getClient();
+
+    if (!$client) {
+        $this->addFlash('danger', 'Votre profil client n\'est pas complet.');
+        return $this->redirectToRoute('front_home');
+    }
     $existing = $questionnaireRepo->findOneBy([
       'campagne' => $campagne,
       'client' => $client

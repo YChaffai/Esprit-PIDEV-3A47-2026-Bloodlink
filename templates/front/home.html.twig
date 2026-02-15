@@ -126,6 +126,48 @@
     </div>
   </div>
 
+  {# =========================
+     ACTIVE CAMPAIGNS SECTION
+     ========================= #}
+  {% if campagnes is defined and campagnes|length > 0 %}
+  <div class="row g-4 mt-5 pt-5 mb-5">
+    <div class="col-12 mb-4">
+      <div class="d-flex justify-content-between align-items-end">
+        <div>
+          <h2 class="fw-black mb-0" style="letter-spacing:-1px;">Campagnes <span style="color:var(--primary);">Actuelles</span></h2>
+          <p style="color:var(--muted);" class="mb-0">Participez à nos collectes en cours.</p>
+        </div>
+        <a href="{{ path('campagne_list') }}" class="btn btn-sm outline-cta rounded-pill px-4">Voir tout</a>
+      </div>
+    </div>
+
+    {% for campagne in campagnes %}
+      <div class="col-12 col-md-4">
+        <div class="glass-card p-0 overflow-hidden feature-card h-100">
+          <div class="p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2">
+                {% if campagne.dateFin|date('Y-m-d') >= "now"|date('Y-m-d') %}En cours{% else %}Terminée{% endif %}
+              </span>
+              <div class="small text-white"><i class="fa-regular fa-calendar me-2"></i>{{ campagne.dateDebut|date('d M Y') }}</div>
+            </div>
+            <h4 class="fw-bold text-white mb-2">{{ campagne.titre }}</h4>
+            <p class="small mb-4" style="color:rgba(255,255,255,0.9); height: 3em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+              {{ campagne.description }}
+            </p>
+            <div class="d-flex gap-2 mb-4">
+              {% for type in campagne.typeSang %}
+                <span class="text-xs fw-bold px-2 py-1 rounded bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20">{{ type }}</span>
+              {% endfor %}
+            </div>
+            <a href="{{ path('questionnaire_new', { id: campagne.id }) }}" class="btn btn-sm main-cta rounded-pill w-100 py-2">S'inscrire</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
 </div>
 
 <style>
@@ -211,6 +253,7 @@
     background: linear-gradient(135deg, transparent, rgba(230,57,57,0.05));
     opacity:0;
     transition: opacity .4s ease;
+    pointer-events: none;
   }
   .feature-card:hover{
     transform: translateY(-10px);

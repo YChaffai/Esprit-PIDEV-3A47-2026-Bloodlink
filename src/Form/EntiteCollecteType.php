@@ -24,13 +24,7 @@ class EntiteCollecteType extends AbstractType
                     new Length(['min' => 3, 'max' => 255])
                 ]
             ])
-            ->add('type', TextType::class, [
-                'label' => 'Type d\'entité',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Hôpital, Banque...'],
-                'constraints' => [
-                    new NotBlank(['message' => 'Le type est obligatoire'])
-                ]
-            ])
+
             ->add('adresse', TextType::class, [
                 'label' => 'Adresse',
                 'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 123 Rue de la Santé'],

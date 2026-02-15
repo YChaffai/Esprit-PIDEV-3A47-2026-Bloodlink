@@ -1,69 +1,175 @@
-{# templates/rendezvous/new.html.twig
+{% extends 'base_front.html.twig' %}
 
-{% extends 'base.html.twig' %}
-
-{% block title %}Prendre un rendez-vous{% endblock %}
+{% block title %}Prendre rendez-vous | BloodLink{% endblock %}
 
 {% block body %}
-<h1>Prendre un rendez-vous</h1>
+<div class="py-4 py-md-5" style="max-width: 800px; margin: 0 auto;">
 
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-    <table>
-        <tr>
-            <td>{{ form_label(form.date_don, "Date et heure du rendez-vous") }}</td>
-            <td>{{ form_widget(form.date_don) }}</td>
-            <td>{{ form_errors(form.date_don) }}</td>
-            
-        </tr>
-        <tr>
-            <td>{{ form_label(form.entite) }}</td>
-            <td>{{ form_widget(form.entite) }}</td>
-            <td>{{ form_errors(form.entite) }}</td>
-        </tr>
-    </table>
-    {{ form_widget(form.submit) }}
-
-{{ form_end(form) }}
-{% endblock %} #}
-
-{# templates/rendezvous/new.html.twig #}
-{% extends 'base.html.twig' %}
-
-{% block title %}Prendre un rendez-vous{% endblock %}
-
-{% block body %}
-<div class="container" style="max-width: 600px;">
-    <h1>Prendre un rendez-vous</h1>
-
-    <div class="glass-card p-4">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
-            {# Style cohérent avec les autres formulaires #}
-            {% set inputStyle = 'height: 48px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; width: 100%; margin-bottom: 5px;' %}
-
-            <div class="mb-4">
-                <label class="form-label text-white small fw-bold">DATE ET HEURE DU RENDEZ-VOUS</label>
-                {{ form_widget(form.date_don, {'attr': {'style': inputStyle}}) }}
-                <div class="text-danger small">{{ form_errors(form.date_don) }}</div>
+  {# --- PROGRESS BAR / HEADER --- #}
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">ÉTAPE 2 SUR 2</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-calendar-check me-2" style="color:var(--primary);"></i>
+                Confirmation du Rendez-vous
+            </h1>
+            <p style="color:var(--muted);">Choisissez le lieu et l'heure de votre don.</p>
+        </div>
+        <div class="d-none d-md-block">
+            <div class="glass-card px-3 py-2 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-check-circle text-success"></i>
+                <span class="small fw-bold text-white">Questionnaire validé</span>
             </div>
-
-            <div class="mb-4">
-                <label class="form-label text-white small fw-bold">ENTITÉ DE COLLECTE</label>
-                {{ form_widget(form.entite, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
-                <div class="text-danger small">{{ form_errors(form.entite) }}</div>
-            </div>
-
-            <div class="mt-4">
-                {{ form_widget(form.submit, {
-                    'label': 'CONFIRMER LE RENDEZ-VOUS',
-                    'attr': {
-                        'class': 'btn btn-primary w-100 rounded-pill',
-                        'style': 'height: 50px; font-weight: 800; letter-spacing: 1px;'
-                    }
-                }) }}
-            </div>
-
-        {{ form_end(form) }}
+        </div>
     </div>
+    
+    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+        <div class="progress-bar" role="progressbar" style="width: 100%; background: var(--primary); border-radius: 10px;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+  </div>
+
+  <div class="glass-card p-4 p-md-5">
+    {{ form_start(form, { attr: { novalidate: 'novalidate', class: 'needs-validation' } }) }}
+
+    {# Global Errors #}
+    {% if form.vars.errors|length > 0 %}
+        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card d-flex align-items-center">
+           <i class="fa-solid fa-triangle-exclamation me-3 fs-4"></i>
+           <div>
+               <strong>Erreur de validation</strong><br>
+               {{ form_errors(form) }}
+           </div>
+        </div>
+    {% endif %}
+
+    <div class="row g-4 mb-5">
+        <div class="col-12">
+            <label class="form-label-premium">Entité de Collecte</label>
+            <div class="position-relative">
+                <i class="fa-solid fa-hospital position-absolute top-50 translate-middle-y ms-3" style="color:var(--primary); z-index: 10; pointer-events: none;"></i>
+                {{ form_widget(form.entite, {'attr': {'class': 'form-select-premium has-icon-left js-choices'}}) }}
+            </div>
+            <div class="small mt-2" style="color:var(--muted);">Sélectionnez le centre de collecte où vous souhaitez vous rendre.</div>
+            {% if form.entite.vars.errors|length > 0 %}
+                <div class="bl-error"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ form_errors(form.entite) }}</div>
+            {% endif %}
+        </div>
+
+        <div class="col-12">
+            <label class="form-label-premium">Date et Heure du rendez-vous</label>
+            <div class="position-relative">
+                <i class="fa-solid fa-clock position-absolute top-50 translate-middle-y ms-3" style="color:var(--primary); z-index: 10; pointer-events: none;"></i>
+                {{ form_widget(form.date_don, {'attr': {'class': 'form-control-premium has-icon-left datepicker', 'placeholder': 'Sélectionnez une date'}}) }}
+            </div>
+            <div class="small mt-2" style="color:var(--muted);">Assurez-vous d'être disponible à l'heure choisie.</div>
+            {% if form.date_don.vars.errors|length > 0 %}
+                <div class="bl-error"><i class="fa-solid fa-circle-exclamation me-1"></i> {{ form_errors(form.date_don) }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
+        <a href="{{ path('questionnaire_new', { id: app.request.get('id')|default(0) }) }}" 
+           class="btn btn-lg rounded-pill fw-bold border-secondary border-opacity-25" 
+           style="background: rgba(255,255,255,0.03); color: white; padding:.95rem 1.2rem;">
+            RETOUR
+        </a>
+        {{ form_widget(form.submit, {
+            'label': 'CONFIRMER LE RENDEZ-VOUS',
+            'attr': {
+                'class': 'btn btn-lg rounded-pill fw-bold flex-fill btn-premium-submit'
+            }
+        }) }}
+    </div>
+
+    {{ form_end(form) }}
+  </div>
+
+  <div class="mt-4 text-center">
+      <p class="small text-white-50">
+          <i class="fa-solid fa-shield-halved me-2"></i>
+          Vos données sont sécurisées et traitées avec confidentialité.
+      </p>
+  </div>
 </div>
+
+<style>
+  .btn-premium-submit {
+      background: var(--primary);
+      color: white;
+      border: 0;
+      padding: .95rem 1.2rem;
+      transition: all 0.3s cubic-bezier(.175,.885,.32,1.275);
+      box-shadow: 0 10px 30px rgba(230,57,57,0.3);
+  }
+  .btn-premium-submit:hover {
+      transform: translateY(-3px);
+      background: #ff4d4d;
+      color: white;
+      box-shadow: 0 15px 40px rgba(230,57,57,0.4);
+  }
+
+  .form-label-premium {
+      text-transform: uppercase;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+  }
+  .form-control-premium {
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 14px !important;
+      padding: 0.8rem 1.2rem !important;
+      transition: all 0.2s ease;
+  }
+  .form-control-premium:focus {
+      background: rgba(255,255,255,.05) !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 4px rgba(230,57,57,0.1) !important;
+      outline: none;
+  }
+  .form-control-premium.has-icon-left {
+      padding-left: 3.2rem !important;
+  }
+  .form-control-premium::placeholder {
+      color: rgba(255,255,255,0.4) !important;
+      opacity: 1;
+  }
+  
+  .form-select-premium {
+      background: rgba(255,255,255,.03) !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text) !important;
+      border-radius: 14px !important;
+      padding: 0.8rem 1.2rem !important;
+      width: 100%;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 1.2rem center !important;
+      background-size: 16px 12px !important;
+  }
+  .form-select-premium:focus {
+      border-color: var(--primary) !important;
+      outline: none;
+  }
+  .form-select-premium.has-icon-left {
+      padding-left: 3.2rem !important;
+  }
+  .form-select-premium option { background: #111; color: #fff; }
+
+  .bl-error {
+      color: #ff4d4d;
+      font-size: .85rem;
+      font-weight: 600;
+      margin-top: 6px;
+      display: block;
+  }
+</style>
 {% endblock %}

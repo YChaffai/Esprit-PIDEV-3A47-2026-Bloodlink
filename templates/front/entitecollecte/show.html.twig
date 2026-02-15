@@ -1,93 +1,210 @@
-{% extends 'front/base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
-{% block title %}Détails de l'Entité de Collecte{% endblock %}
+{% block title %}Détails de l'Entité | {{ entitecollecte.nom }}{% endblock %}
 
 {% block body %}
-    <div class="glass-card p-5">
-        <div class="d-flex justify-content-between align-items-start mb-5">
-            <div>
-                <a href="{{ path('app_entitecollecte_index') }}" class="text-muted text-decoration-none small mb-2 d-block">
-                    <i class="fas fa-arrow-left me-2"></i> Retour à la liste
-                </a>
-                <h1 class="display-5 fw-bold text-white mb-2">{{ entitecollecte.nom }}</h1>
-                <div class="text-muted mb-2"><i class="fas fa-map-marker-alt me-2"></i>{{ entitecollecte.adresse }}, {{ entitecollecte.ville }}</div>
-            </div>
-            <div class="d-flex gap-2">
-                <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}" class="btn-action edit large"><i class="fas fa-edit me-2"></i> Modifier</a>
-                {{ include('front/entitecollecte/_delete_form.html.twig') }}
-            </div>
-        </div>
+<div class="py-4 py-md-5" style="max-width: 1100px; margin: 0 auto;">
 
-        <div class="row g-5">
-            <div class="col-lg-7">
-                <div class="detail-section mb-5">
-                    <h3 class="h6 text-uppercase fw-bold text-muted mb-4 letter-spacing">Campagnes Associées</h3>
-                    <div class="campaign-list">
-                        {% if entitecollecte.campagnes|length > 0 %}
-                            {% for campagne in entitecollecte.campagnes %}
-                                <a href="{{ path('app_compagne_show', {'id': campagne.id}) }}" class="campaign-item-link">
-                                    <div class="d-flex align-items-center justify-content-between p-4 mb-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-10 hover-lift">
-                                        <div>
-                                            <div class="fw-bold text-white">{{ campagne.titre }}</div>
-                                            <div class="small text-muted">{{ campagne.dateDebut|date('d/m/Y') }} — {{ campagne.dateFin|date('d/m/Y') }}</div>
+  {# --- PAGE HEADER --- #}
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div>
+      <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK • ENTITÉ</div>
+      <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+        <i class="fa-solid fa-hospital me-2" style="color:var(--primary);"></i>
+        {{ entitecollecte.nom }}
+      </h1>
+      <div style="color:var(--muted);">
+        <i class="fas fa-map-marker-alt me-1" style="color:var(--primary);"></i> 
+        {{ entitecollecte.adresse }}, {{ entitecollecte.ville }}
+      </div>
+    </div>
+    
+    <div class="d-flex gap-2">
+      <a href="{{ path('app_entitecollecte_index') }}"
+         class="btn btn-lg rounded-pill fw-bold"
+         style="background:transparent; color:white; border:1px solid var(--border); padding:.85rem 1.2rem;">
+        <i class="fa-solid fa-arrow-left me-2"></i> Retour
+      </a>
+      
+      {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}"
+           class="btn btn-lg rounded-pill fw-bold"
+           style="background:rgba(255,193,7,0.1); color:#ffc107; border:1px solid rgba(255,193,7,0.2); padding:.85rem 1.2rem;">
+          <i class="fa-solid fa-edit me-2"></i> Modifier
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    {# --- LEFT COLUMN: CAMPAIGNS --- #}
+    <div class="col-lg-8">
+      <div class="glass-card p-4 p-md-5 h-100">
+        <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;">
+            Campagnes Associées
+        </h5>
+
+        <div class="campaign-list">
+            {% if entitecollecte.campagnes|length > 0 %}
+                <div class="row g-3">
+                    {% for campagne in entitecollecte.campagnes %}
+                        <div class="col-12">
+                            <a href="{{ path('app_compagne_show', {'id': campagne.id}) }}" class="text-decoration-none">
+                                <div class="campaign-premium-item">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="icon-circle bg-danger bg-opacity-10 text-danger">
+                                                <i class="fa-solid fa-droplet"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-white mb-0 h6">{{ campagne.titre }}</div>
+                                                <div class="small text-white opacity-75">
+                                                    <i class="fa-solid fa-calendar-days me-1"></i>
+                                                    {{ campagne.dateDebut|date('d/m/Y') }} — {{ campagne.dateFin|date('d/m/Y') }}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <i class="fas fa-chevron-right text-muted"></i>
+                                        <div class="arrow-indicator">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </div>
                                     </div>
-                                </a>
-                            {% endfor %}
-                        {% else %}
-                            <div class="p-5 text-center rounded-4 border border-dashed border-white border-opacity-10 text-muted">
-                                <i class="fas fa-calendar-times mb-3 fa-2x"></i>
-                                <p class="mb-0">Aucune campagne associée à cette entité</p>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-5">
-                <div class="info-sidebar p-4 rounded-4 shadow-lg" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
-                    <h4 class="h6 text-uppercase fw-bold text-muted mb-4">Informations de contact</h4>
-                    
-                    <div class="contact-info-item mb-4 d-flex align-items-center">
-                        <div class="icon-box me-3"><i class="fas fa-phone"></i></div>
-                        <div>
-                            <div class="small text-muted mb-0 fw-bold">Téléphone</div>
-                            <div class="text-white fs-5">{{ entitecollecte.telephone }}</div>
+                                </div>
+                            </a>
                         </div>
-                    </div>
-
-                    <div class="contact-info-item mb-0 d-flex align-items-center">
-                        <div class="icon-box me-3"><i class="fas fa-id-card"></i></div>
-                        <div>
-                            <div class="small text-muted mb-0 fw-bold">ID Système</div>
-                            <div class="text-white">#{{ entitecollecte.id }}</div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
-            </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="icon-box mb-3">
+                        <i class="fa-solid fa-calendar-times"></i>
+                    </div>
+                    <p class="mb-0 text-muted fw-bold">Aucune campagne programmée</p>
+                    <p class="small text-muted opacity-50">Cette entité n'a pas encore de collectes actives.</p>
+                </div>
+            {% endif %}
         </div>
+      </div>
     </div>
 
-    <style>
-        .letter-spacing { letter-spacing: 2px; }
-        .hover-lift { transition: all 0.3s ease; }
-        .hover-lift:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08) !important; }
-        .campaign-item-link { text-decoration: none; display: block; }
+    {# --- RIGHT COLUMN: CONTACT INFO --- #}
+    <div class="col-lg-4">
+      <div class="glass-card p-4 p-md-5 h-100">
+        <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px;">
+            Contact & Localisation
+        </h5>
         
-        .icon-box {
-            width: 45px; height: 45px;
-            background: rgba(230, 57, 57, 0.1);
-            color: var(--primary);
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 12px;
-            font-size: 1.2rem;
-        }
+        <div class="contact-card mb-4">
+            <label class="form-label-premium">Téléphone</label>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                <div class="btn-action show no-hover">
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+                <div>
+                    <div class="text-white fw-bold">{{ entitecollecte.telephone }}</div>
+                    <div class="small text-white opacity-75">Lundi — Vendredi, 8h-17h</div>
+                </div>
+            </div>
+        </div>
 
-        .btn-action.large {
-            width: auto; padding: 0 20px;
-            font-size: 0.9rem; font-weight: 600;
-        }
-        .btn-action.edit:hover { background: rgba(255, 193, 7, 0.2); color: #ffc107; border-color: #ffc107; }
-    </style>
+        <div class="contact-card mb-4">
+            <label class="form-label-premium">Ville</label>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                <div class="btn-action show no-hover">
+                    <i class="fa-solid fa-city"></i>
+                </div>
+                <div class="text-white fw-bold">{{ entitecollecte.ville }}</div>
+            </div>
+        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="mt-5 pt-4 border-top border-white border-opacity-5">
+                {{ include('front/entitecollecte/_delete_form.html.twig') }}
+            </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .form-label-premium {
+      text-transform: uppercase;
+      font-size: .7rem;
+      letter-spacing: .15em;
+      font-weight: 800;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 8px;
+      display: block;
+  }
+
+  .campaign-premium-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      transition: all 0.3s cubic-bezier(.175,.885,.32,1.275);
+  }
+  .campaign-premium-item:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--primary);
+      transform: translateX(5px);
+  }
+  .campaign-premium-item .icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+  }
+  .campaign-premium-item .arrow-indicator {
+      color: rgba(255,255,255,0.5);
+      transition: all 0.3s ease;
+  }
+  .campaign-premium-item:hover .arrow-indicator {
+      color: var(--primary);
+      transform: translateX(3px);
+  }
+
+  .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+  }
+  .empty-state .icon-box {
+      width: 60px;
+      height: 60px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--muted);
+  }
+
+  .btn-action.show.no-hover {
+      background: rgba(230,57,57,0.1);
+      color: var(--primary) !important;
+      border-color: rgba(230,57,57,0.2);
+      cursor: default;
+  }
+  
+  /* Generic styles adapted from base */
+  .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: white !important;
+  }
+</style>
 {% endblock %}

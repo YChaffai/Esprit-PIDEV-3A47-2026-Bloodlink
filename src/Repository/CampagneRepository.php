@@ -21,9 +21,10 @@ public function findCompatibleForClient(Client $client): array
         $qb = $this->createQueryBuilder('c');
 
         // 1. Filtre par Groupe Sanguin (Celui du client OU Universel 'Tous')
-        $qb->where('c.type_sang = :sang OR c.type_sang = :tous')
-           ->setParameter('sang', $client->getTypeSang())
-           ->setParameter('tous', 'Tous');
+        // Puisque typeSang est un champ JSON, on utilise LIKE pour vérifier la présence du type
+        $qb->where('c.typeSang LIKE :sang OR c.typeSang LIKE :tous')
+           ->setParameter('sang', '%"' . $client->getTypeSang() . '"%')
+           ->setParameter('tous', '%"Tous"%');
 
         // 2. Vérifier l'éligibilité temporelle (Délai de 3 semaines)
         if ($client->getDernierDon()) {

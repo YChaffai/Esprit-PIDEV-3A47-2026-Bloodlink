@@ -131,24 +131,29 @@
       <li class="menu-item">
         <a href="{{ path('front_home') }}" class="menu-link"><span>Accueil</span></a>
       </li>
-      <li class="menu-item"><a href="{{ path('campagne_list') }}" class="menu-link"><span>Campagnes</span></a></li>
+      <li class="menu-item">
+        <a href="{{ path('app_compagne_index') }}" class="menu-link"><span>Campagnes</span></a>
+      </li>
       
       {% if is_granted('ROLE_CLIENT') %}
-        <li class="menu-item"><a href="{{ path('front_don_index') }}" class="menu-link"><span>Dons</span></a></li>
-        <li class="menu-item"><a href="{{ path('front_commandes_index') }}" class="menu-link"><span>Commandes</span></a></li>
-        <li class="menu-item"><a href="{{ path('front_demande_index') }}" class="menu-link"><span>Demandes</span></a></li>
+        <li class="menu-item"><a href="{{ path('front_don_index') }}" class="menu-link"><span>Mes Dons</span></a></li>
+        <li class="menu-item"><a href="{{ path('front_commandes_index') }}" class="menu-link"><span>Mes Commandes</span></a></li>
+        <li class="menu-item"><a href="{{ path('front_demande_index') }}" class="menu-link"><span>Mes Demandes</span></a></li>
         <li class="menu-item"><a href="{{ path('front_transfert_index') }}" class="menu-link"><span>Transferts</span></a></li>
-        <li class="menu-item"><a href="{{ path('app_compagne_index') }}" class="menu-link"><span>Campagnes</span></a></li>
         <li class="menu-item"><a href="{{ path('app_entitecollecte_index') }}" class="menu-link"><span>Entités Collecte</span></a></li>
       {% endif %}
 
-      {% if is_granted('ROLE_DOCTOR') %}
+      {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
         <li class="menu-item"><a href="{{ path('front_dossier_show') }}" class="menu-link"><span>Dossier Médical</span></a></li>
+      {% endif %}
+
+      {% if is_granted('ROLE_ADMIN') %}
+        <li class="menu-item"><a href="{{ path('admin') }}" class="menu-link"><span style="color:var(--primary);">Admin Dashboard</span></a></li>
       {% endif %}
 
       {% if isLogged %}
         <li class="menu-item">
-          <a href="{{ path('front_profile_edit') }}" class="menu-link"><span style="color:var(--primary);">Mon Profil</span></a>
+          <a href="{{ path('front_profile_edit') }}" class="menu-link"><span>Mon Profil</span></a>
         </li>
       {% else %}
         <li class="menu-item">
