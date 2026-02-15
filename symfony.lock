@@ -256,8 +256,6 @@
             "./templates/base.html.twig"
         ]
     },
-<<<<<<< HEAD
-=======
     "symfony/twilio-notifier": {
         "version": "6.4",
         "recipe": {
@@ -267,7 +265,6 @@
             "ref": "10af129fcac6d00ffc9bb23d039d997dee35e657"
         }
     },
->>>>>>> e5190a8 (JEW)
     "symfony/uid": {
         "version": "6.4",
         "recipe": {
@@ -338,8 +335,6 @@
             "./config/packages/messenger.yaml"
         ]
     },
-<<<<<<< HEAD
-=======
     "symfonycasts/reset-password-bundle": {
         "version": "1.24",
         "recipe": {
@@ -355,7 +350,6 @@
     "symfonycasts/verify-email-bundle": {
         "version": "v1.18.0"
     },
->>>>>>> e5190a8 (JEW)
     "twig/extra-bundle": {
         "version": "v3.23.0"
     }

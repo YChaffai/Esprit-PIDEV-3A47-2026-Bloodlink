@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 {# templates/front/home.html.twig #}
->>>>>>> e5190a8 (JEW)
 {% extends 'base_front.html.twig' %}
 
 {% block title %}Accueil | BloodLink - Votre Hub de Don de Sang{% endblock %}
@@ -9,13 +6,6 @@
 {% block body %}
 <div class="container-fluid py-4 px-md-5">
 
-<<<<<<< HEAD
-  {# --- HERO SECTION --- #}
-  <div class="row align-items-center min-vh-75 g-5 mb-5 pt-4">
-    <div class="col-12 col-lg-7 order-2 order-lg-1">
-      <div class="pe-lg-5">
-        <div class="d-inline-flex align-items-center rounded-pill px-3 py-1 mb-4 border border-danger border-opacity-25 animate-hero" 
-=======
   {# =========================
      HERO SECTION
      ========================= #}
@@ -23,7 +13,6 @@
     <div class="col-12 col-lg-7 order-2 order-lg-1">
       <div class="pe-lg-5">
         <div class="d-inline-flex align-items-center rounded-pill px-3 py-1 mb-4 border border-danger border-opacity-25 animate-hero"
->>>>>>> e5190a8 (JEW)
              style="background: rgba(230,57,57,0.1);">
           <span class="badge bg-danger rounded-pill me-2">LIVE</span>
           <span class="small fw-bold text-danger">Chaque don est un nouvel espoir.</span>
@@ -33,22 +22,13 @@
           Sauvez des vies,<br>
           <span style="color:var(--primary); text-shadow: 0 0 40px rgba(230,57,57,0.3);">Une goutte à la fois.</span>
         </h1>
-<<<<<<< HEAD
-        
-        <p class="lead mb-5 animate-hero" style="color:var(--muted); max-width: 600px; font-size: 1.25rem;">
-=======
 
         <p class="lead mb-5 animate-hero" style="color:var(--muted); max-inline-size: 600px; font-size: 1.25rem;">
->>>>>>> e5190a8 (JEW)
           Bienvenue sur votre espace BloodLink. Gérez vos dons, suivez vos commandes de sang et restez informé des campagnes de collecte en temps réel.
         </p>
 
         <div class="d-flex flex-wrap gap-3 animate-hero">
-<<<<<<< HEAD
-          {% if isLogged %}
-=======
           {% if isLogged is defined and isLogged %}
->>>>>>> e5190a8 (JEW)
             <a href="{{ path('front_don_new') }}" class="btn btn-lg rounded-pill fw-bold px-5 py-3 main-cta">
               <i class="fa-solid fa-hand-holding-droplet me-2"></i> Faire un don
             </a>
@@ -64,36 +44,6 @@
       </div>
     </div>
 
-<<<<<<< HEAD
-    {# --- 3D-ISH VISUAL RIGHT SIDE --- #}
-    <div class="col-12 col-lg-5 order-1 order-lg-2">
-      <div class="position-relative hero-visual">
-        <div class="glow-sphere"></div>
-        
-        <div class="glass-card p-4 floating-card-1">
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-circle">
-                    <i class="fa-solid fa-heart-pulse fs-4"></i>
-                </div>
-                <div>
-                    <div class="h4 fw-black mb-0">Direct Impact</div>
-                    <div class="small" style="color:var(--muted);">1 don = 3 vies sauvées</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="glass-card p-4 floating-card-2">
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-circle primary">
-                    <i class="fa-solid fa-droplet fs-4"></i>
-                </div>
-                <div>
-                    <div class="h4 fw-black mb-0">Besoin Urgent</div>
-                    <div class="small" style="color:var(--muted);">Stocks critiques : O-</div>
-                </div>
-            </div>
-        </div>
-=======
     {# --- VISUAL RIGHT SIDE --- #}
     <div class="col-12 col-lg-5 order-1 order-lg-2">
       <div class="position-relative hero-visual">
@@ -122,405 +72,61 @@
             </div>
           </div>
         </div>
-
->>>>>>> e5190a8 (JEW)
       </div>
     </div>
   </div>
-
-<<<<<<< HEAD
-  {# --- FEATURES HUB GRID --- #}
-  <div class="row g-4 mt-5 pt-5 mb-5">
-=======
 
   {# =========================
      FEATURES HUB GRID
      ========================= #}
   <div class="row g-4 mt-5 pt-5 mb-5 features-grid">
->>>>>>> e5190a8 (JEW)
     <div class="col-12 mb-3">
       <h2 class="fw-black mb-0" style="letter-spacing:-1px;">Explorez <span style="color:var(--primary);">votre espace</span></h2>
       <p style="color:var(--muted);">Accédez rapidement à toutes les fonctionnalités clés de BloodLink.</p>
     </div>
 
-<<<<<<< HEAD
-    {# Campagnes #}
-    <div class="col-12 col-md-6 col-lg-3">
-      <a href="{{ path('campagne_list') }}" class="text-decoration-none feature-card-link">
-        <div class="glass-card p-4 h-100 feature-card">
-          <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-bullhorn"></i></div>
-          <h4 class="fw-bold text-white">Campagnes</h4>
-          <p class="small mb-0" style="color:var(--muted);">Découvrez les collectes proches de chez vous et inscrivez-vous.</p>
-=======
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('campagne_list') }}" class="text-decoration-none feature-card-link">
         <div class="glass-card p-4 h-100 feature-card">
           <div class="feature-icon mb-4"><i class="fa-solid fa-bullhorn"></i></div>
           <h4 class="fw-bold text-white">Campagnes</h4>
           <p class="small mb-0" style="color:var(--muted);">Découvrez les collectes et inscrivez-vous.</p>
->>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
 
-<<<<<<< HEAD
-    {# Mes Dons #}
-    <div class="col-12 col-md-6 col-lg-3">
-      <a href="{{ path('front_don_index') }}" class="text-decoration-none feature-card-link">
-        <div class="glass-card p-4 h-100 feature-card">
-          <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-history"></i></div>
-          <h4 class="fw-bold text-white">Mes Dons</h4>
-          <p class="small mb-0" style="color:var(--muted);">Historique complet de vos dons et suivi de votre impact social.</p>
-=======
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('front_don_index') }}" class="text-decoration-none feature-card-link">
         <div class="glass-card p-4 h-100 feature-card">
           <div class="feature-icon mb-4"><i class="fa-solid fa-history"></i></div>
           <h4 class="fw-bold text-white">Mes Dons</h4>
           <p class="small mb-0" style="color:var(--muted);">Historique complet de vos dons et impact.</p>
->>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
 
-<<<<<<< HEAD
-    {# Commandes #}
-    <div class="col-12 col-md-6 col-lg-3">
-      <a href="{{ path('front_commandes_index') }}" class="text-decoration-none feature-card-link">
-        <div class="glass-card p-4 h-100 feature-card">
-          <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-box-open"></i></div>
-          <h4 class="fw-bold text-white">Commandes</h4>
-          <p class="small mb-0" style="color:var(--muted);">Demandez des poches de sang pour vos besoins urgents.</p>
-=======
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('front_commandes_index') }}" class="text-decoration-none feature-card-link">
         <div class="glass-card p-4 h-100 feature-card">
           <div class="feature-icon mb-4"><i class="fa-solid fa-box-open"></i></div>
           <h4 class="fw-bold text-white">Commandes</h4>
           <p class="small mb-0" style="color:var(--muted);">Demandez des poches de sang pour vos besoins.</p>
->>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
 
-<<<<<<< HEAD
-    {# Dossier #}
-    <div class="col-12 col-md-6 col-lg-3">
-      <a href="{{ path('front_dossier_show') }}" class="text-decoration-none feature-card-link">
-        <div class="glass-card p-4 h-100 feature-card">
-          <div class="feature-icon mb-4" style="color:var(--primary);"><i class="fa-solid fa-file-waveform"></i></div>
-          <h4 class="fw-bold text-white">Dossier Médical</h4>
-          <p class="small mb-0" style="color:var(--muted);">Accès sécurisé à vos constantes et analyses médicales.</p>
-=======
     <div class="col-12 col-md-6 col-lg-3">
       <a href="{{ path('front_dossier_show') }}" class="text-decoration-none feature-card-link">
         <div class="glass-card p-4 h-100 feature-card">
           <div class="feature-icon mb-4"><i class="fa-solid fa-file-waveform"></i></div>
           <h4 class="fw-bold text-white">Dossier Médical</h4>
           <p class="small mb-0" style="color:var(--muted);">Accès sécurisé à vos analyses médicales.</p>
->>>>>>> e5190a8 (JEW)
         </div>
       </a>
     </div>
   </div>
 
-<<<<<<< HEAD
 </div>
-
-<style>
-  .main-cta {
-    background: var(--primary);
-    color: white;
-    border: 0;
-    box-shadow: 0 10px 40px rgba(230,57,57,0.4);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .main-cta:hover {
-    transform: translateY(-5px) scale(1.05);
-    background: #ff4d4d;
-    box-shadow: 0 15px 50px rgba(230,57,57,0.5);
-    color: white;
-  }
-  .outline-cta {
-    background: rgba(255,255,255,0.05);
-    color: white;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
-  }
-  .outline-cta:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.3);
-    color: white;
-  }
-
-  .glow-sphere {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 350px;
-    height: 350px;
-    background: var(--primary);
-    filter: blur(140px);
-    opacity: 0.15;
-    border-radius: 50%;
-    z-index: 1;
-  }
-
-  .icon-circle {
-    width:55px; height:55px; 
-    border-radius: 50%;
-    display: flex; align-items:center; justify-content:center;
-    background: rgba(255,255,255,0.08);
-    color: white;
-    box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
-  }
-  .icon-circle.primary {
-    background: rgba(230,57,57,0.15);
-    color: var(--primary);
-  }
-
-  .floating-card-1 {
-    transform: rotate(-3deg) translateX(-20px);
-    z-index: 2;
-    animation: float1 6s infinite ease-in-out;
-  }
-  .floating-card-2 {
-    transform: rotate(4deg) translateX(40px) translateY(20px);
-    z-index: 3;
-    animation: float2 7s infinite ease-in-out;
-  }
-
-  @keyframes float1 { 0%, 100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(-1deg) translateY(-15px); } }
-  @keyframes float2 { 0%, 100% { transform: rotate(4deg) translateY(0); } 50% { transform: rotate(6deg) translateY(20px); } }
-
-  .feature-card {
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-=======
-
-  {# =========================
-     UI CRAFT INTERACTIVE GRID
-     ========================= #}
-  <section id="ui-craft" class="py-5 mt-4 mb-5 pb-5">
-    <div class="text-center mb-4">
-      <h2 class="ui-craft-title mb-2">
-        L'art de <span class="ui-craft-brand">BloodLink</span>
-      </h2>
-      <p class="ui-craft-lead">
-        1 clic = ouvrir la carte, 2ème clic = naviguer.
-      </p>
-    </div>
-
-    <ul class="ui-craft-list" style="--items: 5;">
-      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Faire un don"
-          data-active="true" data-href="{{ path('front_don_new') }}">
-        <article>
-          <h3>Faire un don</h3>
-          <p class="ui-craft-body">Prenez rendez-vous rapidement et suivez votre contribution.</p>
-          <i class="fa-solid fa-hand-holding-droplet ui-craft-icon"></i>
-          <a class="ui-craft-link" href="{{ path('front_don_new') }}"><span>Ouvrir</span></a>
-          <img src="https://health.osu.edu/-/media/health/images/stories/2025/02/donating-blood.jpg" alt="">
-        </article>
-      </li>
-
-      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Campagnes"
-          data-active="false" data-href="{{ path('campagne_list') }}">
-        <article>
-          <h3>Campagnes</h3>
-          <p class="ui-craft-body">Découvrez les collectes et inscrivez-vous en un clic.</p>
-          <i class="fa-solid fa-bullhorn ui-craft-icon"></i>
-          <a class="ui-craft-link" href="{{ path('campagne_list') }}"><span>Ouvrir</span></a>
-          <img src="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/615034246_1506622881146232_1311108811290700629_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_ohc=rhaVcKxYqLUQ7kNvwGf-Nxu&_nc_oc=Adljz8ME-HRJiRgb3ZOOrPrAyplITJTgKYoOUSosUESanMu_wBu_YLekasOBPk37UVE&_nc_zt=23&_nc_ht=scontent.ftun14-1.fna&_nc_gid=WCqN3VFGhzdbajvG9WfG0Q&oh=00_AfspHh6NDhg4hf-GZW3meI8DJDcu1apKJnjzaPiMYQHJ4Q&oe=699640DE" alt="">
-        </article>
-      </li>
-
-      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Mes dons"
-          data-active="false" data-href="{{ path('front_don_index') }}">
-        <article>
-          <h3>Mes dons</h3>
-          <p class="ui-craft-body">Historique complet, dates, et impact de vos dons.</p>
-          <i class="fa-solid fa-history ui-craft-icon"></i>
-          <a class="ui-craft-link" href="{{ path('front_don_index') }}"><span>Ouvrir</span></a>
-          <img src="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/613100953_1503973751411145_3733919481978742877_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=833d8c&_nc_ohc=i_AZePasFL4Q7kNvwHbnTPC&_nc_oc=Adn1tmAWeVthh5ENxvr8ZeUrZS-9jycx5jDGgzx_mJWOtQG4BZKcp6zb0WkQN97VIZI&_nc_zt=23&_nc_ht=scontent.ftun14-1.fna&_nc_gid=33BWWUzjbwA5CdtrB28-TQ&oh=00_AftO2KFZ0GIKLTRfusoetV1f29AogGunrxsQratNdarxHQ&oe=69962B38" alt="">
-        </article>
-      </li>
-
-      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Commandes"
-          data-active="false" data-href="{{ path('front_commandes_index') }}">
-        <article>
-          <h3>Commandes</h3>
-          <p class="ui-craft-body">Demandez des poches de sang et suivez l’état de vos demandes.</p>
-          <i class="fa-solid fa-box-open ui-craft-icon"></i>
-          <a class="ui-craft-link" href="{{ path('front_commandes_index') }}"><span>Ouvrir</span></a>
-          <img src="https://www.mayoclinic.org/-/media/kcms/gbs/medical-professionals/images/2022/04/29/13/32/whole-blood-767x535.jpg" alt="">
-        </article>
-      </li>
-
-      <li class="ui-craft-item" tabindex="0" role="link" aria-label="Dossier médical"
-          data-active="false" data-href="{{ path('front_dossier_show') }}">
-        <article>
-          <h3>Dossier médical</h3>
-          <p class="ui-craft-body">Accès sécurisé à vos analyses et informations médicales.</p>
-          <i class="fa-solid fa-file-waveform ui-craft-icon"></i>
-          <a class="ui-craft-link" href="{{ path('front_dossier_show') }}"><span>Ouvrir</span></a>
-          <img src="https://scontent.ftun14-1.fna.fbcdn.net/v/t39.30808-6/605540721_1493984215743432_3193429798547041132_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=LDIsoK8iufkQ7kNvwE3X5sQ&_nc_oc=Adlkp-KlyRtBMZU_hAp3RcFsvf7ffxN1GWIzIufXAjpUi_TSqlzsfZENHo_mdquyprs&_nc_zt=23&_nc_ht=scontent.ftun14-1.fna&_nc_gid=EWRS9qw36juc76fzO5cJpQ&oh=00_AftE30KDq3197bbEJNu3c4ViAQVQ73tJfBkpYWp_U651CA&oe=69963E21" alt="">
-        </article>
-      </li>
-    </ul>
-  </section>
-
-
-  {# =========================
-     KEYPAD CTA (QUICK ACTIONS)
-     ========================= #}
-  <section id="keypad-cta" class="py-5 mt-4 mb-5">
-    <div class="row align-items-center g-5">
-      <div class="col-12 col-lg-6">
-        <div class="pe-lg-4">
-          <h2 class="fw-black mb-3" style="letter-spacing:-1px;">
-            Jus’ <span style="color:var(--primary);">agissez</span>.<br>Et sauvez des vies.
-          </h2>
-
-          <p class="mb-4" style="color:var(--muted); max-inline-size: 52ch;">
-            Utilisez le keypad pour accéder rapidement aux actions clés.
-            <span class="d-block mt-2 opacity-75">Clavier: O = Don, G = Campagnes, Entrée = Commandes</span>
-          </p>
-
-          <form class="keypad-form" action="#" method="post">
-            <input type="email" required placeholder="email@exemple.com" />
-            <button type="submit">Recevoir alertes</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="col-12 col-lg-6 d-flex justify-content-center justify-content-lg-end">
-        <div class="keypad" aria-label="Quick actions keypad">
-
-          <div class="keypad__base">
-            <img src="https://assets.codepen.io/605876/keypad-base.png?format=auto&quality=86" alt="" />
-          </div>
-
-          <button
-            id="one"
-            class="key keypad__single keypad__single--left"
-            type="button"
-            data-href="{{ path('front_don_new') }}"
-            aria-label="Faire un don"
-            style="--travel: 26; --hue: 90; --saturate: 1.8; --brightness: 0.95;"
-
-          >
-            <span class="key__mask">
-              <span class="key__content">
-                <span class="key__text">ok</span>
-                <img src="https://assets.codepen.io/605876/keypad-single.png?format=auto&quality=86" alt="" />
-              </span>
-            </span>
-          </button>
-
-          <button
-            id="two"
-            class="key keypad__single"
-            type="button"
-            data-href="{{ path('campagne_list') }}"
-            aria-label="Voir les campagnes"
-            style="--travel: 26; --hue: 0; --saturate: 0; --brightness: 1.25;"
-          >
-            <span class="key__mask">
-              <span class="key__content">
-                <span class="key__text">go</span>
-                <img src="https://assets.codepen.io/605876/keypad-single.png?format=auto&quality=86" alt="" />
-              </span>
-            </span>
-          </button>
-
-          <button
-            id="three"
-            class="key keypad__double"
-            type="button"
-            data-href="{{ path('front_commandes_index') }}"
-            aria-label="Accéder aux commandes"
-            style="--travel: 18; --hue: 0; --saturate: 0; --brightness: 0.9;"
-          >
-            <span class="key__mask">
-              <span class="key__content">
-                <span class="key__text">rdv.</span>
-                <img src="https://assets.codepen.io/605876/keypad-double.png?format=auto&quality=86" alt="" />
-              </span>
-            </span>
-          </button>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-
-  {# =========================
-     MYTHBUSTER SECTION
-     ========================= #}
-  <section class="py-5 mt-5" id="myth-buster-section">
-    <div class="text-center mb-5">
-      <h2 class="fw-black mb-0" style="letter-spacing:-1px;">Mythe ou <span style="color:var(--primary);">Réalité ?</span></h2>
-      <p style="color:var(--muted);">Testez vos connaissances sur le don de sang.</p>
-    </div>
-
-    <div class="row justify-content-center text-start">
-      <div class="col-lg-6 d-flex justify-content-center mb-5 mb-lg-0">
-        <div class="card-game-container">
-          <input type="checkbox" id="myth-choice-1">
-          <label for="myth-choice-1" class="myth-card myth-card--answer">
-            <span class="text-success">RÉALITÉ</span><br><br>
-            Vous POUVEZ donner votre sang <strong>4 mois</strong> après un tatouage ou un piercing.
-            <div class="myth-card-footer"><i class="fas fa-check-circle text-success"></i> C'est une simple précaution !</div>
-          </label>
-          <label for="myth-choice-1" class="myth-card myth-card--question">
-            Mythe:<br><br> "Je ne peux pas donner si j'ai un <strong>tatouage</strong>."
-            <div class="myth-card-footer"><i class="fas fa-hand-pointer"></i> Cliquez pour la réponse.</div>
-          </label>
-        </div>
-      </div>
-
-      <div class="col-lg-6 d-flex justify-content-center">
-        <div class="card-game-container">
-          <input type="checkbox" id="myth-choice-2">
-          <label for="myth-choice-2" class="myth-card myth-card--answer">
-            <span class="text-success">RÉALITÉ</span><br><br>
-            Votre corps remplace le plasma en <strong>quelques heures</strong>, globules rouges en semaines.
-            <div class="myth-card-footer"><i class="fas fa-check-circle text-success"></i> Une bonne hydratation suffit !</div>
-          </label>
-          <label for="myth-choice-2" class="myth-card myth-card--question">
-            Mythe:<br><br> "Donner son sang <strong>affaiblit</strong> le corps pour longtemps."
-            <div class="myth-card-footer"><i class="fas fa-hand-pointer"></i> Cliquez pour la réponse.</div>
-          </label>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</div>
-
-<footer class="blood-footer">
-  <div class="container-fluid px-md-5">
-    <div class="blood-footer__inner">
-      <div class="blood-footer__brand"  style="color:rgba(255,255,255,0.85);">
-        <span class="blood-footer__dot"  style="color:rgba(255,255,255,0.85);"></span>
-        <strong>BloodLink</strong>
-        <span class="blood-footer__sep">—</span>
-        <span class="blood-footer__muted"  style="color:rgba(255,255,255,0.85);" >Chaque don compte.</span>
-      </div>
-
-    <div class="blood-footer__made" style="color:rgba(255,255,255,0.85);">
-
-        Made by 6 people: <strong>Youssef</strong>, <strong>Wajd</strong>, <strong>Yassine</strong>, <strong>Eya</strong>, <strong>Rami</strong>, <strong>Khalil</strong>.
-      </div>
-
-      <div class="blood-footer__copy"  style="color:rgba(255,255,255,0.85);">
-        © {{ "now"|date("Y") }} BloodLink. Tous droits réservés.
-      </div>
-    </div>
-  </div>
-</footer>
 
 <style>
   /* =========================
@@ -594,22 +200,10 @@
      ========================= */
   .feature-card{
     transition: all .4s cubic-bezier(.165,.84,.44,1);
->>>>>>> e5190a8 (JEW)
     border: 1px solid var(--border);
     position: relative;
     overflow: hidden;
   }
-<<<<<<< HEAD
-  .feature-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent, rgba(230,57,57,0.05));
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-  .feature-card:hover {
-=======
   .feature-card::after{
     content:'';
     position:absolute;
@@ -619,40 +213,10 @@
     transition: opacity .4s ease;
   }
   .feature-card:hover{
->>>>>>> e5190a8 (JEW)
     transform: translateY(-10px);
     border-color: rgba(230,57,57,0.4);
     box-shadow: 0 20px 50px rgba(0,0,0,0.4);
   }
-<<<<<<< HEAD
-  .feature-card:hover::after { opacity: 1; }
-
-  .feature-icon {
-    font-size: 2.2rem;
-    color: rgba(255,255,255,0.7);
-    transition: transform 0.4s ease;
-  }
-  .feature-card:hover .feature-icon {
-    transform: scale(1.1) rotate(5deg);
-  }
-
-  .animate-hero { opacity: 0; transform: translateY(30px); }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    gsap.to('.animate-hero', {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      stagger: 0.15,
-      ease: 'power3.out',
-      delay: 0.2
-    });
-  });
-</script>
-{% endblock %}
-=======
   .feature-card:hover::after{ opacity:1; }
   .feature-icon{
     font-size: 2.2rem;
@@ -1532,4 +1096,3 @@
     });
   </script>
 {% endblock %}
->>>>>>> e5190a8 (JEW)

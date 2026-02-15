@@ -15,11 +15,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
-<<<<<<< HEAD
-=======
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
->>>>>>> e5190a8 (JEW)
 
 class DossierMedType extends AbstractType
 {
@@ -32,33 +29,21 @@ class DossierMedType extends AbstractType
                 'class' => Don::class,
                 'choice_label' => function (Don $d) {
                     $date = $d->getDate() ? $d->getDate()->format('Y-m-d H:i') : 'no date';
-<<<<<<< HEAD
-                    $clientName = $d->getClient() && $d->getClient()->getUser() ? $d->getClient()->getUser()->getNomComplet() : 'Inconnu';
-=======
                     $clientName = $d->getClient() && $d->getClient()->getUser()
                         ? $d->getClient()->getUser()->getNomComplet()
                         : 'Inconnu';
 
->>>>>>> e5190a8 (JEW)
                     return "#{$d->getId()} - {$clientName} ({$d->getTypeDon()}) - {$date}";
                 },
                 'query_builder' => function (DonRepository $repo) use ($client) {
                     $qb = $repo->createQueryBuilder('d')
                         ->orderBy('d.date', 'DESC');
-<<<<<<< HEAD
-                    
-=======
 
->>>>>>> e5190a8 (JEW)
                     if ($client) {
                         $qb->andWhere('d.client = :c')
                            ->setParameter('c', $client);
                     }
-<<<<<<< HEAD
-                    
-=======
 
->>>>>>> e5190a8 (JEW)
                     return $qb;
                 },
                 'placeholder' => '-- Sélectionner un don --',
@@ -88,11 +73,7 @@ class DossierMedType extends AbstractType
                 'choices' => [
                     'Homme' => 'Homme',
                     'Femme' => 'Femme',
-<<<<<<< HEAD
-                    'Autre' => 'Autre'
-=======
                     'Autre' => 'Autre',
->>>>>>> e5190a8 (JEW)
                 ],
                 'placeholder' => '-- Choose --',
                 'required' => true,
@@ -121,10 +102,6 @@ class DossierMedType extends AbstractType
                 ],
             ])
 
-<<<<<<< HEAD
-            // ✅ MISSING FIELD FIXED HERE
-=======
->>>>>>> e5190a8 (JEW)
             ->add('poid', NumberType::class, [
                 'required' => true,
                 'label' => 'Poids (kg)',
@@ -150,11 +127,6 @@ class DossierMedType extends AbstractType
                 'label' => 'Contact urgence',
                 'attr' => ['min' => 0, 'placeholder' => 'Ex: 99587306'],
                 'constraints' => [
-<<<<<<< HEAD
-                    new NotBlank(['message' => 'Le contact urgence est obligatoire.']),
-                ],
-            ]);
-=======
                     new NotBlank(['message' => "Le contact d'urgence est obligatoire."]),
                 ],
             ]);
@@ -169,7 +141,6 @@ class DossierMedType extends AbstractType
                 $data->setClient($data->getDon()->getClient());
             }
         });
->>>>>>> e5190a8 (JEW)
     }
 
     public function configureOptions(OptionsResolver $resolver): void
