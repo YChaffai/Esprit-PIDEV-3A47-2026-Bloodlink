@@ -51,10 +51,6 @@ class CommandeType extends AbstractType
         'class' => Banque::class,
         'choice_label' => 'nom',
       ])
-      ->add('client', EntityType::class, [
-        'class' => Client::class,
-        'choice_label' => 'id',
-      ])
     ;
   }
 

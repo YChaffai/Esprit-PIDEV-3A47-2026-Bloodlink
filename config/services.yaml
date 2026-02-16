@@ -1,29 +1,40 @@
 # config/services.yaml
 
 parameters:
-    env(RECAPTCHA_SITE_KEY): ''
-    env(RECAPTCHA_SECRET_KEY): ''
+    env(RECAPTCHA_SITE_KEY): ""
+    env(RECAPTCHA_SECRET_KEY): ""
+    google_recaptcha_site_key: "%env(GOOGLE_RECAPTCHA_SITE_KEY)%"
+    konnect.api_key: "%env(KONNECT_API_KEY)%"
+    konnect.api_url: "%env(KONNECT_API_URL)%"
+    konnect.wallet_id: "%env(KONNECT_WALLET_ID)%"
+    app.public_base_url: "%env(APP_PUBLIC_BASE_URL)%"
 
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
-        resource: '../src/'
+        resource: "../src/"
         exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+            - "../src/DependencyInjection/"
+            - "../src/Entity/"
+            - "../src/Kernel.php"
 
     # Explicit service for PasswordResetController with Recaptcha keys
     App\Controller\PasswordResetController:
         arguments:
-            $recaptchaSiteKey: '%env(RECAPTCHA_SITE_KEY)%'
-            $recaptchaSecretKey: '%env(RECAPTCHA_SECRET_KEY)%'
+            $recaptchaSiteKey: "%env(RECAPTCHA_SITE_KEY)%"
+            $recaptchaSecretKey: "%env(RECAPTCHA_SECRET_KEY)%"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\Konnect:
+        arguments:
+            $konnectApiKey: "%konnect.api_key%"
+            $konnectApiUrl: "%konnect.api_url%"
+            $receiverWalletId: "%konnect.wallet_id%"
+            $publicBaseUrl: "%app.public_base_url%"

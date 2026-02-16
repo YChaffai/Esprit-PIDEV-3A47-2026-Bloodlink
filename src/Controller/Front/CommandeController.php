@@ -100,7 +100,7 @@ class CommandeController extends AbstractController
         } catch (\Throwable $e) {
           $this->addFlash('warning', 'Commande Créée but email failed: ' . $e->getMessage());
         }
-
+      
         return $this->redirectToRoute('front_commandes_index');
       }
     }
