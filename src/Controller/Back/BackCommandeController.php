@@ -46,7 +46,7 @@ class BackCommandeController extends AbstractController
     #[Route('/{id}/edit', name: 'admin_commande_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Commande $commande, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(CommandeType::class, $commande);
+        $form = $this->createForm(CommandeType::class, $commande, ['show_status' => true]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
