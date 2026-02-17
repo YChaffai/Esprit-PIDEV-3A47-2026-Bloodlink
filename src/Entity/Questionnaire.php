@@ -68,22 +68,6 @@ class Questionnaire
     #[ORM\ManyToOne(inversedBy: 'questionnaires')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Client $client = null;
-// #[Assert\Callback]
-// public function validateClient(ExecutionContextInterface $context, $payload): void
-// {
-//     $form = $context->getRoot();
-
-//     // On vérifie que $form est bien un objet Formulaire ET qu'il contient le champ 'client'
-//     if ($form instanceof \Symfony\Component\Form\FormInterface && $form->has('client')) {
-//         if ($form->get('client')->getData() === null) {
-//             $context->buildViolation('Veuillez choisir un client')
-//                 ->atPath('client')
-//                 ->addViolation();
-//         }
-//     }
-//     // Si on est en Frontoffice, 'client' n'existe pas dans le formulaire,
-//     // donc cette condition est ignorée et le formulaire devient valide !
-// }
 
     #[ORM\Column(length: 5)]
     private ?string $group_sanguin = null;

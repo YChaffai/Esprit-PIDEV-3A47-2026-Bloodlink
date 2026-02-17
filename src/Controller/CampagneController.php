@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\CampagneRepository;
+use App\Repository\CompagneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class CampagneController extends AbstractController
 {
   #[Route('/list', name: 'campagne_list')]
-  public function list(CampagneRepository $campagneRepository): Response
+  public function list(CompagneRepository $campagneRepository): Response
   {
     /** @var User $user */
     $user = $this->getUser();
@@ -33,4 +33,3 @@ final class CampagneController extends AbstractController
     ]);
   }
 }
-

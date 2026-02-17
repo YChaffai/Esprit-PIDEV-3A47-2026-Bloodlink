@@ -9,12 +9,53 @@
         <p class="text-white-50 mb-0">Gérez les rendez-vous des donneurs et leur statut.</p>
     </div>
     <div class="d-flex gap-2">
+        <button type="button" onclick="runAiAnalysis()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
+            <i class="fa-solid fa-brain"></i>
+        </button>
+        <button type="button" onclick="exportRendezvous()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
+            <i class="fa-solid fa-download"></i>
+        </button>
          <span class="badge bg-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0" style="font-size: 0.9rem;">
             <i class="fa-solid fa-calendar-check me-2"></i> {{ rendezvous|length }} RÉS.
          </span>
     </div>
 </div>
+{# ZONE DU RAPPORT IA (S'affiche uniquement si report existe) #}
+    {% if report %}
+<div id="ai-report-section" class="glass-card p-4 mb-4 border-start border-4 border-danger" style="background: rgba(255,255,255,0.08);">
+<div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-danger fw-bold mb-0">
+            <i class="fa-solid fa-robot me-2"></i>Analyse Stratégique
+        </h5>
+        
+        <div class="d-flex gap-2">
+            {# Bouton PDF #}
+           <button id="downloadBtn" class="btn btn-primary">Télécharger le rapport</button>
 
+            
+            {# Bouton Quitter (X) #}
+            <a href="{{ path('rendezvousback_list') }}" class="btn btn-sm btn-danger rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </div>
+    </div>    
+    <div class="ai-content text-white mt-3 p-3 bg-dark rounded shadow-inner">
+        {{ report|nl2br }}
+    </div>
+
+    <div class="mt-4 pt-3 border-top border-secondary">
+        <label class="small text-white-50 mb-2">Demander une modification ou plus de détails :</label>
+        <div class="input-group">
+            <input type="text" id="ai-feedback-input" class="form-control border-0 bg-dark text-white" 
+                   placeholder="Ex: 'Focalise sur les rendez-vous en attente' ou 'Rends le ton plus formel'..."
+                   value="{{ last_feedback }}">
+            <button class="btn btn-danger" type="button" onclick="updateAiReport()">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
 <div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
     {# Filtres #}
     <div class="mb-4">
@@ -64,4 +105,101 @@
         {% include 'rendez_vous/_listback_table.html.twig' %}
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    function exportRendezvous() {
+    const filterForm = document.getElementById('rv-filter-form');
+    const formData = new FormData(filterForm);
+    
+    // On récupère la valeur de recherche
+    const searchVal = filterForm.querySelector('input[name="search"]').value;
+
+    // IMPORTANT : On l'ajoute avec le préfixe utilisé par Symfony 
+    // pour que $criteria['rendez_vous_filter'] le contienne
+    if (searchVal) {
+        formData.append('rendez_vous_filter[search]', searchVal);
+    }
+
+    const params = new URLSearchParams(formData).toString();
+    window.location.href = "{{ path('export_rendezvous') }}?" + params;
+}
+
+//partie ai//
+{# function runAiAnalysis() {
+    const form = document.getElementById('rv-filter-form');
+    const params = new URLSearchParams(new FormData(form)).toString();
+    window.open("{{ path('app_ai_report') }}?" + params, '_blank');
+} #}
+
+function runAiAnalysis() {
+    const form = document.getElementById('rv-filter-form');
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    
+    // On ajoute le déclencheur d'analyse
+    params.set('analyze', '1');
+    
+    // Recharge la MÊME PAGE avec les filtres + l'instruction d'analyse
+    // Pas de _blank, donc pas de nouvel onglet
+    window.location.href = "{{ path('rendezvousback_list') }}?" + params.toString();
+}
+
+function updateAiReport() {
+    const feedbackInput = document.getElementById('ai-feedback-input');
+    const feedback = feedbackInput.value.trim();
+    
+    if (feedback === "") return;
+
+    // 1. Afficher le loader immédiatement
+    const overlay = document.getElementById('ai-loading-overlay');
+    if (overlay) {
+        overlay.classList.remove('d-none');
+        overlay.style.display = 'flex';
+    }
+
+    // 2. Récupérer l'URL actuelle et ses paramètres
+    const currentUrl = new URL(window.location.href);
+    
+    // 3. Mettre à jour les paramètres
+    currentUrl.searchParams.set('analyze', '1');
+    currentUrl.searchParams.set('user_feedback', feedback);
+    
+    // 4. Conserver les filtres existants (search, status, etc.)
+    // Ils sont déjà dans currentUrl.searchParams si on est sur la page filtrée
+
+    // 5. Rediriger (Ajouter l'ancre pour revenir au bloc IA)
+    window.location.href = currentUrl.pathname + currentUrl.search + '#ai-report-section';
+}
+
+// JavaScript to trigger download
+document.getElementById("downloadBtn").addEventListener("click", function() {
+    // Define the file URL (this is a path to your file)
+    var fileUrl = "/files/your-file-name.extension"; // Modify this path
+    
+    // Create an anchor tag dynamically
+    var link = document.createElement("a");
+    link.href = fileUrl; // Set the file URL
+    link.download = "rapport.pdf"; // Optional: Set the default file name
+
+    // Append the link to the body (necessary for triggering the click)
+    document.body.appendChild(link);
+
+    // Trigger the click event to start the download
+    link.click();
+
+    // Remove the link after triggering the download
+    document.body.removeChild(link);
+});
+    </script>
+
+<style>
+    .ai-content strong { color: white; }
+    #ai-report-section {
+        animation: slideDown 0.5s ease-out;
+    }
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
 {% endblock %}

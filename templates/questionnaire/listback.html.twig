@@ -8,9 +8,14 @@
         <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Questionnaires</h1>
         <p class="text-white-50 mb-0">Consultez et gérez les questionnaires des donneurs.</p>
     </div>
-    <a href="{{ path('questionnaireback_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
-        <i class="fa-solid fa-plus"></i> NOUVEAU QUESTIONNAIRE
-    </a>
+    <div class="d-flex gap-2">
+       <button type="button" onclick="exportQuestionnaires()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
+    <i class="fa-solid fa-download"></i>
+     </button>
+        <a href="{{ path('questionnaireback_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+            <i class="fa-solid fa-plus"></i> NOUVEAU QUESTIONNAIRE
+        </a>
+    </div>
 </div>
 
 <div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
@@ -58,4 +63,28 @@
         {% include 'questionnaire/_listback_table.html.twig' %}
     </div>
 </div>
+
+<script>
+function exportQuestionnaires() {
+    // 1. On cible le formulaire spécifique aux questionnaires
+    const filterForm = document.getElementById('auto-filter-form');
+    const formData = new FormData(filterForm);
+    
+    // 2. On récupère la valeur du champ recherche "manuel"
+    const searchInput = filterForm.querySelector('input[name="search"]');
+    const searchVal = searchInput ? searchInput.value : '';
+
+    // 3. IMPORTANT : On utilise le préfixe 'questionnaire_filter'
+    // pour que ton PHP puisse l'extraire correctement
+    if (searchVal) {
+        formData.append('questionnaire_filter[search]', searchVal);
+    }
+
+    // 4. Génération de l'URL avec les paramètres
+    const params = new URLSearchParams(formData).toString();
+    const exportUrl = "{{ path('export_questionnaires') }}";
+    
+    window.location.href = exportUrl + "?" + params;
+}
+</script>
 {% endblock %}

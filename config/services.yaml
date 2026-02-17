@@ -3,13 +3,15 @@
 parameters:
     env(RECAPTCHA_SITE_KEY): ''
     env(RECAPTCHA_SECRET_KEY): ''
+    gemini_api_key: '%env(GEMINI_API_KEY)%'
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
+        bind:
+            $geminiApiKey: '%gemini_api_key%'
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -24,6 +26,8 @@ services:
         arguments:
             $recaptchaSiteKey: '%env(RECAPTCHA_SITE_KEY)%'
             $recaptchaSecretKey: '%env(RECAPTCHA_SECRET_KEY)%'
-
+    App\Service\GoogleCalendarService:
+        arguments:
+            $googleCredentialsPath: '%kernel.project_dir%/config/secret-griffin-436115-k4-5af9cc553bb6.json' 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

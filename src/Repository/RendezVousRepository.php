@@ -114,4 +114,65 @@ class RendezVousRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+
+    //lel client
+  public function searchByClient(int $clientId, array $criteria = []): array
+{
+    $qb = $this->createQueryBuilder('rv')
+        ->join('rv.questionnaire', 'q')
+        ->where('q.client = :client_id')
+        ->andWhere('rv.status != :status_annule')
+        ->setParameter('client_id', $clientId)
+        ->setParameter('status_annule', 'annulé');
+
+    // Filtre Campagne
+    if (!empty($criteria['campagne'])) {
+        $qb->andWhere('q.campagne = :campagne')
+           ->setParameter('campagne', $criteria['campagne']);
+    }
+   
+    // Filtre Status (on utilise statusClient si c'est celui que vous affichez en front)
+    $status = $criteria['statusClient'] ?? $criteria['status'] ?? null;
+    if ($status) {
+        $qb->andWhere('rv.status = :s')
+           ->setParameter('s', $status);
+    }
+
+    // Filtre Date
+    if (!empty($criteria['filter_date'])) {
+        $qb->andWhere('rv.date_don LIKE :d')
+           ->setParameter('d', $criteria['filter_date']->format('Y-m-d') . '%');
+    }
+    if (!empty($criteria['filter_time'])) {
+        // format 'H:i' extrait "14:30". 
+        // En SQL on cherche "%14:30%" dans "2026-02-15 14:30:00"
+        $qb->andWhere('rv.date_don LIKE :t')
+           ->setParameter('t', '%' . $criteria['filter_time']->format('H:i') . '%');
+    }
+
+    // Tri dynamique sur la date
+    $direction = 'DESC';
+    if (!empty($criteria['tri_date'])) {
+        $direction = str_contains($criteria['tri_date'], 'ASC') ? 'ASC' : 'DESC';
+    }
+    $qb->orderBy('rv.date_don', $direction);
+
+    return $qb->getQuery()->getResult();
+}
+
+
+public function findForExport(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.questionnaire', 'q') // Jointure avec Questionnaire
+            ->leftJoin('q.campagne', 'c') // Accès à Campagne via Questionnaire
+            ->leftJoin('r.entite', 'e')   // Jointure avec Entite
+            ->addSelect('q', 'c', 'e')     // Sélectionner aussi Questionnaire, Campagne et Entite
+            ->where('r.date_don >= :today')
+            ->setParameter('today', new \DateTime())
+            ->orderBy('r.date_don', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

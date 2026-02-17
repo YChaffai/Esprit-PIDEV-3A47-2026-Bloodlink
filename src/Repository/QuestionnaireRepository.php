@@ -91,4 +91,43 @@ class QuestionnaireRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+
+    public function searchByClient(int $clientId, array $criteria = []): array
+{
+    $qb = $this->createQueryBuilder('q')
+        ->leftJoin('q.campagne', 'c')
+        ->leftJoin('q.rendezVous', 'rv') // Utile pour le statut du RDV
+        ->where('q.client = :client_id')
+        ->setParameter('client_id', $clientId);
+
+    // Filtre Campagne
+    if (!empty($criteria['campagne'])) {
+        $qb->andWhere('q.campagne = :campagne')
+           ->setParameter('campagne', $criteria['campagne']);
+    }
+
+    // Filtre Date (Y-m-d)
+    if (!empty($criteria['filter_date'])) {
+        $qb->andWhere('q.date LIKE :d')
+           ->setParameter('d', $criteria['filter_date']->format('Y-m-d') . '%');
+    }
+
+    // Filtre Heure (H:i)
+    if (!empty($criteria['filter_time'])) {
+        $qb->andWhere('q.date LIKE :t')
+           ->setParameter('t', '%' . $criteria['filter_time']->format('H:i') . '%');
+    }
+
+    // Tri dynamique
+    $direction = 'DESC';
+    if (!empty($criteria['tri_date'])) {
+        $direction = str_contains($criteria['tri_date'], 'ASC') ? 'ASC' : 'DESC';
+    }
+    $qb->orderBy('q.date', $direction);
+
+    return $qb->getQuery()->getResult();
 }
+}
+
+

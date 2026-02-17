@@ -14,8 +14,8 @@ class UpdateQuestionnaireType extends AbstractType
   public function buildForm(FormBuilderInterface $builder, array $options): void
   {
     $builder
-      ->add('nom')
-      ->add('prenom')
+      // ->add('nom')
+      // ->add('prenom')
       ->add('age')
       ->add('sexe', ChoiceType::class, [
         'choices' => [

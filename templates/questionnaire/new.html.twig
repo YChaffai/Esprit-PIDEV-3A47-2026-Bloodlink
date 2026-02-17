@@ -1,141 +1,29 @@
-{# templates/questionnaire/new.html.twig #}
-{# 
-{% extends 'base.html.twig' %}
-
-{% block title %}Remplir le questionnaire{% endblock %} #}
-
-{# {% block body %}
-    <h1>Remplir le questionnaire</h1>
-
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-
-    <table> #}
-        {# <tr>
-            <td>{{ form_label(form.nom, "Nom") }}</td>
-            <td>{{ form_widget(form.nom) }}</td>
-            <td>{{ form_errors(form.nom) }}</td>
-            
-
-        </tr>
-
-        <tr>
-            <td>{{ form_label(form.prenom, "Prénom") }}</td>
-            <td>{{ form_widget(form.prenom) }}</td>
-            <td>{{ form_errors(form.prenom) }}</td>
-
-           
-        </tr> #}
-       
-        {# <tr>
-            <td>{{ form_label(form.age, "Âge") }}</td>
-            <td>{{ form_widget(form.age) }}</td>
-            <td>{{ form_errors(form.age) }}</td>
-           
-        </tr>
-
-        <tr>
-            <td>{{ form_label(form.sexe, "Sexe") }}</td>
-            <td>{{ form_widget(form.sexe) }}</td>
-            <td>{{ form_errors(form.sexe) }}</td>
-           
-        </tr>
-
-        <tr>
-            <td>{{ form_label(form.poids, "Poids") }}</td>
-            <td>{{ form_widget(form.poids) }}</td>
-            <td>{{ form_errors(form.poids) }}</td>
-           
-        </tr>
-
-        <tr>
-            <td>{{ form_label(form.autres, "Autres") }}</td>
-            <td>{{ form_widget(form.autres) }}</td>
-            <td>{{ form_errors(form.autres) }}</td>
-           
-        </tr>
-        #}
-
-    {# </table>
-    {{ form_widget(form.submit) }}
-
-    {{ form_end(form) }}
-{% endblock %} #}
-
-
-{# templates/questionnaire/new.html.twig
-{% extends 'base.html.twig' %}
+{% extends 'Base_front.html.twig' %}
 
 {% block title %}Remplir le questionnaire{% endblock %}
 
 {% block body %}
 <div class="container" style="max-width: 800px;">
-    <h1>Remplir le questionnaire</h1>
+    <div class="py-4 py-md-5">
 
-    <div class="glass-card">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
-            {# Style commun pour les inputs #}
-            {# {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px;' %}
-            
-            <div class="row"> #}
-                {# Âge #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">ÂGE</label>
-                    {{ form_widget(form.age, {'attr': {'style': inputStyle, 'placeholder': 'Votre âge'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.age) }}</div>
-                </div> #}
-
-                {# Sexe #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">SEXE</label>
-                    {{ form_widget(form.sexe, {'attr': {'style': inputStyle, 'class': 'form-select'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.sexe) }}</div>
+        {# --- HEADER --- #}
+        <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+            <div>
+                <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+                <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                    <i class="fa-solid fa-clipboard-list me-2" style="color:var(--primary);"></i>
+                    Remplir le questionnaire
+                </h1>
+                <div style="color:var(--muted);">
+                    Veuillez compléter les informations nécessaires pour votre don.
                 </div>
             </div>
+        </div>
 
-            <div class="row"> #}
-                {# Poids #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">POIDS (KG)</label>
-                    {{ form_widget(form.poids, {'attr': {'style': inputStyle, 'placeholder': 'Ex: 70'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.poids) }}</div>
-                </div> #}
-
-                {# Autres #}
-                {# <div class="col-md-6 mb-4">
-                    <label class="form-label text-white small fw-bold">AUTRES INFORMATIONS</label>
-                    {{ form_widget(form.autres, {'attr': {'style': inputStyle, 'placeholder': 'Antécédents, allergies...'}}) }}
-                    <div class="text-danger small">{{ form_errors(form.autres) }}</div>
-                </div>
-            </div>
-
-            <div class="mt-4">
-                {{ form_widget(form.submit, {
-                    'label': 'Continuer vers le rendez-vous',
-                    'attr': {
-                        'class': 'btn btn-primary w-100 rounded-pill',
-                        'style': 'height: 55px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'
-                    }
-                }) }}
-            </div>
-
-        {{ form_end(form) }}
-    </div>
-</div>
-{% endblock %} #} 
-{# templates/questionnaire/new.html.twig #}
-{% extends 'base.html.twig' %}
-
-{% block title %}Remplir le questionnaire{% endblock %}
-
-{% block body %}
-<div class="container" style="max-width: 800px;">
-    <h1>Remplir le questionnaire</h1>
-
-    <div class="glass-card">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        {# --- FORM --- #}
+        <div class="glass-card p-4">
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
             
-            {# Style commun pour les inputs avec largeur forcée à 100% #}
             {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px; width: 100%;' %}
             
             <div class="row">
@@ -176,12 +64,12 @@
                     {{ form_widget(form.submit, {
                         'label': 'Continuer',
                         'attr': {
-                            'class': 'btn btn-primary w-100 rounded-pill',
+                            'class': 'btn btn-danger w-100 rounded-pill',
                             'style': 'height: 55px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'
                         }
                     }) }}
                 </div>
-                
+
                 <a href="{{ path('campagne_list') }}" 
                    class="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center" 
                    style="height: 55px; padding: 0 35px; font-weight: 700; text-transform: uppercase;">
@@ -189,7 +77,8 @@
                 </a>
             </div>
 
-        {{ form_end(form) }}
+            {{ form_end(form) }}
+        </div>
     </div>
 </div>
 {% endblock %}

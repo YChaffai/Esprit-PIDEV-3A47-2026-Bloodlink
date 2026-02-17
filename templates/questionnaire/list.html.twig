@@ -65,7 +65,7 @@
 </script> #}
 {# </div>
 {% endblock %}  #}
-{% extends 'base.html.twig' %}
+{% extends 'Base_front.html.twig' %}
 
 {% block body %}
 <div class="container">
@@ -89,34 +89,7 @@
     <div id="list-content">
         {% include 'questionnaire/_list_content.html.twig' %}
     </div>
-</div>
-{% endblock %}
-            <div class="row g-3 align-items-center">
-                <div class="col-md-2">{{ form_widget(filterForm.filter_date) }}</div>
-                <div class="col-md-2">{{ form_widget(filterForm.filter_time) }}</div>
-                <div class="col-md-3">{{ form_widget(filterForm.campagne, {'attr': {'style': 'height: 38px;'}}) }}</div>
-                <div class="col-md-3">{{ form_widget(filterForm.tri_date, {'attr': {'style': 'height: 38px;'}}) }}</div>
-
-                <div class="col-md-2">
-                     <a href="{{ path('questionnaire_list', { 'client_id': client_id }) }}" class="btn btn-danger no-popup w-100">Reset</a>
-                </div>
-            </div>
-        {{ form_end(filterForm, {'render_rest': false}) }}
-    </div>
-
-    {% for quest in questionnaires %}
-        <div class="glass-card">
-            <h3>{{ quest.campagne.titre }}</h3>
-            <p class="text-muted small"style="color: red !important;">Soumis le : {{ quest.date|date('d/m/Y H:i') }}</p>
-            <div class="d-flex gap-2">
-                <a href="{{ path('questionnaire_update', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Update</a>
-                <a  href="{{ path('questionnaire_delete', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Delete</a>
-                <a href="{{ path('questionnaire_details', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Details</a>
-            </div>
-        </div>
-    {% endfor %}
-
-    <script>
+ <script>
     const form = document.getElementById('auto-filter-form');
     form.querySelectorAll('input, select').forEach(element => {
         element.addEventListener('change', () => form.submit());

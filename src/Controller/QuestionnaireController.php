@@ -10,7 +10,7 @@ use App\Form\CreateQuestionnaireBackType;
 use App\Entity\Questionnaire;
 use App\Repository\QuestionnaireRepository;
 use App\Repository\ClientRepository;
-use App\Repository\CampagneRepository;
+use App\Repository\CompagneRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,16 +18,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class QuestionnaireController extends AbstractController
 {
   //-------------------------------------------frontoffice--------------------------------------------------------------//
   #[Route('/questionnaire/new/{id}/{client_id}',  name: 'questionnaire_new')]
   #[IsGranted('ROLE_CLIENT')]
-  public function new(int $id, int $client_id, Request $request, CampagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
+  public function new(int $id, int $client_id, Request $request, CompagneRepository $campagneRepo,  ClientRepository $clientRepository, EntityManagerInterface $em, QuestionnaireRepository $questionnaireRepo)
   {
     $campagne = $campagneRepo->find($id);
-    $client = $clientRepository->find($client_id);
+$client = $clientRepository->findOneBy(['user' => $client_id]);
+    // TEST DE DÉBOGAGE
+if (!$client) {
+    throw new \Exception("Le client avec l'ID " . $client_id . " n'existe pas dans la table Client !");
+}
     $existing = $questionnaireRepo->findOneBy([
       'campagne' => $campagne,
       'client' => $client
@@ -71,66 +78,33 @@ final class QuestionnaireController extends AbstractController
     ], new Response(null, $status));
   }
 
-
-  #[Route('/questionnaire/list/{client_id}', name: 'questionnaire_list')]
-  #[IsGranted('ROLE_CLIENT')]
-  public function list(Request $request, int $client_id, QuestionnaireRepository $questionnaireRepository)
-  {
-    // 1. On crée le formulaire de filtre
+#[Route('/questionnaire/list/{client_id}', name: 'questionnaire_list')]
+#[IsGranted('ROLE_CLIENT')]
+public function list(Request $request, int $client_id, QuestionnaireRepository $repo): Response
+{
     $form = $this->createForm(QuestionnaireFilterType::class);
     $form->handleRequest($request);
 
-    // 2. On prépare le QueryBuilder pour la liste du Backoffice
-    $queryBuilder = $questionnaireRepository->createQueryBuilder('q')
-      ->where('q.client = :client_id') // Sécurité : on filtre par le client de l'URL
-      ->setParameter('client_id', $client_id)
-      ->leftJoin('q.campagne', 'c')
-      ->orderBy('q.date', 'DESC');
+    // On récupère les données si soumis, sinon tableau vide
+    $criteria = ($form->isSubmitted() && $form->isValid()) ? $form->getData() : [];
 
-    // 3. On applique les filtres si le formulaire est soumis (GET)
-    if ($form->isSubmitted() && $form->isValid()) {
-      $data = $form->getData();
-      // Filtrer par DATE uniquement
+    // Appel à la méthode optimisée du Repository
+    $questionnaires = $repo->searchByClient($client_id, $criteria);
 
-      if (!empty($data['campagne'])) {
-        $queryBuilder->andWhere('q.campagne = :campagne')
-          ->setParameter('campagne', $data['campagne']);
-      }
-
-      // Filtre sur la DATE
-      if ($data['filter_date']) {
-        $queryBuilder->andWhere('q.date LIKE :d')
-          ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-      }
-
-      // Filtre sur l'HEURE (Format 24h, ex: 14:00)
-      if ($data['filter_time']) {
-        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
-        $queryBuilder->andWhere('q.date LIKE :t')
-          ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-      }
-    }
-
-      if (!empty($data['tri_date'])) {
-        $parts = explode('_', $data['tri_date']);
-        $direction = $parts[1]; // 'ASC' ou 'DESC'
-        $queryBuilder->orderBy('q.date', $direction);
-      }
-
+    // Gestion AJAX
     if ($request->isXmlHttpRequest()) {
         return $this->render('questionnaire/_list_content.html.twig', [
-            'questionnaires' => $queryBuilder->getQuery()->getResult(),
-             'client_id' => $client_id
+            'questionnaires' => $questionnaires,
+            'client_id' => $client_id
         ]);
     }
 
     return $this->render('questionnaire/list.html.twig', [
-      'questionnaires' => $queryBuilder->getQuery()->getResult(),
-      'filterForm' => $form->createView(),
-      'client_id' => $client_id
+        'questionnaires' => $questionnaires,
+        'filterForm' => $form->createView(),
+        'client_id' => $client_id
     ]);
-  }
-
+}
   #[Route('/questionnaire/update/{id}', name: 'questionnaire_update')]
   #[IsGranted('ROLE_CLIENT')]
   public function update($id, Request $request, QuestionnaireRepository $questionnaireRepository, EntityManagerInterface $em)
@@ -144,7 +118,7 @@ final class QuestionnaireController extends AbstractController
       $em->flush();
       return $this->redirectToRoute('questionnaire_list', ['client_id' => $clientId]);
     }
-    return $this->render('questionnaire/update.html.twig', [
+    return $this->render('questionnaire/updatefront.html.twig', [
       "form" => $form,
       'questionnaires' => $questionnaire
     ]);
@@ -267,4 +241,72 @@ final class QuestionnaireController extends AbstractController
       'form' => $form->createView(),
     ], new Response(null, $status));
   }
+
+ #[Route('/backoffice/questionnaire/export', name: 'export_questionnaires')]
+public function exportQuestionnaires(Request $request, QuestionnaireRepository $repo): StreamedResponse
+{
+    // 1. Récupération et nettoyage des filtres (comme pour les RDV)
+    $criteria = $request->query->all();
+   // Extraction si les filtres sont encapsulés dans le nom du formulaire
+    if (isset($criteria['questionnaire_filter'])) {
+        $criteria = $criteria['questionnaire_filter'];
+    }
+
+    // 3. LA CORRECTION : On transforme les chaînes de caractères en Objets DateTime
+    // On fait cela ici pour que le Repository reçoive bien un OBJET et puisse faire ->format()
+    if (!empty($criteria['filter_date']) && is_string($criteria['filter_date'])) {
+        $criteria['filter_date'] = new \DateTime($criteria['filter_date']);
+    }
+    
+    if (!empty($criteria['filter_time']) && is_string($criteria['filter_time'])) {
+        // Pour l'heure, on s'assure que PHP interprète bien le format H:i
+        $criteria['filter_time'] = new \DateTime($criteria['filter_time']);
+    }
+    // 2. Récupération des données filtrées
+    $list = $repo->searchBy($criteria); // Assure-toi que ton Repo Questionnaire a aussi un searchBy
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // --- Design Titre ---
+    $sheet->setCellValue('A1', 'LISTE DES QUESTIONNAIRES');
+    $sheet->mergeCells('A1:H1');
+    $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('FFFFFF');
+    $sheet->getStyle('A1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('212529'); // Noir Premium
+    $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+
+    // --- En-têtes (Basé sur ton tableau Twig) ---
+    $headers = ['ID', 'Donneur', 'Sexe', 'Age', 'Poids', 'Groupe Sanguin', 'Campagne', 'Date de soumission'];
+    $sheet->fromArray([$headers], null, 'A2');
+    $sheet->getStyle('A2:H2')->getFont()->setBold(true);
+
+    // --- Données ---
+    $rows = [];
+    foreach ($list as $q) {
+        $rows[] = [
+            $q->getId(),
+            strtoupper($q->getNom()) . ' ' . $q->getPrenom(),
+            $q->getSexe(), 
+            $q->getAge() . ' ans', 
+            $q->getPoids() . ' kg',
+            $q->getGroupSanguin(),
+            $q->getCampagne()->getTitre(),
+            $q->getDate()->format('d/m/Y H:i')
+        ];
+    }
+    $sheet->fromArray($rows, null, 'A3');
+
+    foreach (range('A', 'H') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    $writer = new Xlsx($spreadsheet);
+    return new StreamedResponse(function() use ($writer) {
+        $writer->save('php://output');
+    }, 200, [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition' => 'attachment; filename="export_questionnaires.xlsx"',
+    ]);
+}
+
 }

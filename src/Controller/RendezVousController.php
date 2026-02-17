@@ -11,11 +11,15 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\CampagneRepository;
 use App\Repository\ClientRepository;
 use App\Entity\RendezVous;
-use App\Entity\Questionnaire;
 use App\Form\UpdateRendezVousType;
 use App\Repository\RendezVousRepository;
 use App\Service\SmsService;
+use App\Service\AiReportService;
+use App\Service\GoogleCalendarService;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class RendezVousController extends AbstractController
 {
@@ -31,7 +35,7 @@ final class RendezVousController extends AbstractController
     #[Route('/rendez_vous/new', name: 'rendezvous_new')]
     #[IsGranted('ROLE_CLIENT')]
 public function new(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo,
-        SmsService $smsService): Response
+        SmsService $smsService, GoogleCalendarService $googleCalendarService): Response
 {
      $questionnaire = $request->getSession()->get('pending_questionnaire');
     
@@ -86,7 +90,19 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
                 $this->addFlash('success', 'Rendez-vous confirmé (Aucun SMS envoyé : numéro manquant).');
             }
             // ------------
-        
+          // --- 4. Ajouter l'événement à Google Calendar ---
+        // Créez l'événement sur Google Calendar
+        $eventLink = $googleCalendarService->addEvent(
+            'Rendez-vous pour don de sang',
+            $rendezVous->getEntite()->getNom(),
+            'Rendez-vous de collecte de sang',
+            $rendezVous->getDateDon(),
+            $rendezVous->getDateDon()->add(new \DateInterval('PT1H'))  // Ajout d'une heure pour l'événement
+        );
+
+        // Ajouter un lien vers l'événement Google Calendar
+        $this->addFlash('success', 'Rendez-vous ajouté à Google Calendar !');
+
 
         return $this->redirectToRoute('rendezvous_list', ['client_id' => $client->getId()]);
     }
@@ -97,76 +113,32 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
         'form' => $form->createView(),
     ], new Response(null, $status));
 }
-  #[Route('/rendez_vous/list/{client_id}', name: 'rendezvous_list')]
-  #[IsGranted('ROLE_CLIENT')]
+
+#[Route('/rendez_vous/list/{client_id}', name: 'rendezvous_list')]
 public function list(int $client_id, Request $request, RendezVousRepository $rvRepository): Response
 {
     $form = $this->createForm(RendezVousFilterType::class);
     $form->handleRequest($request);
 
-    $queryBuilder = $rvRepository->createQueryBuilder('rv')
-        ->join('rv.questionnaire', 'q')
-        ->where('q.client = :client_id')
-        ->andWhere('rv.status != :status_annule')
-        ->setParameter('client_id', $client_id)
-        ->setParameter('status_annule', 'annulé')
-        ->orderBy('rv.date_don', 'DESC');
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $data = $form->getData();
-
-        if ($data['campagne']) {
-            $queryBuilder->andWhere('q.campagne = :campagne')->setParameter('campagne', $data['campagne']);
-        }
-
-        if ($data['status']) {
-            $queryBuilder->andWhere('rv.status = :status')->setParameter('status', $data['status']);
-        }
-      // Filtre sur la DATE
-   // Filtre sur la DATE (ex: 2026-02-08)
-    if ($data['filter_date']) {
-        $queryBuilder->andWhere('rv.date_don LIKE :d')
-                     ->setParameter('d', $data['filter_date']->format('Y-m-d') . '%');
-    }
-
-    // Filtre sur l'HEURE (Format 24h, ex: 14:00)
-    if ($data['filter_time']) {
-        // On utilise LIKE avec des jokers pour isoler l'heure et les minutes dans le DATETIME
-        $queryBuilder->andWhere('rv.date_don LIKE :t')
-                     ->setParameter('t', '%' . $data['filter_time']->format('H:i') . '%');
-    }
-        // if ($data['date']) {
-        //     $dt = $data['date'];
-        //     // Logique identique au Back : filtrage à la minute près
-        //     $start = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0);
-        //     $end = (clone $dt)->setTime((int)$dt->format('H'), (int)$dt->format('i'), 59);
-            
-        //     $queryBuilder->andWhere('rv.date_don BETWEEN :s AND :e')
-        //                  ->setParameter('s', $start)
-        //                  ->setParameter('e', $end);
-        // }
-         // LOGIQUE DE TRI UNIQUE
-        if (!empty($data['tri_date'])) {
-            $dateForm = $data['tri_date']; // ex : 'date_ASC'
-            $parts = explode('_', $dateForm);
-            $direction = $parts[1]; // 'ASC' ou 'DESC'
-            $queryBuilder->orderBy('rv.date_don', $direction);
-        }
-    }
+    $criteria = ($form->isSubmitted() && $form->isValid()) ? $form->getData() : [];
+    
+    // On appelle la méthode ISOLÉE
+    $rendezvous = $rvRepository->searchByClient($client_id, $criteria);
 
     if ($request->isXmlHttpRequest()) {
         return $this->render('rendez_vous/_list_content.html.twig', [
-            'rendezvous' => $queryBuilder->getQuery()->getResult(),
-             'client_id' => $client_id
+            'rendezvous' => $rendezvous,
+            'client_id' => $client_id
         ]);
     }
 
     return $this->render('rendez_vous/list.html.twig', [
-        'rendezvous' => $queryBuilder->getQuery()->getResult(),
+        'rendezvous' => $rendezvous,
         'filterForm' => $form->createView(),
         'client_id' => $client_id
     ]);
 }
+
      #[Route('/rendez_vous/update/{id}', name:'rendezvous_update')]
      #[IsGranted('ROLE_CLIENT')]
     public function update(int $id, Request $request, RendezVousRepository $rendezVousRepository, EntityManagerInterface $em){
@@ -181,7 +153,7 @@ public function list(int $client_id, Request $request, RendezVousRepository $rvR
         }
             $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;
 
-        return $this->render('rendez_vous/update.html.twig', [
+        return $this->render('rendez_vous/updatefront.html.twig', [
             "form" => $form
         ], new Response(null, $status));
     }
@@ -274,7 +246,7 @@ $request->getSession()->remove('pending_questionnaireback');
 
 #[Route('/backoffice/rendezvous', name: 'rendezvousback_list')]
 #[IsGranted('ROLE_ADMIN')]
-public function listback(Request $request, RendezVousRepository $rendezVousRepository): Response
+public function listback(Request $request, RendezVousRepository $rendezVousRepository, AiReportService $aiService): Response
 {
     $form = $this->createForm(RendezVousFilterType::class);
     $form->handleRequest($request);
@@ -289,6 +261,23 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
 
     $rendezvous = $rendezVousRepository->searchBy($criteria);
 
+    // --- PARTIE IA ---
+    $report = null;
+    $userFeedback = $request->query->get('user_feedback'); // On récupère la demande de modif
+
+    if ($request->query->get('analyze') === '1') {
+        // On prépare les stats basées sur les résultats filtrés ($rendezvous)
+        $statsData = [
+            'total_rdv' => count($rendezvous),
+            'user_instruction' => $userFeedback, // On passe l'instruction de l'utilisateur
+            'json_stats' => json_encode(array_map(fn($r) => [
+                'date' => $r->getDateDon()->format('d/m/Y'),
+                'status' => $r->getStatus(),
+                'type' => $r->getQuestionnaire()->getCampagne()->getTypeSang()
+            ], $rendezvous))
+        ];
+        $report = $aiService->generateReport($statsData);
+    }
     if ($request->isXmlHttpRequest()) {
         return $this->render('rendez_vous/_listback_table.html.twig', [
             'rendezvous' => $rendezvous,
@@ -298,6 +287,8 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
     return $this->render('rendez_vous/listback.html.twig', [
         'rendezvous' => $rendezvous,
         'filterForm' => $form->createView(),
+        'report' => $report,
+        'last_feedback' => $userFeedback
     ]);
 }
 
@@ -327,4 +318,73 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
     }
 
    
+
+//excel export//
+#[Route('/backoffice/rendez_vous/export_rendezvous', name:'export_rendezvous')]
+public function exportRendezvous(Request $request, RendezVousRepository $repo): StreamedResponse
+{
+    // On récupère les filtres directement (pas besoin de handleRequest ici si on veut rester simple)
+    // On nettoie pour ne garder que les clés dont searchBy a besoin
+    $criteria = $request->query->all();
+    
+    // Si tes filtres sont dans un tableau 'rendez_vous_filter', on l'extrait
+    if (isset($criteria['rendez_vous_filter'])) {
+        $criteria = $criteria['rendez_vous_filter'];
+    }
+
+    // 3. LA CORRECTION : On transforme les chaînes de caractères en Objets DateTime
+    // On fait cela ici pour que le Repository reçoive bien un OBJET et puisse faire ->format()
+    if (!empty($criteria['filter_date']) && is_string($criteria['filter_date'])) {
+        $criteria['filter_date'] = new \DateTime($criteria['filter_date']);
+    }
+    
+    if (!empty($criteria['filter_time']) && is_string($criteria['filter_time'])) {
+        // Pour l'heure, on s'assure que PHP interprète bien le format H:i
+        $criteria['filter_time'] = new \DateTime($criteria['filter_time']);
+    }
+    // On récupère les résultats filtrés
+    $rendezvousList = $repo->searchBy($criteria);
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // --- Design Titre ---
+    $sheet->setCellValue('A1', 'LISTE DES RENDEZ-VOUS');
+    $sheet->mergeCells('A1:E1');
+    $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('FFFFFF');
+    $sheet->getStyle('A1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('CC0000');
+    $sheet->getStyle('A1')->getAlignment()->setHorizontal('center');
+
+    // --- En-têtes ---
+    $headers = ['ID', 'Donneur', 'Date & Lieu', 'Campagne', 'Statut'];
+    $sheet->fromArray([$headers], null, 'A2');
+    $sheet->getStyle('A2:E2')->getFont()->setBold(true);
+
+    // --- Données ---
+    $rows = [];
+    foreach ($rendezvousList as $rv) {
+        $q = $rv->getQuestionnaire();
+        $rows[] = [
+            $rv->getId(),
+            $q->getPrenom() . ' ' . $q->getNom(),
+            $rv->getDateDon()->format('d/m/Y H:i') . ' - ' . $rv->getEntite()->getNom(),
+            $q->getCampagne()->getTitre(),
+            $rv->getStatus()
+        ];
+    }
+    $sheet->fromArray($rows, null, 'A3');
+
+    foreach (range('A', 'E') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    $writer = new Xlsx($spreadsheet);
+    return new StreamedResponse(function() use ($writer) {
+        $writer->save('php://output');
+    }, 200, [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition' => 'attachment; filename="export_rendezvous.xlsx"',
+    ]);
+}
+
 }

@@ -46,7 +46,7 @@
                             {% if camp.typeSang %}
                             <div class="d-flex align-items-center gap-2 small text-white-50">
                                 <i class="fa-solid fa-droplet fa-fw text-danger"></i>
-                                <span>Besoin : <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border-0">{{ camp.typeSang }}</span></span>
+                                <span>Besoin : <span class="badge rounded-pill bg-danger bg-opacity-25 text-white border-0">{{ camp.typeSang|join(', ') }}</span></span>
                             </div>
                             {% endif %}
                         </div>
@@ -58,7 +58,7 @@
 
                     <div class="mt-auto position-relative z-1">
                         <a href="{{ path('questionnaire_new', { id : camp.id, client_id: client.user.id }) }}" 
-                           class="btn btn-primary w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 transition-all" 
+                           class="btn btn-danger w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 transition-all" 
                            style="height: 52px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(230,57,57,.2);">
                            <span>Participer</span>
                            <i class="fa-solid fa-arrow-right-long transition-all"></i>

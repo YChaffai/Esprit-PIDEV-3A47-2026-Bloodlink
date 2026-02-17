@@ -1,20 +1,24 @@
-    {% for r in rendezvous %}
-        <div class="glass-card mb-4 p-3" style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; border-left: 4px solid var(--primary);">
-            <div class="row align-items-center">
-                <div class="col-md-9">
-                    <p class="mb-1" style="color: white;"><b>Date :</b> {{ r.getDateDon()|date('Y-m-d H:i') }} </p>
-                    <p class="mb-1" style="color: white;"><b>Status :</b> <span class="badge bg-danger">{{ r.status }}</span> </p>
-                    <p class="mb-1" style="color: white;"><b>Campagne :</b> {{ r.questionnaire.campagne.titre }} </p>
-                    <p class="mb-0" style="color: white;"><b>Entité :</b> {{ r.entite.nom }} </p>
-                </div>
-                <div class="col-md-3 text-end">
-                    <a href="{{ path('rendezvous_update', { id : r.id })}}" class="btn btn-outline-light btn-sm rounded-pill px-3">Update</a>
-                    <a href="{{ path('rendezvous_delete', { id : r.id })}}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Delete</a> 
-                </div>
+{# templates/rendez_vous/_list_content.html.twig #}
+{% for r in rendezvous %}
+    <div class="glass-card mb-4 p-3" style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; border-left: 4px solid #dc3545;">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <p class="mb-1 text-white"><b>Date :</b> {{ r.getDateDon()|date('d/m/Y H:i') }} </p>
+                <p class="mb-1 text-white">
+                    <b>Statut :</b> 
+                    <span class="badge {% if r.status == 'confirmé' %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ r.status|upper }}
+                    </span>
+                </p>
+                <p class="mb-1 text-white"><b>Campagne :</b> {{ r.questionnaire.campagne.titre }} </p>
+                <p class="mb-0 text-white"><b>Entité :</b> {{ r.entite.nom }} </p>
             </div>
-         </div>
-    {% else %}
-        <p class="text-white">Aucun rendez-vous trouvé.</p>
-    {% endfor %}
-    
-
+            <div class="col-md-3 text-end">
+                <a href="{{ path('rendezvous_update', { id : r.id })}}" class="btn btn-outline-light btn-sm rounded-pill px-3">Update</a>
+                <a href="{{ path('rendezvous_delete', { id : r.id })}}" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Supprimer ce RDV ?')">Delete</a> 
+            </div>
+        </div>
+     </div>
+{% else %}
+    <p class="text-white-50 text-center py-5">Aucun rendez-vous trouvé pour ces critères.</p>
+{% endfor %}
