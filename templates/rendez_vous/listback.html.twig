@@ -9,9 +9,15 @@
         <p class="text-white-50 mb-0">Gérez les rendez-vous des donneurs et leur statut.</p>
     </div>
     <div class="d-flex gap-2">
-        <button type="button" onclick="runAiAnalysis()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
-            <i class="fa-solid fa-brain"></i>
-        </button>
+       <button type="button" onclick="fetchAiReport()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
+    <i class="fa-solid fa-brain me-2"></i> Générer Analyse IA
+</button>
+
+{# On ajoute un petit loader discret pour faire patienter l'admin #}
+<div id="ai-loader" class="d-none mt-2 text-center">
+    <div class="spinner-border spinner-border-sm text-danger" role="status"></div>
+    <span class="text-white-50 ms-2 small">L'IA analyse vos données...</span>
+</div>
         <button type="button" onclick="exportRendezvous()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
             <i class="fa-solid fa-download"></i>
         </button>
@@ -21,41 +27,40 @@
     </div>
 </div>
 {# ZONE DU RAPPORT IA (S'affiche uniquement si report existe) #}
-    {% if report %}
-<div id="ai-report-section" class="glass-card p-4 mb-4 border-start border-4 border-danger" style="background: rgba(255,255,255,0.08);">
-<div class="d-flex justify-content-between align-items-center mb-3">
+  <div id="ai-report-section" class="glass-card p-4 mb-4 border-start border-4 border-danger d-none" style="background: rgba(255,255,255,0.08);">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="text-danger fw-bold mb-0">
             <i class="fa-solid fa-robot me-2"></i>Analyse Stratégique
         </h5>
         
         <div class="d-flex gap-2">
-            {# Bouton PDF #}
-           <button id="downloadBtn" class="btn btn-primary">Télécharger le rapport</button>
-
+            {# Bouton PDF avec la nouvelle fonction #}
+            <button onclick="generatePDF()" class="btn btn-outline-light rounded-pill px-4">
+                <i class="fa-solid fa-download me-2"></i> Télécharger PDF
+            </button>
             
-            {# Bouton Quitter (X) #}
-            <a href="{{ path('rendezvousback_list') }}" class="btn btn-sm btn-danger rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+            {# Bouton Quitter (On cache simplement le bloc au lieu de recharger la page) #}
+            <button onclick="document.getElementById('ai-report-section').classList.add('d-none')" class="btn btn-sm btn-danger rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
                 <i class="fa-solid fa-xmark"></i>
-            </a>
+            </button>
         </div>
     </div>    
-    <div class="ai-content text-white mt-3 p-3 bg-dark rounded shadow-inner">
-        {{ report|nl2br }}
-    </div>
+
+    {# Conteneur du texte généré par l'IA #}
+    <div id="ai-content" class="ai-content text-white mt-3 p-3 bg-dark rounded shadow-inner" style="min-height: 50px;">
+        </div>
 
     <div class="mt-4 pt-3 border-top border-secondary">
         <label class="small text-white-50 mb-2">Demander une modification ou plus de détails :</label>
         <div class="input-group">
-            <input type="text" id="ai-feedback-input" class="form-control border-0 bg-dark text-white" 
-                   placeholder="Ex: 'Focalise sur les rendez-vous en attente' ou 'Rends le ton plus formel'..."
-                   value="{{ last_feedback }}">
-            <button class="btn btn-danger" type="button" onclick="updateAiReport()">
+            <input type="text" id="ai-user-input" class="form-control border-0 bg-dark text-white" 
+                   placeholder="Ex: 'Focalise sur les rendez-vous en attente' ou 'Rends le ton plus simple'...">
+            <button class="btn btn-danger" type="button" onclick="fetchAiReport(true)">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
         </div>
     </div>
 </div>
-{% endif %}
 <div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
     {# Filtres #}
     <div class="mb-4">
@@ -108,7 +113,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
     function exportRendezvous() {
-    const filterForm = document.getElementById('rv-filter-form');
+    const filterForm = document.getElementById('rv-filter-form'); //id mtaa el form
     const formData = new FormData(filterForm);
     
     // On récupère la valeur de recherche
@@ -124,72 +129,93 @@
     window.location.href = "{{ path('export_rendezvous') }}?" + params;
 }
 
-//partie ai//
-{# function runAiAnalysis() {
-    const form = document.getElementById('rv-filter-form');
-    const params = new URLSearchParams(new FormData(form)).toString();
-    window.open("{{ path('app_ai_report') }}?" + params, '_blank');
-} #}
+async function fetchAiReport(isUpdate = false) {
+    const content = document.getElementById('ai-content');
+    const loader = document.getElementById('ai-loader');
+    const reportSection = document.getElementById('ai-report-section');
 
-function runAiAnalysis() {
-    const form = document.getElementById('rv-filter-form');
-    const formData = new FormData(form);
-    const params = new URLSearchParams(formData);
-    
-    // On ajoute le déclencheur d'analyse
-    params.set('analyze', '1');
-    
-    // Recharge la MÊME PAGE avec les filtres + l'instruction d'analyse
-    // Pas de _blank, donc pas de nouvel onglet
-    window.location.href = "{{ path('rendezvousback_list') }}?" + params.toString();
-}
+    // On récupère la date du calendrier (input type date de Symfony)
+    const dateInput = document.querySelector('input[name*="filter_date"]');
+    const dateValue = dateInput ? dateInput.value : '';
 
-function updateAiReport() {
-    const feedbackInput = document.getElementById('ai-feedback-input');
-    const feedback = feedbackInput.value.trim();
-    
-    if (feedback === "") return;
+    if (loader) loader.classList.remove('d-none');
 
-    // 1. Afficher le loader immédiatement
-    const overlay = document.getElementById('ai-loading-overlay');
-    if (overlay) {
-        overlay.classList.remove('d-none');
-        overlay.style.display = 'flex';
+    // Construction de l'URL avec la date pour le filtre SQL
+    let url = `{{ path('app_ai_report') }}?ajax=1&filter_date=${dateValue}`;
+    
+    if (isUpdate) {
+        const feedback = document.getElementById('ai-user-input').value;
+        url += `&user_feedback=${encodeURIComponent(feedback)}`;
     }
 
-    // 2. Récupérer l'URL actuelle et ses paramètres
-    const currentUrl = new URL(window.location.href);
-    
-    // 3. Mettre à jour les paramètres
-    currentUrl.searchParams.set('analyze', '1');
-    currentUrl.searchParams.set('user_feedback', feedback);
-    
-    // 4. Conserver les filtres existants (search, status, etc.)
-    // Ils sont déjà dans currentUrl.searchParams si on est sur la page filtrée
-
-    // 5. Rediriger (Ajouter l'ancre pour revenir au bloc IA)
-    window.location.href = currentUrl.pathname + currentUrl.search + '#ai-report-section';
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // NETTOYAGE DU TEXTE : On enlève les symboles Markdown
+        let cleanText = data.report
+            .replace(/\*\*/g, '') // Supprime les **
+            .replace(/#/g, '')    // Supprime les #
+            .replace(/\*/g, '')   // Supprime les * simples
+            .trim();
+        
+        content.innerHTML = cleanText.replace(/\n/g, '<br>');
+        reportSection.classList.remove('d-none');
+    } catch (e) {
+        alert("Erreur lors de l'analyse des données.");
+    } finally {
+        if (loader) loader.classList.add('d-none');
+    }
 }
 
-// JavaScript to trigger download
-document.getElementById("downloadBtn").addEventListener("click", function() {
-    // Define the file URL (this is a path to your file)
-    var fileUrl = "/files/your-file-name.extension"; // Modify this path
+function generatePDF() {
+    const reportContent = document.getElementById('ai-content').innerText;
     
-    // Create an anchor tag dynamically
-    var link = document.createElement("a");
-    link.href = fileUrl; // Set the file URL
-    link.download = "rapport.pdf"; // Optional: Set the default file name
+    // On crée un formulaire temporaire pour envoyer le texte en POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{{ path('app_ai_export_pdf') }}";
 
-    // Append the link to the body (necessary for triggering the click)
-    document.body.appendChild(link);
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'pdf_content';
+    input.value = reportContent;
 
-    // Trigger the click event to start the download
-    link.click();
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
 
-    // Remove the link after triggering the download
-    document.body.removeChild(link);
-});
+{# function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const text = document.getElementById('ai-content').innerText;
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(204, 0, 0); // Rouge BloodLink
+    doc.text("RAPPORT STRATÉGIQUE BLOODLINK", 10, 15);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "normal");
+
+    // Découpage automatique pour gérer les rapports longs sur plusieurs pages
+    const lines = doc.splitTextToSize(text, 180);
+    let y = 25;
+
+    lines.forEach(line => {
+        if (y > 280) { // Si on dépasse le bas de page A4
+            doc.addPage();
+            y = 20;
+        }
+        doc.text(line, 10, y);
+        y += 7;
+    });
+
+    doc.save("Analyse_BloodLink.pdf");
+} #}
+
     </script>
 
 <style>

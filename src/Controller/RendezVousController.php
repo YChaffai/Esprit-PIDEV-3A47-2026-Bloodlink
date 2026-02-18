@@ -15,6 +15,7 @@ use App\Form\UpdateRendezVousType;
 use App\Repository\RendezVousRepository;
 use App\Service\SmsService;
 use App\Service\AiReportService;
+use App\Service\PdfGeneratorService;
 use App\Service\GoogleCalendarService;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -261,23 +262,25 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
 
     $rendezvous = $rendezVousRepository->searchBy($criteria);
 
-    // --- PARTIE IA ---
-    $report = null;
-    $userFeedback = $request->query->get('user_feedback'); // On récupère la demande de modif
+    // // --- PARTIE IA ---
+    // $report = null;
+    // $userFeedback = $request->query->get('user_feedback'); // On récupère la demande de modif
 
-    if ($request->query->get('analyze') === '1') {
-        // On prépare les stats basées sur les résultats filtrés ($rendezvous)
-        $statsData = [
-            'total_rdv' => count($rendezvous),
-            'user_instruction' => $userFeedback, // On passe l'instruction de l'utilisateur
-            'json_stats' => json_encode(array_map(fn($r) => [
-                'date' => $r->getDateDon()->format('d/m/Y'),
-                'status' => $r->getStatus(),
-                'type' => $r->getQuestionnaire()->getCampagne()->getTypeSang()
-            ], $rendezvous))
-        ];
-        $report = $aiService->generateReport($statsData);
-    }
+    // if ($request->query->get('analyze') === '1') {
+    //     // On prépare les stats basées sur les résultats filtrés ($rendezvous)
+    //     $statsData = [
+    //         'total_rdv' => count($rendezvous),
+    //         'user_instruction' => $userFeedback, // On passe l'instruction de l'utilisateur
+    //         'json_stats' => json_encode(array_map(fn($r) => [
+    //             'date' => $r->getDateDon()->format('d/m/Y'),
+    //             'status' => $r->getStatus(),
+    //             'type' => $r->getQuestionnaire()->getCampagne()->getTypeSang()
+    //         ], $rendezvous))
+    //     ];
+    //     $report = $aiService->generateReport($statsData);
+      
+    // }
+
     if ($request->isXmlHttpRequest()) {
         return $this->render('rendez_vous/_listback_table.html.twig', [
             'rendezvous' => $rendezvous,
@@ -286,9 +289,11 @@ public function listback(Request $request, RendezVousRepository $rendezVousRepos
 
     return $this->render('rendez_vous/listback.html.twig', [
         'rendezvous' => $rendezvous,
-        'filterForm' => $form->createView(),
-        'report' => $report,
-        'last_feedback' => $userFeedback
+        'filterForm' => $form->createView()
+        // 'report' => $report,
+        // 'last_feedback' => $userFeedback,
+        // 'fileUrl' => $fileUrl ?? '' // Pass the file URL for the frontend to use
+
     ]);
 }
 
@@ -332,8 +337,7 @@ public function exportRendezvous(Request $request, RendezVousRepository $repo): 
         $criteria = $criteria['rendez_vous_filter'];
     }
 
-    // 3. LA CORRECTION : On transforme les chaînes de caractères en Objets DateTime
-    // On fait cela ici pour que le Repository reçoive bien un OBJET et puisse faire ->format()
+    // On fait cela ici pour que le Repository reçoive bien un OBJET et puisse faire ->format() khaterhom string tawa
     if (!empty($criteria['filter_date']) && is_string($criteria['filter_date'])) {
         $criteria['filter_date'] = new \DateTime($criteria['filter_date']);
     }
@@ -386,5 +390,30 @@ public function exportRendezvous(Request $request, RendezVousRepository $repo): 
         'Content-Disposition' => 'attachment; filename="export_rendezvous.xlsx"',
     ]);
 }
+
+
+
+#[Route('/backoffice/rendezvous/report/download', name: 'rendezvous_report_download')]
+public function downloadReport(): Response
+{
+    // Define the PDF file path. You may need to adjust it based on where you saved the PDF.
+    $pdfFilePath = '/path/to/generated/file/rapport.pdf';
+
+    // Check if the file exists
+    if (!file_exists($pdfFilePath)) {
+        throw $this->createNotFoundException('File not found');
+    }
+
+    // Serve the file as a response
+    return new Response(
+        file_get_contents($pdfFilePath),
+        200,
+        [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="rapport.pdf"'
+        ]
+    );
+}
+
 
 }

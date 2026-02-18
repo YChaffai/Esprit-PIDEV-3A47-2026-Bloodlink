@@ -1,48 +1,96 @@
 <?php
 namespace App\Controller;
+
 use App\Repository\RendezVousRepository;
-use App\Repository\QuestionnaireRepository;
 use App\Service\AiReportService;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class AiController extends AbstractController
-{// src/Controller/AiController.php
-
-#[Route('/backoffice/ai/report', name: 'app_ai_report')]
-public function index(Request $request, QuestionnaireRepository $qRepo, RendezVousRepository $rvRepo, AiReportService $aiService)
 {
-    $qs = $qRepo->findAll();
-    $rvs = $rvRepo->findAll();
-    $totalQ = count($qs);
+    #[Route('/backoffice/ai/report', name: 'app_ai_report')]
+public function index(Request $request, RendezVousRepository $rvRepo, AiReportService $aiService)
+{
+    $dateFilter = $request->query->get('filter_date');
+    $criteria = [];
+    $contexte = "global";
 
-    // 1. Calcul des statistiques
-    $statsData = [
-        'donneurs' => [
-            'total' => $totalQ,
-            'age_moyen' => $totalQ > 0 ? round(array_sum(array_map(fn($q) => $q->getAge(), $qs)) / $totalQ, 1) : 0,
-            'poids_moyen' => $totalQ > 0 ? round(array_sum(array_map(fn($q) => $q->getPoids(), $qs)) / $totalQ, 1) : 0,
-            'repartition_groupes' => array_count_values(array_map(fn($q) => $q->getGroupSanguin(), $qs)),
-        ],
-        'logistique' => [
-            'total_rdv' => count($rvs),
-            'etats_rdv' => array_count_values(array_map(fn($r) => $r->getStatus(), $rvs)),
-        ],
-        'derniere_activite' => $totalQ > 0 ? end($qs)->getDate()->format('d/m/Y') : 'N/A'
-    ];
-
-    $report = null;
-
-    // 2. On déclenche l'IA uniquement si le bouton est cliqué
-    if ($request->query->get('analyze') === '1') {
-        $statsData['json_stats'] = json_encode($statsData);
-        $report = $aiService->generateReport($statsData);
+    if (!empty($dateFilter)) {
+        try {
+            // On transforme la string en objet DateTime pour ton searchBy
+            $dateObj = new \DateTime($dateFilter);
+            $criteria['filter_date'] = $dateObj;
+            
+            // ON UTILISE TON SEARCHBY ICI
+            $rvs = $rvRepo->searchBy($criteria);
+            
+            $contexte = "Analyse précise pour le " . $dateObj->format('d/m/Y');
+        } catch (\Exception $e) {
+            $rvs = [];
+            $contexte = "Erreur technique de lecture de date : " . $dateFilter;
+        }
+    } else {
+        $rvs = $rvRepo->findAll();
     }
 
-    return $this->render('ai/report.html.twig', [
-        'report' => $report,
-        'stats' => $statsData
+    // Préparation des stats pour l'IA
+    $groupes = [];
+    $totalAge = 0;
+    foreach ($rvs as $r) {
+        $g = $r->getQuestionnaire()->getGroupSanguin();
+        $groupes[$g] = ($groupes[$g] ?? 0) + 1;
+        $totalAge += $r->getQuestionnaire()->getAge();
+    }
+
+    $statsData = [
+        'contexte' => $contexte,
+        'total_rendez_vous' => count($rvs),
+        'repartition_groupes' => $groupes,
+        'moyenne_age' => count($rvs) > 0 ? round($totalAge / count($rvs), 1) : 0
+    ];
+
+    if ($request->query->get('ajax') === '1') {
+        $report = $aiService->generateReport($statsData, $request->query->get('user_feedback'));
+        return new JsonResponse(['report' => $report]);
+    }
+
+    return $this->render('ai/report.html.twig', ['stats' => $statsData]);
+}
+
+#[Route('/backoffice/ai/export-pdf', name: 'app_ai_export_pdf', methods: ['POST'])]
+public function exportPdf(Request $request)
+{
+    $content = $request->request->get('pdf_content');
+    
+    // Nettoyage rapide si des symboles traînent encore
+    $content = str_replace(['**', '#'], '', $content);
+
+    // Configuration de Dompdf
+    $pdfOptions = new Options();
+    $pdfOptions->set('defaultFont', 'Helvetica');
+    $pdfOptions->set('isHtml5ParserEnabled', true);
+
+    $dompdf = new Dompdf($pdfOptions);
+    
+    // On crée un HTML propre pour le PDF
+    $html = $this->renderView('rendez_vous/pdf_template.html.twig', [
+        'content' => $content,
+        'date' => new \DateTime()
+    ]);
+
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    // On envoie le PDF au navigateur
+    return new Response($dompdf->output(), 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'attachment; filename="Rapport_BloodLink.pdf"'
     ]);
 }
 }

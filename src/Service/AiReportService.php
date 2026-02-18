@@ -14,56 +14,39 @@ class AiReportService
         $this->apiKey = $geminiApiKey;
     }
 
-    public function generateReport(array $data): string
-{// On récupère le feedback s'il existe
-    $feedback = $data['user_instruction'] ?? null;
-    $stats = $data['json_stats'];
-
-    $prompt = "Tu es l'expert BloodLink. Voici les données actuelles : $stats. ";
-    
-    if ($feedback) {
-        $prompt .= "\n\nIMPORTANT : L'utilisateur a une demande spécifique. Modifie ton analyse en suivant cette consigne : " . $feedback;
-    } else {
-        $prompt .= "\n\nGénère un rapport stratégique complet (Résumé, Stocks, Actions).";
+    public function generateReport(array $stats, ?string $feedback = null): string
+    {
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $this->apiKey;
+// Si pas de données, on ne sollicite même pas l'API inutilement
+    if ($stats['total_rendez_vous'] === 0 && !$feedback) {
+        return "# RÉSUMÉ EXÉCUTIF\nAucune donnée disponible pour cette date.\n# ANALYSE DES STOCKS\nVisibilité nulle.\n# PLAN D'ACTION\nRelancer les collectes.";
     }
+        // On prépare le contexte des données
+        $jsonStats = json_encode($stats);
+        
+        // Construction du prompt intelligent
+        $prompt = "Agis en tant qu'expert BloodLink. Analyse ces données : $jsonStats. \n";
+        
+        if ($feedback) {
+            // $prompt .= "L'utilisateur souhaite modifier le rapport précédent avec cette consigne : $feedback. Réponds directement en intégrant ce changement.";
+            $prompt .= "Consigne de modification : '$feedback'. \n";
+            $prompt .= "Génère un nouveau rapport complet en intégrant cette consigne tout en gardant les sections : # RÉSUMÉ EXÉCUTIF, # ANALYSE DES STOCKS et # PLAN D'ACTION.";
+        } else {
+            $prompt .= "Structure ton rendu en Markdown :
+            # RÉSUMÉ EXÉCUTIF (Analyse âge/poids)
+            # ANALYSE DES STOCKS (Répartition groupes sanguins)
+            # PLAN D'ACTION (Actions concrètes)";
+        }
 
-
-    
-    $instruction = $data['user_instruction'] 
-        ? "L'utilisateur souhaite modifier le rapport précédent avec cette consigne : " . $data['user_instruction']
-        : "Génère une analyse initiale.";
-
-    $prompt = "Données : " . $data['json_stats'] . "\n" .
-              "Consigne : " . $instruction . "\n" .
-              "Agis en expert BloodLink. Réponds en Markdown de manière concise.";
-
-    $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" . $this->apiKey;
-
-    // Utilisation de <<<PROMPT pour éviter les erreurs de guillemets
-    $prompt = <<<PROMPT
-Agis en tant qu'expert BloodLink. Analyse UNIQUEMENT ces données : 
-{$data['json_stats']}
-
-Structure ton rendu pour une interface Canvas :
-# 📝 RÉSUMÉ EXÉCUTIF
-Analyse l'âge moyen et le poids des donneurs.
-
-# 🩸 ANALYSE DES STOCKS
-Analyse la répartition des groupes sanguins.
-
-# 🚀 PLAN D'ACTION
-Donne 2 actions concrètes basées sur les rendez-vous en attente.
-PROMPT;
-
-    $response = $this->client->request('POST', $url, [
-        'json' => [
-            'contents' => [
-                ['parts' => [['text' => $prompt]]]
+        $response = $this->client->request('POST', $url, [
+            'json' => [
+                'contents' => [
+                    ['parts' => [['text' => $prompt]]]
+                ]
             ]
-        ]
-    ]);
+        ]);
 
-    $result = $response->toArray();
-    return $result['candidates'][0]['content']['parts'][0]['text'];
-}
+        $result = $response->toArray();
+        return $result['candidates'][0]['content']['parts'][0]['text'] ?? "Erreur lors de la génération.";
+    }
 }
