@@ -36,7 +36,7 @@ final class RendezVousController extends AbstractController
     #[Route('/rendez_vous/new', name: 'rendezvous_new')]
     #[IsGranted('ROLE_CLIENT')]
 public function new(Request $request, EntityManagerInterface $em, CampagneRepository $campagneRepo, ClientRepository $clientRepo,
-        SmsService $smsService, GoogleCalendarService $googleCalendarService): Response
+        SmsService $smsService): Response
 {
      $questionnaire = $request->getSession()->get('pending_questionnaire');
     
@@ -93,19 +93,20 @@ public function new(Request $request, EntityManagerInterface $em, CampagneReposi
             // ------------
           // --- 4. Ajouter l'événement à Google Calendar ---
         // Créez l'événement sur Google Calendar
-        $eventLink = $googleCalendarService->addEvent(
-            'Rendez-vous pour don de sang',
-            $rendezVous->getEntite()->getNom(),
-            'Rendez-vous de collecte de sang',
-            $rendezVous->getDateDon(),
-            $rendezVous->getDateDon()->add(new \DateInterval('PT1H'))  // Ajout d'une heure pour l'événement
-        );
+       $request->getSession()->set('pending_rdv_data', [
+        'date_don' => $rendezVous->getDateDon(),
+        'campagne_id' => $campagneManaged->getId(),
+        'client_id' => $clientManaged->getId(),
+        'entite_id' => $rendezVous->getEntite()->getNom(),
+        // Ajoute ici d'autres IDs si nécessaire (ex: questionnaire_id)
+    ]);
 
         // Ajouter un lien vers l'événement Google Calendar
         $this->addFlash('success', 'Rendez-vous ajouté à Google Calendar !');
 
-
-        return $this->redirectToRoute('rendezvous_list', ['client_id' => $client->getId()]);
+// // On redirige vers Google
+//     return $this->redirectToRoute('connect_google_start');
+        return $this->redirectToRoute('rendezvous_list', ['client_id' => $client->getId(), 'showGoogleModal' => 1]);
     }
 
     $status = $form->isSubmitted() && !$form->isValid() ? 422 : 200;

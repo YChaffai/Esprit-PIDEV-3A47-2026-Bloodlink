@@ -28,7 +28,8 @@ services:
             $recaptchaSecretKey: '%env(RECAPTCHA_SECRET_KEY)%'
     App\Service\GoogleCalendarService:
         arguments:
-            $googleCredentialsPath: '%kernel.project_dir%/config/secret-griffin-436115-k4-5af9cc553bb6.json' 
+            $clientId: '%env(GOOGLE_CLIENT_ID)%'
+            $clientSecret: '%env(GOOGLE_CLIENT_SECRET)%'
     App\Service\PdfGeneratorService: ~ 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
