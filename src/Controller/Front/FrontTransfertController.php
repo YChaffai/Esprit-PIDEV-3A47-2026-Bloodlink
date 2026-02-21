@@ -3,8 +3,10 @@
 namespace App\Controller\Front;
 
 use App\Entity\Demande;
+use App\Entity\Transfert;
 use App\Repository\TransfertRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -92,4 +94,28 @@ class FrontTransfertController extends AbstractController
             'sortDir'    => 'ASC',
         ]);
     }
+    #[Route('/agent/transfert/{id}/valider', name: 'front_transfert_valider')]
+public function validerReception(Transfert $transfert, EntityManagerInterface $em): Response
+{
+    if ($transfert->getStatus() !== 'EN_COURS') {
+        $this->addFlash('danger', 'Ce transfert ne peut pas être validé.');
+        return $this->redirectToRoute('front_transfert_index');
+    }
+
+    // ✅ Changer statut transfert
+    $transfert->setStatus('RECU');
+
+    // ✅ Changer statut demande liée
+    if ($transfert->getDemande()) {
+        $transfert->getDemande()->setStatus('VALIDEE');
+        $transfert->getDemande()->setUpdatedAt(new \DateTimeImmutable());
+    }
+
+    $em->flush();
+
+    $this->addFlash('success', 'Réception validée avec succès.');
+
+    return $this->redirectToRoute('front_transfert_index');
+}
+    
 }

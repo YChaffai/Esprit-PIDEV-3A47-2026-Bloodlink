@@ -17,12 +17,29 @@
                 Consultez et gérez vos demandes de sang.
             </div>
         </div>
-        <div>
-            <a href="{{ path('front_demande_new') }}" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2" style="height:48px; background-color: var(--primary); border-color: var(--primary);">
-                <i class="fa-solid fa-plus-circle"></i>
-                Nouvelle demande
-            </a>
-        </div>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+
+    <a href="{{ path('front_demande_new') }}"
+       class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2"
+       style="height:48px; background-color: var(--primary); border-color: var(--primary);">
+        <i class="fa-solid fa-plus-circle"></i>
+        Nouvelle demande
+    </a>
+
+    <a href="{{ path('front_demande_pdf') }}"
+       class="btn btn-outline-danger rounded-pill px-4 fw-bold d-flex align-items-center gap-2"
+       style="height:48px;">
+        <i class="fa-solid fa-file-pdf"></i>
+        PDF
+    </a>
+
+    <a href="{{ path('demande_ai_openai') }}"
+       class="btn btn-outline-info rounded-pill px-4 fw-bold d-flex align-items-center gap-2"
+       style="height:48px;">
+        🤖 Predict
+    </a>
+
+</div>
     </div>
 
     {# --- SEARCH & FILTER BAR --- #}
@@ -51,14 +68,15 @@
             <div class="col-6 col-md-4 col-lg-4">
                 <select id="dem-status" class="form-select bg-transparent text-white border-secondary" style="box-shadow:none;">
                     <option value="" class="text-dark">Tous les statuts</option>
-                    <option value="en_attente" class="text-dark">⏳ En Attente</option>
                     <option value="en_cours" class="text-dark">🔄 En Cours</option>
                     <option value="validee" class="text-dark">✅ Validée</option>
                     <option value="refusee" class="text-dark">❌ Refusée</option>
-                    <option value="satisfaite" class="text-dark">🎉 Satisfaite</option>
-                    <option value="annulee" class="text-dark">🚫 Annulée</option>
+                    
+                    
                 </select>
             </div>
+            
+
         </div>
     </div>
 
@@ -75,10 +93,10 @@
                        style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
                     <thead>
                         <tr style="color:var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
-                            <th class="py-3 ps-4">ID</th>
+                            <th class="py-3 ps-4" onclick="sortTable(0)" style="cursor:pointer;">ID ⬍</th>
                             <th class="py-3">Banque</th>
                             <th class="py-3">Type Sang</th>
-                            <th class="py-3">Quantité</th>
+                            <th onclick="sortTable(3)" style="cursor:pointer;">Quantité ⬍</th>
                             <th class="py-3">Urgence</th>
                             <th class="py-3">Statut</th>
                             <th class="py-3 pe-4 text-end">Actions</th>
@@ -100,7 +118,7 @@
                                 </td>
 
                                 <td class="py-4">
-                                    <span class="small text-white"><i class="fa-solid fa-building-columns me-1 text-muted"></i>ID: {{ d.idBanque }}</span>
+                                    <span class="small text-white"><i class="fa-solid fa-building-columns me-1 text-muted"></i>{{ d.banque.nom }}</span>
                                 </td>
 
                                 <td class="py-4">
@@ -147,17 +165,31 @@
                                 </td>
 
                                 <td class="py-4 pe-4 text-end">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ path('front_demande_show', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
-                                            <i class="fa-solid fa-eye me-1"></i> Détails
-                                        </a>
-                                        {% if d.status == 'EN_ATTENTE' %}
-                                            <a href="{{ path('front_demande_edit', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-light border-opacity-25 px-3">
-                                                <i class="fa-solid fa-pen me-1"></i> Modifier
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                </td>
+    <div class="d-flex justify-content-end gap-2">
+        <a href="{{ path('front_demande_show', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
+            <i class="fa-solid fa-eye me-1"></i> Détails
+        </a>
+        {% if d.status == 'EN_ATTENTE' %}
+            <a href="{{ path('front_demande_edit', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-light border-opacity-25 px-3">
+                <i class="fa-solid fa-pen me-1"></i> Modifier
+            </a>
+
+            {# AJOUTER CE BOUTON SUPPRIMER #}
+            <form method="post"
+                  action="{{ path('front_demande_delete', {id: d.id}) }}"
+                  onsubmit="return confirm('Supprimer cette demande ?');"
+                  style="display:inline-block">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ d.id) }}">
+
+                <button class="btn btn-sm rounded-pill btn-outline-danger px-3">
+                    <i class="fa-solid fa-trash me-1"></i> Supprimer
+                </button>
+            </form>
+
+        {% endif %}
+    </div>
+</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -180,6 +212,178 @@
 
     <div class="text-end text-white-50 mt-3 small" id="dem-count-bottom"></div>
 </div>
+{# ================= COMMANDES ================= #}
+
+{% if commandes is not empty %}
+<div class="glass-card overflow-hidden mt-5">
+
+    {# HEADER #}
+    <div class="p-4 d-flex justify-content-between align-items-center"
+         style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+
+        <div class="fw-black text-uppercase small"
+             style="letter-spacing:1px; color:var(--muted);">
+
+            Liste des Commandes
+
+        </div>
+
+        <div class="small fw-bold text-white">
+            {{ commandes|length }} commandes
+        </div>
+
+    </div>
+
+    {# TABLE #}
+    <div class="table-responsive">
+        <table class="table table-dark mb-0 align-middle"
+               style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
+
+            <thead>
+                <tr style="color:var(--muted);
+                           font-size:0.8rem;
+                           text-transform:uppercase;
+                           letter-spacing:1px;">
+
+                    <th class="py-3 ps-4">ID</th>
+                    <th class="py-3">Référence</th>
+                    <th class="py-3">Banque</th>
+                    <th class="py-3">Type Sang</th>
+                    <th class="py-3">Quantité</th>
+                    <th class="py-3">Priorité</th>
+                    <th class="py-3">Statut</th>
+                    <th class="py-3 pe-4 text-end">Actions</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for c in commandes %}
+
+                <tr style="border-top:1px solid var(--border);">
+
+                    {# ID #}
+                    <td class="py-4 ps-4">
+                        <div class="d-flex align-items-center justify-content-center
+                                    rounded bg-dark bg-opacity-50
+                                    border border-secondary border-opacity-25 px-2"
+                             style="min-width:44px;height:34px;">
+
+                            <span class="small fw-black text-white">
+                                #{{ c.id }}
+                            </span>
+
+                        </div>
+                    </td>
+
+                    {# Reference #}
+                    <td class="py-4">
+                        <span class="fw-bold text-white">
+                            REF-{{ c.reference }}
+                        </span>
+                    </td>
+
+                    {# Banque #}
+                    <td class="py-4">
+                        <span class="small text-white">
+                            <i class="fa-solid fa-building-columns me-1 text-muted"></i>
+                            {{ c.banque.nom }}
+                        </span>
+                    </td>
+
+                    {# Type Sang #}
+                    <td class="py-4">
+                        <span class="badge rounded-pill bg-danger bg-opacity-20
+                                     text-white border border-danger border-opacity-25 px-3 py-2">
+
+                            {{ c.typeSang }}
+
+                        </span>
+                    </td>
+
+                    {# Quantité #}
+                    <td class="py-4">
+                        <div class="fw-bold text-white">
+                            {{ c.quantite }}
+                        </div>
+                    </td>
+
+                    {# Priorité #}
+                    <td class="py-4">
+
+                        {% if c.priorite == 'Urgente' %}
+                            <span class="badge bg-danger">
+                                🚨 Urgente
+                            </span>
+
+                        {% elseif c.priorite == 'Élevée' %}
+                            <span class="badge bg-warning text-dark">
+                                ⚠️ Élevée
+                            </span>
+
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                Normale
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+                    {# Statut #}
+                    <td class="py-4">
+
+                        {% if c.status == 'Confirmée' %}
+                            <div class="text-success fw-bold small">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Confirmée
+                            </div>
+
+                        {% elseif c.status == 'Annulée' %}
+                            <div class="text-danger fw-bold small">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                Annulée
+                            </div>
+
+                        {% else %}
+                            <div class="text-warning fw-bold small">
+                                <i class="fa-solid fa-clock"></i>
+                                En attente
+                            </div>
+
+                        {% endif %}
+
+                    </td>
+
+                    {# ACTION VALIDER #}
+                    <td class="py-4 pe-4 text-end">
+
+                        {% if c.status == 'En Attente' %}
+
+                        <a href="{{ path('front_commande_valider', {id: c.id}) }}"
+                           class="btn btn-sm rounded-pill btn-outline-success px-3">
+
+                            <i class="fa-solid fa-check me-1"></i>
+                            Valider
+
+                        </a>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+{% endif %}
 
 <style>
     .dem-row:hover {
@@ -238,5 +442,29 @@
 
         applyFilters();
     })();
+    function sortTable(columnIndex) {
+
+    const table = document.querySelector("table tbody");
+    const rows = Array.from(table.querySelectorAll("tr"));
+
+    const asc = table.classList.toggle("asc");
+    table.classList.toggle("desc", !asc);
+
+    rows.sort((a, b) => {
+
+        let A = a.children[columnIndex].innerText.trim().toLowerCase();
+        let B = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        if (!isNaN(A) && !isNaN(B)) {
+            return asc ? A - B : B - A;
+        }
+
+        return asc
+            ? A.localeCompare(B)
+            : B.localeCompare(A);
+    });
+
+    rows.forEach(tr => table.appendChild(tr));
+}
 </script>
 {% endblock %}

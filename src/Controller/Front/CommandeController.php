@@ -109,4 +109,15 @@ class CommandeController extends AbstractController
       'form' => $form->createView(),
     ], new Response(null, $form->isSubmitted() && !$form->isValid() ? 422 : 200));
   }
+  #[Route('/front/commande/{id}/valider', name: 'front_commande_valider')]
+public function valider(Commande $commande, EntityManagerInterface $em): Response
+{
+    $commande->setStatus('Confirmée');
+
+    $em->flush();
+
+    $this->addFlash('success', 'Commande validée');
+
+    return $this->redirectToRoute('front_demande_index');
+}
 }

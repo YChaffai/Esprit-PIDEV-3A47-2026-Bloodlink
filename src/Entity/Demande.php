@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Banque;
+use App\Entity\User;
 use App\Repository\DemandeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -16,6 +17,10 @@ class Demande
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $client = null;
 
     #[ORM\ManyToOne(inversedBy: 'commandes')]
     #[ORM\JoinColumn(name: 'id_banque', nullable: false)]
@@ -75,6 +80,17 @@ class Demande
         return $this->id;
     }
 
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): static
+    {
+        $this->client = $client;
+        return $this;
+    }
+
     public function getBanque(): ?Banque
     {
         return $this->banque;
@@ -85,8 +101,7 @@ class Demande
         $this->banque = $banque;
         return $this;
     }
-    
-    // Helper for backward compatibility if needed, or primarily for logic seeking ID
+
     public function getIdBanque(): ?int
     {
         return $this->banque?->getId();
@@ -158,9 +173,6 @@ class Demande
         return $this;
     }
 
-    /**
-     * @return Collection<int, Transfert>
-     */
     public function getTransferts(): Collection
     {
         return $this->transferts;
@@ -172,6 +184,7 @@ class Demande
             $this->transferts->add($transfert);
             $transfert->setDemande($this);
         }
+
         return $this;
     }
 
@@ -182,6 +195,7 @@ class Demande
                 $transfert->setDemande(null);
             }
         }
+
         return $this;
     }
 }

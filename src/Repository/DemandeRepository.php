@@ -59,4 +59,24 @@ class DemandeRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+    public function sortByClient(string $field, string $direction, $client)
+{
+    return $this->createQueryBuilder('d')
+        ->andWhere('d.client = :client')
+        ->setParameter('client', $client)
+        ->orderBy('d.' . $field, $direction)
+        ->getQuery()
+        ->getResult();
+}
+public function searchByClient(string $keyword, $client)
+{
+    return $this->createQueryBuilder('d')
+        ->andWhere('d.client = :client')
+        ->andWhere('d.typeSang LIKE :keyword OR d.status LIKE :keyword')
+        ->setParameter('client', $client)
+        ->setParameter('keyword', '%' . $keyword . '%')
+        ->getQuery()
+        ->getResult();
+}
+
 }

@@ -1,0 +1,88 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Analyse IA | BloodLink{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    {# En-tête avec badge IA #}
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="bg-danger bg-opacity-10 p-3 rounded-circle" style="border: 1px solid var(--primary);">
+            <i class="fa-solid fa-microchip text-danger fa-2x"></i>
+        </div>
+        <div>
+            <h2 class="mb-0 fw-900 text-uppercase" style="letter-spacing: -1px;">
+                Analyse <span class="text-danger">Prédictive</span>
+            </h2>
+            <p class="text-muted mb-0">Intelligence Artificielle BloodLink v2.0</p>
+        </div>
+    </div>
+
+    {# Carte de résultat style "Glassmorphism" #}
+    <div class="glass-card p-5 mb-4 position-relative overflow-hidden">
+        {# Petit effet de lumière en fond #}
+        <div class="position-absolute top-0 end-0 p-4 opacity-25">
+            <i class="fa-solid fa-brain fa-6x text-white"></i>
+        </div>
+
+        <h5 class="fw-bold mb-4 d-flex align-items-center">
+            <i class="fa-solid fa-terminal me-2 text-danger"></i> 
+            Résultat de l'analyse
+        </h5>
+        
+        <hr class="border-secondary opacity-25 mb-4">
+
+        <div class="analysis-content" style="font-size: 1.1rem; line-height: 1.8; color: var(--text);">
+            {# On utilise nl2br pour garder les sauts de ligne de l'IA #}
+            {{ analysis|nl2br }}
+        </div>
+    </div>
+
+    {# Actions #}
+   <div class="d-flex gap-3 flex-wrap">
+    <a href="{{ path('front_demande_index') }}" 
+       class="btn btn-outline-light rounded-pill px-4 py-2 fw-bold shadow-sm hover-primary">
+        <i class="fa-solid fa-arrow-left me-2"></i>
+        Retour aux demandes
+    </a>
+
+    <a href="{{ path('demande_ai_openai') }}" 
+       class="btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm">
+        <i class="fa-solid fa-rotate me-2"></i>
+        Actualiser l'analyse
+    </a>
+
+    {# NOUVEAU bouton PDF #}
+    <a href="{{ path('front_demande_prediction_pdf', { analysis: analysis }) }}"
+   target="_blank"
+   class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold shadow-sm">
+    <i class="fa-solid fa-file-pdf me-2"></i>
+    Exporter PDF
+</a>
+
+</div>
+</div>
+
+<style>
+    /* Animation subtile pour l'apparition du texte */
+    .analysis-content {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Style pour les listes que l'IA pourrait générer */
+    .analysis-content b, .analysis-content strong {
+        color: var(--primary);
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    // On récupère le texte brut
+    const rawContent = document.querySelector('.analysis-content').innerText;
+    // On le transforme en beau HTML
+    document.querySelector('.analysis-content').innerHTML = marked.parse(rawContent);
+</script>
+{% endblock %}

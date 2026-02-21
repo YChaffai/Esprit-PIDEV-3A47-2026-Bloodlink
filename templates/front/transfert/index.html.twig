@@ -58,11 +58,11 @@
                        style="--bs-table-bg: transparent; --bs-table-border-color: var(--border);">
                     <thead>
                         <tr style="color:var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
-                            <th class="py-3 ps-4">ID</th>
+                            <th class="py-3 ps-4" onclick="sortTable(0)" style="cursor:pointer;">ID ⬍</th>
                             <th class="py-3">Demande</th>
                             <th class="py-3">Origine</th>
                             <th class="py-3">Destination</th>
-                            <th class="py-3">Quantité</th>
+                            <th class="py-3" onclick="sortTable(4)" style="cursor:pointer;">Quantité ⬍</th>
                             <th class="py-3">Envoi</th>
                             <th class="py-3">Statut</th>
                             <th class="py-3 pe-4 text-end">Actions</th>
@@ -123,10 +123,24 @@
                                 </td>
 
                                 <td class="py-4 pe-4 text-end">
-                                    <a href="{{ path('front_transfert_show', {id: t.id}) }}" class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
-                                        <i class="fa-solid fa-eye me-1"></i> Détails
-                                    </a>
-                                </td>
+    {% set s = t.status|lower %}
+
+
+
+    {# Bouton Valider Réception si EN_ATTENTE #}
+    {% if s == 'en_cours' %}
+        <a href="{{ path('front_transfert_valider', {id: t.id}) }}"
+           class="btn btn-sm rounded-pill btn-outline-success px-3 me-2">
+            <i class="fa-solid fa-check me-1"></i> Valider
+        </a>
+    {% endif %}
+
+    <a href="{{ path('front_transfert_show', {id: t.id}) }}"
+       class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
+        <i class="fa-solid fa-eye me-1"></i> Détails
+    </a>
+</td>
+
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -200,5 +214,29 @@
 
         applyFilters();
     })();
+    function sortTable(columnIndex) {
+
+    const table = document.querySelector("#trf-rows");
+    const rows = Array.from(table.querySelectorAll("tr"));
+
+    const asc = table.classList.toggle("asc");
+    table.classList.toggle("desc", !asc);
+
+    rows.sort((a, b) => {
+
+        let A = a.children[columnIndex].innerText.trim().toLowerCase();
+        let B = b.children[columnIndex].innerText.trim().toLowerCase();
+
+        if (!isNaN(A) && !isNaN(B)) {
+            return asc ? A - B : B - A;
+        }
+
+        return asc
+            ? A.localeCompare(B)
+            : B.localeCompare(A);
+    });
+
+    rows.forEach(tr => table.appendChild(tr));
+}
 </script>
 {% endblock %}

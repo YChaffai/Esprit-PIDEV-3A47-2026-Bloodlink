@@ -164,7 +164,7 @@ class BackDemandeController extends AbstractController
         $transfert->setToOrgId($banque->getId());
         $transfert->setToOrg($banque->getNom());
         $transfert->setQuantite($demande->getQuantite());
-        $transfert->setStatus('RECU'); // Transfert done/received
+        $transfert->setStatus('EN_COURS'); // Transfert done/received
         $transfert->setDateEnvoie(new \DateTime());
         $transfert->setDateReception(new \DateTime());
         $transfert->setCreatedAt(new \DateTimeImmutable());
