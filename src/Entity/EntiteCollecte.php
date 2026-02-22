@@ -6,8 +6,11 @@ use App\Repository\EntiteCollecteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: EntiteCollecteRepository::class)]
+#[UniqueEntity(fields: ['nom'], message: 'Une entité de collecte avec ce nom existe déjà.')]
 class EntiteCollecte
 {
     #[ORM\Id]
@@ -17,23 +20,49 @@ class EntiteCollecte
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le nom est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom ne doit pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $nom = null;
-
+    
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le téléphone est obligatoire.')]
+    #[Assert\Regex(
+        pattern: '/^[0-9]{8}$/',
+        message: 'Le téléphone doit contenir exactement 8 chiffres.'
+    )]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(message: 'Le type est obligatoire.')]
-    private ?string $type = 'Hôpital'; // Hôpital, Banque, Point Mobile
+    #[Assert\Choice(
+        choices: ['Hôpital', 'Banque de sang', 'Point Mobile'],
+        message: 'Le type doit être Hôpital, Banque de sang ou Point Mobile.'
+    )]
+    private ?string $type = 'Hôpital';
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'L\'adresse est obligatoire.')]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: 'L\'adresse doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'L\'adresse ne doit pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: 'La ville est obligatoire.')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'La ville doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'La ville ne doit pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $ville = null;
 
     /**

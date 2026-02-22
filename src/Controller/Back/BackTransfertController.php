@@ -105,4 +105,17 @@ class BackTransfertController extends AbstractController
 
         return $this->redirectToRoute('back_transfert_index');
     }
+    
+    #[Route('/statistiques/transfert', name: 'stat_transfert')]
+    public function statistiques(TransfertRepository $repo): Response
+    {
+        return $this->render('back/transfert/statistiques.html.twig', [
+            'total' => $repo->countTotal(),
+            'enAttente' => $repo->countByStatus('En Attente'),
+            'confirme' => $repo->countByStatus('Confirmé'),
+            'annule' => $repo->countByStatus('Annulé'),
+            'parType' => $repo->countByTypeSang(),
+            
+        ]);
+    }
 }

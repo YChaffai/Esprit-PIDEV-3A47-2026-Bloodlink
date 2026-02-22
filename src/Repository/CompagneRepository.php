@@ -42,7 +42,7 @@ class CompagneRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findBySearchAndSort(?string $search, string $sort, string $direction): array
+    public function findBySearchAndSort(?string $search, string $sort, string $direction): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('c');
 
@@ -61,10 +61,9 @@ class CompagneRepository extends ServiceEntityRepository
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
 
         return $qb->orderBy('c.' . $sort, $direction)
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
     }
-
+    ////wajd's function
    public function findCompatibleForClient(Client $client): array
 {
     $qb = $this->createQueryBuilder('c');
@@ -95,5 +94,20 @@ class CompagneRepository extends ServiceEntityRepository
               ->getQuery()
               ->getResult();
 }
+
+    
+    
+    public function getFinishedCampaignsWithDonorCount(): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.questionnaires', 'q')
+            ->andWhere('c.date_fin < :now')
+            ->setParameter('now', new \DateTime())
+            ->groupBy('c.id')
+            ->select('c.id, c.titre, c.date_debut, c.date_fin, COUNT(q.id) AS nb_donneurs');
+
+        return $qb->getQuery()->getResult();
+    }
+
 
 }

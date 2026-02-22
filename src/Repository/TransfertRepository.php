@@ -35,4 +35,29 @@ class TransfertRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+    public function countTotal(): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+    public function countByStatus(string $status): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.status = :status')
+            ->setParameter('status', $status)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+    public function countByTypeSang()
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.stock', 's')
+            ->select('s.type_sang as typeSang, COUNT(t.id) as total')
+            ->groupBy('s.type_sang')
+            ->getQuery()
+            ->getResult();
+    }
 }

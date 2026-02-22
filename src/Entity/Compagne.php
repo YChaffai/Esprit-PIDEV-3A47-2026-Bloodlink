@@ -52,6 +52,7 @@ class Compagne{
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotNull(message: "La date de début est obligatoire")]
+    #[Assert\GreaterThanOrEqual("today", message: "La date de début ne peut pas être antérieure à aujourd'hui")]
     private ?\DateTime $date_debut = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]

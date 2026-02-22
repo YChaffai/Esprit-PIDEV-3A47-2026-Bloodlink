@@ -98,6 +98,27 @@
 
         .italic { font-style: italic; }
 
+        /* Pagination Styles */
+        .pagination .page-link {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+            color: #ccc;
+        }
+        .pagination .page-item.active .page-link {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .pagination .page-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .pagination .page-item.disabled .page-link {
+            background: rgba(255,255,255,0.02);
+            border-color: rgba(255,255,255,0.05);
+            color: #555;
+        }
+
         /* FullCalendar Custom Styling */
         #calendar {
             padding: 20px;
@@ -171,6 +192,7 @@
             function updateTable() {
                 const formData = new FormData(searchForm);
                 const params = new URLSearchParams(formData);
+                params.set('page', 1); // Reset to page 1 on search/sort change
                 const url = `${window.location.pathname}?${params.toString()}`;
 
                 fetch(url, {
@@ -182,6 +204,7 @@
                 .then(html => {
                     tableContainer.innerHTML = html;
                     bindSortLinks();
+                    bindPaginationLinks();
                     // Update URL in browser for bookmarking
                     window.history.pushState({}, '', url);
                 });
@@ -211,6 +234,36 @@
             sortSelect.addEventListener('change', updateTable);
 
             bindSortLinks();
+            bindPaginationLinks();
+
+            function bindPaginationLinks() {
+                tableContainer.querySelectorAll('.pagination a.page-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const href = this.getAttribute('href');
+                        if (!href) return;
+                        const urlObj = new URL(href, window.location.origin);
+                        const page = urlObj.searchParams.get('page') || 1;
+
+                        // Build AJAX URL with current search/sort + page
+                        const formData = new FormData(searchForm);
+                        const params = new URLSearchParams(formData);
+                        params.set('page', page);
+                        const url = `${window.location.pathname}?${params.toString()}`;
+
+                        fetch(url, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            tableContainer.innerHTML = html;
+                            bindSortLinks();
+                            bindPaginationLinks();
+                            window.history.pushState({}, '', url);
+                        });
+                    });
+                });
+            }
 
             // Calendar logic
             var calendarEl = document.getElementById('calendar');
@@ -227,7 +280,7 @@
                     month: "Mois"
                 },
                 events: [
-                    {% for compagne in compagnes %}
+                    {% for compagne in allCompagnes %}
                     {
                         title: '{{ compagne.titre|e('js') }}',
                         start: '{{ compagne.dateDebut|date('Y-m-d') }}',

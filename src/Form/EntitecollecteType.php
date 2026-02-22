@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class EntitecollecteType extends AbstractType
+class EntiteCollecteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -18,18 +18,22 @@ class EntitecollecteType extends AbstractType
             ->add('nom', TextType::class, [
                 'label' => 'Nom de l\'entité',
                 'help' => 'Le nom officiel de l\'entité de collecte (ex: Hôpital X).',
+                'attr' => ['placeholder' => 'Ex: Hôpital Charles Nicolle'],
             ])
             ->add('adresse', TextType::class, [
                 'label' => 'Adresse',
                 'help' => 'Adresse complète de l\'entité.',
+                'attr' => ['placeholder' => 'Ex: 12 Rue de la République'],
             ])
             ->add('ville', TextType::class, [
                 'label' => 'Ville',
                 'help' => 'Ville de l\'entité.',
+                'attr' => ['placeholder' => 'Ex: Tunis'],
             ])
             ->add('telephone', TelType::class, [
                 'label' => 'Numéro de téléphone',
-                'help' => 'Format numérique uniquement (ex: 0612345678).',
+                'help' => 'Exactement 8 chiffres.',
+                'attr' => ['placeholder' => 'Ex: 71234567'],
             ]);
     }
 
@@ -37,7 +41,6 @@ class EntitecollecteType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => EntiteCollecte::class,
-            'csrf_protection' => false,
         ]);
     }
 }
