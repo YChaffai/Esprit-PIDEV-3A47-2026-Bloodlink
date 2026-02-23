@@ -1,59 +1,134 @@
 {% extends 'back/baseBack.html.twig' %}
-{% block title %}Dossiers médicaux | BloodLink Admin{% endblock %}
+
+{% block title %}Dossiers Médicaux | BloodLink Admin{% endblock %}
 
 {% block body %}
-<div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
-  <div>
-    <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Dossiers médicaux</h1>
-    <p class="text-white-50 mb-0">Gestion des dossiers médicaux des donneurs.</p>
-  </div>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Dossiers Médicaux</h1>
+        <p class="text-white-50 mb-0">Annuaire centralisé des patients (1 dossier unique par donneur).</p>
+    </div>
+    
+    <div class="d-flex gap-3 align-items-center flex-wrap">
+        {# --- Barre de recherche visuelle et dynamique --- #}
+        <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-transparent border-secondary border-opacity-25 text-white-50 rounded-start-pill ps-3">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control bg-transparent border-secondary border-opacity-25 text-white rounded-end-pill shadow-none" placeholder="Rechercher un patient...">
+        </div>
 
-  <a href="{{ path('back_dossier_new') }}" class="btn btn-premium rounded-pill px-4 fw-bold">
-    <i class="fa-solid fa-plus me-2"></i> AJOUTER
-  </a>
+        <a href="{{ path('back_dossier_new') }}" class="btn btn-premium rounded-pill px-4 fw-bold">
+            <i class="fa-solid fa-plus me-2"></i> NOUVEAU DOSSIER
+        </a>
+    </div>
 </div>
 
 <div class="glass-card p-4 p-md-5">
-  <div class="table-responsive">
-    <table class="table table-premium align-middle mb-0">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nom</th>
-          <th>Âge</th>
-          <th>Sexe</th>
-          <th>Groupe</th>
-          <th>Don lié</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for d in dossiers %}
-        <tr>
-          <td class="fw-bold">#{{ d.id }}</td>
-          <td class="text-white-50">{{ d.nom }} {{ d.prenom }}</td>
-          <td class="text-white-50">{{ d.age }}</td>
-          <td><span class="badge badge-premium">{{ d.sexe }}</span></td>
-          <td><span class="badge badge-admin">{{ d.typeSang }}</span></td>
-          <td class="text-white-50">#{{ d.don ? d.don.id : '—' }}</td>
-          <td class="text-end">
-            <a class="btn btn-outline-light btn-sm rounded-pill px-3 me-2"
-               href="{{ path('back_dossier_show', {id: d.id}) }}">
-              <i class="fa-solid fa-eye me-1"></i> Voir
-            </a>
-            <a class="btn btn-outline-light btn-sm rounded-pill px-3"
-               href="{{ path('back_dossier_edit', {id: d.id}) }}">
-              <i class="fa-solid fa-pen me-1"></i> Modifier
-            </a>
-          </td>
-        </tr>
-      {% else %}
-        <tr>
-          <td colspan="7" class="text-center text-white-50 py-5">Aucun dossier trouvé.</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <div class="table-responsive">
+        <table class="table table-premium align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Groupe Sanguin</th>
+                    <th>Contact</th>
+                    <th>Historique</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="dossiersTableBody">
+                {% for dossier in dossiers %}
+                    <tr class="dossier-row">
+                        <td>
+                            <div class="fw-bold fs-6 patient-name">{{ dossier.prenom|capitalize }} {{ dossier.nom|upper }}</div>
+                            <div class="small text-white-50">{{ dossier.age }} ans</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-premium blood-type">
+                                <i class="fa-solid fa-droplet me-1"></i> {{ dossier.typeSang }}
+                            </span>
+                        </td>
+                        <td class="text-white-50 contact-info">
+                            <i class="fa-solid  bg-black fa-phone small me-1"></i> {{ dossier.contactUrgence }}
+                        </td>
+                        <td>
+                            {% set countDons = dossier.client ? nombreDons[dossier.client.id]|default(0) : 0 %}
+                            <span class="badge  bg-black-25 bg-black-25 px-2 py-1">
+                                <i class="fa-solid bg-black fa-clock-rotate-left me-1"></i> {{ countDons }} Don(s)
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="{{ path('back_dossier_show', {'id': dossier.id}) }}">
+                                    <i class="fa-solid fa-eye me-1"></i> Voir
+                                </a>
+                                <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="{{ path('back_dossier_edit', {'id': dossier.id}) }}">
+                                    <i class="fa-solid fa-pen me-1"></i> Modifier
+                                </a>
+                                
+                                {# Formulaire de suppression conforme à votre contrôleur DossierBackController #}
+                                <form method="post" action="{{ path('back_dossier_delete', {'id': dossier.id}) }}" onsubmit="return confirm('Supprimer définitivement ce dossier médical ?');" style="display:inline-block">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dossier.id) }}">
+                                    <button class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-white-50 py-5">
+                            <i class="fa-solid fa-folder-open fs-2 mb-3 d-block opacity-50"></i>
+                            Aucun dossier médical n'a encore été créé.
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                {# Ligne affichée si aucun résultat de recherche #}
+                <tr id="noMatchRow" style="display: none;">
+                    <td colspan="5" class="text-center text-white-50 py-5">
+                        <i class="fa-solid fa-magnifying-glass fs-2 mb-3 d-block opacity-50"></i>
+                        Aucun patient ne correspond à votre recherche.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.querySelectorAll('.dossier-row');
+    const noMatchRow = document.getElementById('noMatchRow');
+
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            const term = e.target.value.toLowerCase();
+            let hasResults = false;
+
+            tableRows.forEach(function(row) {
+                const name = row.querySelector('.patient-name').textContent.toLowerCase();
+                const blood = row.querySelector('.blood-type').textContent.toLowerCase();
+                const contact = row.querySelector('.contact-info').textContent.toLowerCase();
+
+                if (name.includes(term) || blood.includes(term) || contact.includes(term)) {
+                    row.style.display = '';
+                    hasResults = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (noMatchRow) {
+                noMatchRow.style.display = (!hasResults && term !== "") ? '' : 'none';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

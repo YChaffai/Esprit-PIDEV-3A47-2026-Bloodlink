@@ -26,6 +26,11 @@ class DonBackController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $don = new Don();
+        
+        // 🛠️ FIX 1: Explicitly set the mandatory fields that are NOT in the form
+        $don->setIdEntite(1); 
+        $don->setDate(new \DateTime()); // Default to now (form can override)
+
         $form = $this->createForm(DonType::class, $don);
         $form->handleRequest($request);
 
@@ -36,6 +41,9 @@ class DonBackController extends AbstractController
             $this->addFlash('success', 'Don ajouté avec succès.');
             return $this->redirectToRoute('back_don_index');
         }
+        
+        // 🛠️ FIX 2: If we are here, it means isValid() failed. 
+        // Ensure your Twig template displays these errors.
 
         return $this->render('back/don/new.html.twig', [
             'form' => $form->createView(),
@@ -72,7 +80,7 @@ class DonBackController extends AbstractController
     #[Route('/{id}/delete', name: 'back_don_delete', methods: ['POST'])]
     public function delete(Request $request, Don $don, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete_don_'.$don->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete_don_'.$don->getId(), (string) $request->request->get('_token'))) {
             $em->remove($don);
             $em->flush();
             $this->addFlash('success', 'Don supprimé.');

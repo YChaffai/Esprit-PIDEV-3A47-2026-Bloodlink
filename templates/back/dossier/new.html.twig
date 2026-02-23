@@ -15,6 +15,7 @@
 <div class="glass-card p-4 p-md-5">
   {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
 
+  {# Affichage global des erreurs #}
   {% if not form.vars.valid %}
     <div class="alert alert-danger mb-4 rounded-4 border-0 bg-danger bg-opacity-10 text-danger p-4">
       <h5 class="fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i>Erreurs de validation</h5>
@@ -26,63 +27,66 @@
     <div class="col-12">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Don lié</label>
       {{ form_widget(form.don, { attr: { class: 'form-select form-control-premium border-0' } }) }}
-      {{ form_errors(form.don) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.don) }}</div>
     </div>
 
     <div class="col-md-6">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Nom</label>
       {{ form_widget(form.nom, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.nom) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.nom) }}</div>
     </div>
 
     <div class="col-md-6">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Prénom</label>
       {{ form_widget(form.prenom, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.prenom) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.prenom) }}</div>
     </div>
 
     <div class="col-md-4">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Âge</label>
       {{ form_widget(form.age, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.age) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.age) }}</div>
     </div>
 
     <div class="col-md-4">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Sexe</label>
       {{ form_widget(form.sexe, { attr: { class: 'form-select form-control-premium border-0' } }) }}
-      {{ form_errors(form.sexe) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.sexe) }}</div>
     </div>
 
     <div class="col-md-4">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Groupe sanguin</label>
       {{ form_widget(form.typeSang, { attr: { class: 'form-select form-control-premium border-0' } }) }}
-      {{ form_errors(form.typeSang) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.typeSang) }}</div>
     </div>
 
     <div class="col-md-4">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Taille (cm)</label>
       {{ form_widget(form.taille, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.taille) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.taille) }}</div>
     </div>
 
     <div class="col-md-4">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Poids (kg)</label>
       {{ form_widget(form.poid, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.poid) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.poid) }}</div>
     </div>
 
     <div class="col-md-4">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Température (°C)</label>
       {{ form_widget(form.temperature, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.temperature) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.temperature) }}</div>
     </div>
 
     <div class="col-md-6">
       <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Contact urgence</label>
       {{ form_widget(form.contactUrgence, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.contactUrgence) }}
+      <div class="text-danger small mt-1 fw-bold">{{ form_errors(form.contactUrgence) }}</div>
     </div>
   </div>
+
+  {# 🔥 INDISPENSABLE : Génère le jeton CSRF caché manquant avant la fin du formulaire #}
+  {{ form_rest(form) }}
 
   <div class="d-flex justify-content-end gap-3 mt-5">
     <a href="{{ path('back_dossier_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">ANNULER</a>

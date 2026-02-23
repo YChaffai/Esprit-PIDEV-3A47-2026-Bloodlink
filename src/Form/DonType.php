@@ -20,22 +20,26 @@ class DonType extends AbstractType
         $builder
             ->add('client', EntityType::class, [
                 'class' => Client::class,
-                // ✅ choose how you want to display client in dropdown:
-                // If Client has getUser()->getNomComplet():
+                // ✅ Enable Autocomplete
+                'autocomplete' => true,
                 'choice_label' => function (Client $c) {
-                    return $c->getUser() ? $c->getUser()->getNomComplet() : ('Client #' . $c->getId());
+                    return $c->getUser() 
+                        ? ($c->getUser()->getNom() . ' ' . $c->getUser()->getPrenom()) 
+                        : ('Client #' . $c->getId());
                 },
-                'placeholder' => '-- Sélectionner un client --',
+                'placeholder' => 'Rechercher un donneur par nom...',
                 'required' => true,
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez sélectionner un client.']),
                 ],
+                'attr' => [
+                    'class' => 'glass-input'
+                ]
             ])
-
             ->add('date', DateTimeType::class, [
                 'widget' => 'single_text',
+                'attr' => ['class' => 'glass-input']
             ])
-
             ->add('typeDon', ChoiceType::class, [
                 'choices' => [
                     'Sang total' => 'Sang total',
@@ -43,10 +47,11 @@ class DonType extends AbstractType
                     'Plaquettes' => 'Plaquettes',
                     'Globules rouges' => 'Globules rouges',
                 ],
+                'attr' => ['class' => 'glass-input']
             ])
-
             ->add('quantite', NumberType::class, [
                 'scale' => 2,
+                'attr' => ['class' => 'glass-input', 'placeholder' => 'Quantité en ml']
             ]);
     }
 

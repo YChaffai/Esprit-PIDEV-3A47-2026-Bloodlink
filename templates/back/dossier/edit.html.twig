@@ -1,98 +1,84 @@
 {% extends 'back/baseBack.html.twig' %}
-{% block title %}Modifier Dossier | BloodLink Admin{% endblock %}
+
+{% block title %}Dossier #{{ dossier.id }} | BloodLink Admin{% endblock %}
 
 {% block body %}
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-  <div>
-    <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Modifier Dossier #{{ dossier.id }}</h1>
-    <p class="text-white-50 mb-0">Modifier les informations du dossier médical.</p>
-  </div>
-  <a href="{{ path('back_dossier_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
-    <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
-  </a>
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Dossier #{{ dossier.id }}</h1>
+        <p class="text-white-50 mb-0">Consultation des données médicales du patient.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('back_dossier_edit', {id: dossier.id}) }}" class="btn btn-premium rounded-pill px-4 fw-bold">
+            <i class="fa-solid fa-pen me-2"></i> MODIFIER
+        </a>
+        <a href="{{ path('back_dossier_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+            <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+        </a>
+    </div>
 </div>
 
 <div class="glass-card p-4 p-md-5">
-  {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+    <div class="row g-4">
+        {# État Civil #}
+        <div class="col-md-6">
+            <label class="text-white-50 small text-uppercase fw-bold" style="letter-spacing: 1px;">Patient</label>
+            <p class="fs-4 fw-black text-white mb-0">{{ dossier.prenom }} {{ dossier.nom|upper }}</p>
+            <span class="badge bg-danger bg-opacity-25 text-daneger rounded-pill px-3">{{ dossier.sexe }}</span>
+        </div>
 
-  <div class="row g-4">
-    <div class="col-12">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Don lié</label>
-      {{ form_widget(form.don, { attr: { class: 'form-select form-control-premium border-0' } }) }}
-      {{ form_errors(form.don) }}
+        <div class="col-md-6">
+            <label class="text-white-50 small text-uppercase fw-bold" style="letter-spacing: 1px;">Groupe Sanguin</label>
+            <p class="fs-4 fw-black text-danger mb-0">
+                <i class="fa-solid fa-droplet me-2"></i>{{ dossier.typeSang }}
+            </p>
+        </div>
+
+        <hr class="border-white border-opacity-10 my-2">
+
+        {# Constantes #}
+        <div class="col-md-3">
+            <label class="text-white-50 small text-uppercase fw-bold">Âge</label>
+            <p class="fs-5 text-white">{{ dossier.age }} ans</p>
+        </div>
+        <div class="col-md-3">
+            <label class="text-white-50 small text-uppercase fw-bold">Taille</label>
+            <p class="fs-5 text-white">{{ dossier.taille }} cm</p>
+        </div>
+        <div class="col-md-3">
+            <label class="text-white-50 small text-uppercase fw-bold">Poids</label>
+            <p class="fs-5 text-white">{{ dossier.poid }} kg</p>
+        </div>
+        <div class="col-md-3">
+            <label class="text-white-50 small text-uppercase fw-bold">Température</label>
+            <p class="fs-5 text-white">{{ dossier.temperature }} °C</p>
+        </div>
+
+        {# Contact Urgence #}
+        <div class="col-12">
+            <div class="bg-white bg-opacity-5 p-3 rounded-4 border border-white border-opacity-10">
+                <label class="text-black-50 small text-uppercase fw-bold d-block mb-1">Contact d'urgence</label>
+                <p class="fs-5 text-black mb-0">
+                    <i class="fa-solid fa-phone-flip me-2 text-success"></i>{{ dossier.contactUrgence }}
+                </p>
+            </div>
+        </div>
+
+        {# Information sur le don lié #}
+        <div class="col-12 mt-4">
+            <label class="text-white-50 small text-uppercase fw-bold">Don associé</label>
+            {% if dossier.don %}
+                <div class="d-flex align-items-center gap-3 mt-2">
+                    <span class="badge badge-premium">#{{ dossier.don.id }}</span>
+                    <span class="text-white">{{ dossier.don.typeDon }} - {{ dossier.don.date|date('d/m/Y') }}</span>
+                    <a href="{{ path('back_don_show', {id: dossier.don.id}) }}" class="btn btn-sm btn-link text-white-50 text-decoration-none p-0">
+                        <i class="fa-solid fa-external-link small ms-1"></i> Voir le don
+                    </a>
+                </div>
+            {% else %}
+                <p class="text-warning small italic">Aucun don lié à ce dossier.</p>
+            {% endif %}
+        </div>
     </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Nom</label>
-      {{ form_widget(form.nom, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.nom) }}
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Prénom</label>
-      {{ form_widget(form.prenom, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.prenom) }}
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Âge</label>
-      {{ form_widget(form.age, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.age) }}
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Sexe</label>
-      {{ form_widget(form.sexe, { attr: { class: 'form-select form-control-premium border-0' } }) }}
-      {{ form_errors(form.sexe) }}
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Groupe sanguin</label>
-      {{ form_widget(form.typeSang, { attr: { class: 'form-select form-control-premium border-0' } }) }}
-      {{ form_errors(form.typeSang) }}
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Taille (cm)</label>
-      {{ form_widget(form.taille, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.taille) }}
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Poids (kg)</label>
-      {{ form_widget(form.poid, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.poid) }}
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Température (°C)</label>
-      {{ form_widget(form.temperature, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.temperature) }}
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Contact urgence</label>
-      {{ form_widget(form.contactUrgence, { attr: { class: 'form-control form-control-premium border-0' } }) }}
-      {{ form_errors(form.contactUrgence) }}
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-between align-items-center mt-5">
-    <form method="post" action="{{ path('back_dossier_delete', {id: dossier.id}) }}" onsubmit="return confirm('Supprimer ce dossier ?');">
-      <input type="hidden" name="_token" value="{{ csrf_token('delete_dossier_' ~ dossier.id) }}">
-      <button class="btn btn-outline-danger rounded-pill px-4 fw-bold">
-        <i class="fa-solid fa-trash me-2"></i> SUPPRIMER
-      </button>
-    </form>
-
-    <div class="d-flex gap-3">
-      <a href="{{ path('back_dossier_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">ANNULER</a>
-      <button type="submit" class="btn btn-premium px-5">
-        <i class="fa-solid fa-check me-2"></i>ENREGISTRER
-      </button>
-    </div>
-  </div>
-
-  {{ form_end(form) }}
 </div>
 {% endblock %}

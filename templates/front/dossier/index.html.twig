@@ -14,14 +14,14 @@
                 {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
                     Gestion des Dossiers Médicaux
                 {% else %}
-                    Mes Dossiers Médicaux
+                    Mon Dossier Médical
                 {% endif %}
             </h1>
             <div style="color:var(--muted);">
                 {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
                     Consultez et gérez les dossiers médicaux des patients.
                 {% else %}
-                    Un dossier médical est créé pour chaque don effectué.
+                    Retrouvez ici l'historique de vos constantes médicales liées à vos dons.
                 {% endif %}
             </div>
         </div>
@@ -76,7 +76,7 @@
             <div class="p-4 d-flex justify-content-between align-items-center"
                  style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
                 <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">Historique Médical</div>
-                <div class="small fw-bold text-white">{{ dossiers|length }} résultats trouvés</div>
+                <div class="small fw-bold text-white">{{ dossiers|length }} enregistrements trouvés</div>
             </div>
 
             <div class="table-responsive">
@@ -109,8 +109,10 @@
                             <tr class="cmd-row transition-all" style="border-top:1px solid var(--border);">
                                 <td class="py-4 ps-4">
                                     {% if dossier.client and dossier.client.user %}
-                                        <div class="fw-bold text-white">{{ dossier.client.user.nomComplet }}</div>
-                                        <div class="small text-muted">ID Patient: #{{ dossier.client.id }}</div>
+                                        <div class="fw-bold text-white fs-5">{{ dossier.client.user.nomComplet }}</div>
+                                        <div class="badge bg-secondary bg-opacity-25 text-white border border-secondary border-opacity-50 mt-1 px-2 py-1">
+                                            <i class="fa-solid fa-id-card me-1 text-muted"></i> ID Patient: #{{ dossier.client.id }}
+                                        </div>
                                     {% else %}
                                         <span class="text-muted">Anonyme</span>
                                     {% endif %}
@@ -169,16 +171,23 @@
 
                                 <td class="py-4 pe-4 text-end">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ path('front_dossier_edit', {'id': dossier.id}) }}" 
-                                           class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
-                                            <i class="fa-solid fa-edit"></i>
+                                        <a href="{{ path('front_dossier_pdf', {'id': dossier.id}) }}" 
+                                           class="btn btn-sm rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3"
+                                           title="Télécharger le dossier PDF"
+                                           target="_blank">
+                                            <i class="fa-solid fa-file-pdf"></i>
                                         </a>
-                                        <form method="post" action="{{ path('front_dossier_delete', {'id': dossier.id}) }}" onsubmit="return confirm('Supprimer ce dossier ?');" class="d-inline">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_dossier_' ~ dossier.id) }}">
-                                            <button class="btn btn-sm rounded-pill bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3">
-                                                <i class="fa-solid fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+
+                                        {% if is_granted('ROLE_DOCTOR') or is_granted('ROLE_ADMIN') %}
+                                       
+                                            
+                                            <form method="post" action="{{ path('front_dossier_delete', {'id': dossier.id}) }}" onsubmit="return confirm('Supprimer cet enregistrement ?');" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete_dossier_' ~ dossier.id) }}">
+                                                <button class="btn btn-sm rounded-pill bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3">
+                                                    <i class="fa-solid fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -193,8 +202,8 @@
                  style="width:76px;height:76px;background: rgba(230,57,57,.1); border: 1px solid rgba(230,57,57,.2);">
                 <i class="fa-solid fa-file-circle-question fs-2 text-primary" style="color:var(--primary) !important;"></i>
             </div>
-            <h4 class="fw-black text-white mb-2">Aucun dossier trouvé</h4>
-            <p class="text-white-50 mb-0">Effectuez un don pour générer votre premier dossier médical complet.</p>
+            <h4 class="fw-black text-white mb-2">Aucun historique trouvé</h4>
+            <p class="text-white-50 mb-0">Effectuez un don pour générer votre premier enregistrement médical.</p>
         </div>
     {% endif %}
 </div>
