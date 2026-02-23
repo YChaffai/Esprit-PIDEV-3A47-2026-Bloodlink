@@ -104,11 +104,19 @@
           <span class="text-danger">{{ error.message }}</span>
         {% endfor %}
 
-        {# Add class-level errors (UniqueEntity) under email #}
         {% for error in form.vars.errors %}
           {% if error.origin and error.origin.name == 'email' %}
             <span class="text-danger">{{ error.message }}</span>
           {% endif %}
+        {% endfor %}
+      </div>
+
+      {# Téléphone #}
+      <div class="mb-4">
+        <label class="form-label" for="{{ form.telephone.vars.id }}">Téléphone</label>
+        {{ form_widget(form.telephone, {'attr': {'class':'form-control','placeholder':'Ex: +216 12 345 678', 'autocomplete':'off'}}) }}
+        {% for error in form.telephone.vars.errors %}
+          <span class="text-danger">{{ error.message }}</span>
         {% endfor %}
       </div>
 
@@ -120,7 +128,6 @@
           <span class="text-danger">{{ error.message }}</span>
         {% endfor %}
       </div>
-
 
       <button type="submit" class="btn btn-submit w-100">
         <i class="fas fa-user-plus me-2"></i> S'inscrire
@@ -134,5 +141,3 @@
   </div>
 </div>
 {% endblock %}
-
-

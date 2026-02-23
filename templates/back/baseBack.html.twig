@@ -72,8 +72,33 @@
       margin: 25px 0 12px 10px;
     }
 
-    .sidebar-nav { list-style: none; padding: 0; margin: 0; flex-grow: 1; }
-    
+    /* Updated Scrolling Container */
+    .sidebar-nav-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 8px; /* Room for the scrollbar */
+      margin-right: -8px; /* Offset the padding to keep width consistent */
+    }
+
+    /* Custom Webkit Scrollbar */
+    .sidebar-nav-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .sidebar-nav-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .sidebar-nav-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 10px;
+    }
+    .sidebar-nav-container::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+
+    /* Removed flex-grow: 1 from here to prevent inner items from stretching */
+    .sidebar-nav { list-style: none; padding: 0; margin: 0; }
+
     .sidebar-link {
       display: flex;
       align-items: center;
@@ -170,7 +195,7 @@
           <i class="fa fa-users"></i> Utilisateurs
         </a>
       </li>
-       <li>
+      <li>
         <a href="{{ path('back_commandes_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_commande' %}active{% endif %}">
           <i class="fa fa-shopping-cart"></i> Commandes
         </a>
@@ -180,7 +205,6 @@
           <i class="fa fa-layer-group"></i> Stocks
         </a>
       </li>
-
       <li>
         <a href="{{ path('back_demande_index') }}" class="sidebar-link {% if app.request.attributes.get('_route') starts with 'back_demande' %}active{% endif %}">
           <i class="fa fa-file-medical"></i> Demandes
@@ -259,7 +283,7 @@
      <button class="btn btn-outline-light btn-sm d-lg-none me-auto" onclick="document.getElementById('sidebar').classList.toggle('open')">
         <i class="fa fa-bars"></i>
      </button>
-     
+
      <div class="d-flex align-items-center gap-4">
         {# Notifications placeholder #}
         <i class="fa-regular fa-bell text-muted cursor-pointer"></i>
