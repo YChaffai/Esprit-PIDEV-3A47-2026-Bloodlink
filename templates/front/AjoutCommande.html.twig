@@ -87,7 +87,7 @@
 <div class="py-4 py-md-5">
 
     {# --- HEADER --- #}
-    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
+    <div class="mb-5">
         <div>
             <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
             <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
@@ -98,9 +98,6 @@
                 Remplissez les informations ci-dessous pour soumettre votre demande.
             </div>
         </div>
-        <a href="{{ path('front_commandes_index') }}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold transition-all" style="height:48px; border-color:var(--border);">
-            <i class="fa-solid fa-arrow-left me-2"></i> Annuler
-        </a>
     </div>
 
     <div class="row justify-content-center">
@@ -129,7 +126,7 @@
 
                         <div class="col-md-6">
                             <label class="form-label-premium">{{ form_label(form.quantite) }}</label>
-                            {{ form_widget(form.quantite, { attr: { class: 'form-control form-control-lg form-control-premium', placeholder: 'Quantité en ml' } }) }}
+                            {{ form_widget(form.quantite, { attr: { class: 'form-control form-control-lg form-control-premium', placeholder: 'Quantité' } }) }}
                             {% if form.quantite.vars.errors|length > 0 %}
                                 <div class="bl-error"><i class="fa-solid fa-circle-exclamation"></i> {{ form_errors(form.quantite) }}</div>
                             {% endif %}
@@ -161,6 +158,10 @@
                     </div>
 
                     <div class="mt-5 pt-4 border-top border-secondary border-opacity-10 d-flex justify-content-end align-items-center gap-3">
+                        <a href="{{ path('front_commandes_index') }}" class="btn btn-outline-secondary rounded-pill px-4 fw-bold transition-all d-flex align-items-center justify-content-center" 
+                           style="height:56px; border-color:var(--border); color: var(--text);">
+                            Annuler
+                        </a>
                         <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-black text-uppercase transition-all" 
                                 style="height:56px; font-size: 0.9rem; letter-spacing: 1.5px; box-shadow: 0 10px 20px rgba(230,57,57,0.2); background-color: var(--primary); border-color: var(--primary);">
                             <i class="fa-solid fa-paper-plane me-2"></i> Envoyer la commande
@@ -171,6 +172,9 @@
         </div>
     </div>
 </div>
+
+{% include 'front/_chatbot.html.twig' %}
+
 {% endblock %}
 
 {% block javascripts %}

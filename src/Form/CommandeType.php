@@ -39,29 +39,31 @@ class CommandeType extends AbstractType
         ],
         'placeholder' => 'Choisir un type de sang',
       ])
-      ->add('status', ChoiceType::class, [
+      
+      ->add('banque', EntityType::class, [
+        'class' => Banque::class,
+        'choice_label' => 'nom',
+      ])
+    ;
+    if ($options['show_status']) {
+      $builder->add('status', ChoiceType::class, [
         'choices' => [
           'En Attente' => 'En Attente',
           'Confirmée' => 'Confirmée',
           'Annulée' => 'Annulée',
         ],
         'label' => 'Statut de la commande',
-      ])
-      ->add('banque', EntityType::class, [
-        'class' => Banque::class,
-        'choice_label' => 'nom',
-      ])
-      ->add('client', EntityType::class, [
-        'class' => Client::class,
-        'choice_label' => 'id',
-      ])
-    ;
+      ]);
+    
+    }
   }
-
+  
   public function configureOptions(OptionsResolver $resolver): void
   {
     $resolver->setDefaults([
       'data_class' => Commande::class,
+      'show_status' => false,
     ]);
+    $resolver->setAllowedTypes('show_status', 'bool');
   }
 }
