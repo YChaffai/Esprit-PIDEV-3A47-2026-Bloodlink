@@ -22,7 +22,7 @@ def verify():
         unknown_encodings = face_recognition.face_encodings(unknown_image)
 
         if not known_encodings or not unknown_encodings:
-            return jsonify({"match": False, "error": "No face detected"})
+            return jsonify({"match": False, "error": "Aucun visage détecté"})
 
         known_encoding = known_encodings[0]
         unknown_encoding = unknown_encodings[0]
