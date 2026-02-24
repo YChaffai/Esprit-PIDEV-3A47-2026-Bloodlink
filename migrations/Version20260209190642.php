@@ -20,12 +20,12 @@ final class Version20260209190642 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE entitecollecte CHANGE telephone telephone VARCHAR(20) NOT NULL');
+        $this->addSql('ALTER TABLE entite_collecte CHANGE telephone telephone VARCHAR(20) NOT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE entitecollecte CHANGE telephone telephone INT NOT NULL');
+        $this->addSql('ALTER TABLE entite_collecte CHANGE telephone telephone INT NOT NULL');
     }
 }

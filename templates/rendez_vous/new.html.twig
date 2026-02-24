@@ -13,7 +13,7 @@
             <td>{{ form_label(form.date_don, "Date et heure du rendez-vous") }}</td>
             <td>{{ form_widget(form.date_don) }}</td>
             <td>{{ form_errors(form.date_don) }}</td>
-            
+
         </tr>
         <tr>
             <td>{{ form_label(form.entite) }}</td>
@@ -27,7 +27,7 @@
 {% endblock %} #}
 
 {# templates/rendezvous/new.html.twig #}
-{% extends 'Base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Prendre un rendez-vous{% endblock %}
 
@@ -52,7 +52,7 @@
         {# --- FORM --- #}
         <div class="glass-card p-4">
             {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
+
             {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px; width: 100%;' %}
 
             <div class="mb-4">

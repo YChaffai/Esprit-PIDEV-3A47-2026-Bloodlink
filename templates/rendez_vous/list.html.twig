@@ -1,4 +1,4 @@
-{% extends 'Base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Liste des rendez vous{% endblock %}
 
@@ -6,7 +6,7 @@
 <div class="container mt-4">
     <h1>Liste des rendez vous</h1>
     <hr>
-    
+
     {# Section Filtre : Conversion du fond en Glass-card sombre #}
     <div class="glass-card p-3 mb-4 shadow-sm" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px;">
        {{ form_start(filterForm, {
@@ -17,7 +17,7 @@
         {# Utilisation de g-1 pour réduire l'espace entre les champs #}
         <div class="row g-1 align-items-center">
             {% set s = 'height: 38px; background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;' %}
-            
+
             <div class="col-md-2">{{ form_widget(filterForm.campagne, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
             <div class="col-md-2">{{ form_widget(filterForm.filter_date, {'attr': {'style': s}}) }}</div>
             <div class="col-md-2">{{ form_widget(filterForm.filter_time, {'attr': {'style': s}}) }}</div>
@@ -25,8 +25,8 @@
             <div class="col-md-2">{{ form_widget(filterForm.tri_date, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
 
             <div class="col-md-2">
-                <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}" 
-                   class="btn btn-danger w-100 d-flex align-items-center justify-content-center" 
+                <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}"
+                   class="btn btn-danger w-100 d-flex align-items-center justify-content-center"
                    style="height: 38px; font-weight: bold; font-size: 0.8rem;">RESET</a>
             </div>
         </div>
@@ -37,7 +37,7 @@
     <div id="list-content">
         {% include 'rendez_vous/_list_content.html.twig' %}
     </div>
-    
+
 
   {# À placer en bas de templates/rendez_vous/list.html.twig #}
 
@@ -54,7 +54,7 @@
             <div class="modal-footer">
                 {# On utilise client_id envoyé par le contrôleur de la liste #}
                 <a href="{{ path('rendezvous_list', {client_id: client_id}) }}" class="btn btn-secondary">Plus tard</a>
-                
+
                 <a href="{{ path('connect_google_start') }}" class="btn btn-primary">
                     <i class="fab fa-google"></i> Ajouter à mon calendrier
                 </a>
@@ -92,7 +92,7 @@
             rvForm.querySelectorAll('select, input').forEach(el => {
                 el.addEventListener('change', () => {
                     const data = new URLSearchParams(new FormData(rvForm));
-                    
+
                     fetch(`${window.location.pathname}?${data.toString()}`, {
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     })
@@ -125,4 +125,4 @@
 </div>
 
 {% endblock %}
-    
+

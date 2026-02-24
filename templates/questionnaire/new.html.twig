@@ -1,4 +1,4 @@
-{% extends 'Base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Remplir le questionnaire{% endblock %}
 
@@ -23,9 +23,9 @@
         {# --- FORM --- #}
         <div class="glass-card p-4">
             {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            
+
             {% set inputStyle = 'height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 5px; width: 100%;' %}
-            
+
             <div class="row">
                 {# Âge #}
                 <div class="col-md-6 mb-4">
@@ -70,8 +70,8 @@
                     }) }}
                 </div>
 
-                <a href="{{ path('campagne_list') }}" 
-                   class="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center" 
+                <a href="{{ path('campagne_list') }}"
+                   class="btn btn-outline-light rounded-pill d-flex align-items-center justify-content-center"
                    style="height: 55px; padding: 0 35px; font-weight: 700; text-transform: uppercase;">
                    Annuler
                 </a>
