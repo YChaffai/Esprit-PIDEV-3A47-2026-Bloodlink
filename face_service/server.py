@@ -5,6 +5,9 @@ import face_recognition
 app = Flask(__name__)
 CORS(app)
 
+# Email of the user whose face is stored in known_faces/user.jpg
+KNOWN_USER_EMAIL = "khalilboujemaa@gmail.com"
+
 
 @app.route("/verify", methods=["POST"])
 def verify():
@@ -27,9 +30,18 @@ def verify():
         results = face_recognition.compare_faces([known_encoding], unknown_encoding)
         distance = face_recognition.face_distance([known_encoding], unknown_encoding)
 
-        return jsonify(
-            {"match": bool(results[0]), "confidence": float(1 - distance[0])}
-        )
+        matched = bool(results[0])
+
+        response = {
+            "match": matched,
+            "confidence": float(1 - distance[0]),
+        }
+
+        # Include the email so Symfony knows which user to authenticate
+        if matched:
+            response["email"] = KNOWN_USER_EMAIL
+
+        return jsonify(response)
 
     except Exception as e:
         return jsonify({"error": str(e)})
