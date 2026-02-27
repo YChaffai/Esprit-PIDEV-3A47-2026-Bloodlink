@@ -1,6 +1,53 @@
-{% extends 'front/base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block title %}Liste des Entités de Collecte{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            color: var(--text) !important;
+            padding: .6rem .9rem !important;
+            min-height: 48px !important;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+        .search-box { z-index: 2; position: relative; }
+    </style>
+{% endblock %}
 
 {% block body %}
     <div class="glass-card p-5">
@@ -18,7 +65,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <select name="sort" class="form-select">
+                    <select name="sort" class="form-select js-choices">
                         <option value="nom" {% if currentSort == 'nom' %}selected{% endif %}>Nom</option>
                         <option value="adresse" {% if currentSort == 'adresse' %}selected{% endif %}>Adresse</option>
                         <option value="ville" {% if currentSort == 'ville' %}selected{% endif %}>Ville</option>
@@ -119,8 +166,21 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Choices.js
+            const sortSelectEl = document.querySelector('.js-choices');
+            let sortChoices = null;
+            if (sortSelectEl) {
+                sortChoices = new Choices(sortSelectEl, {
+                    searchEnabled: false,
+                    shouldSort: false,
+                    itemSelectText: '',
+                    allowHTML: true
+                });
+            }
+
             const searchInput = document.querySelector('input[name="q"]');
             const sortSelect = document.querySelector('select[name="sort"]');
             const searchForm = document.getElementById('search-form');
@@ -155,7 +215,8 @@
                         if (sortSelect.value === newSort) {
                             directionInput.value = (directionInput.value === 'ASC') ? 'DESC' : 'ASC';
                         } else {
-                            sortSelect.value = newSort;
+                            if (sortChoices) sortChoices.setChoiceByValue(newSort);
+                            else sortSelect.value = newSort;
                             directionInput.value = 'ASC';
                         }
                         updateTable();
@@ -168,7 +229,11 @@
                 timeout = setTimeout(updateTable, 500);
             });
 
-            sortSelect.addEventListener('change', updateTable);
+            if (sortSelectEl) {
+                sortSelectEl.addEventListener('change', updateTable);
+            } else {
+                sortSelect.addEventListener('change', updateTable);
+            }
 
             bindSortLinks();
         });

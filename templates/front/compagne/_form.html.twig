@@ -88,7 +88,35 @@
         color: white;
         font-weight: 600;
     }
+    /* Choices.js Customization */
+    .choices__inner {
+        background: rgba(255,255,255,.03) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        padding: .6rem .9rem !important;
+        min-height: 48px !important;
+        transition: all 0.2s ease;
+    }
+    .choices.is-focused .choices__inner {
+        border-color: var(--primary) !important;
+        background: rgba(255,255,255,.05) !important;
+    }
+    .choices__list--dropdown, .choices__list[aria-expanded] {
+        background: #111 !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        color: var(--text) !important;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+    .choices__item { color: var(--text) !important; }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background: rgba(230,57,57,.2) !important;
+    }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 
 <div class="form-custom">
     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
@@ -132,11 +160,26 @@
 
         <div class="mb-5">
             {{ form_label(form.entites) }}
-            {{ form_widget(form.entites) }}
+            {{ form_widget(form.entites, {'attr': {'class': 'js-choices'}}) }}
             <div class="form-help-custom">{{ form_help(form.entites) }}</div>
             <div class="form-error">{{ form_errors(form.entites) }}</div>
         </div>
 
         <button class="btn btn-submit-custom">{{ button_label|default('Enregistrer les modifications') }}</button>
     {{ form_end(form) }}
+    
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.js-choices').forEach((el) => {
+                new Choices(el, {
+                    searchEnabled: true,
+                    shouldSort: false,
+                    itemSelectText: '',
+                    allowHTML: true,
+                    placeholderValue: 'Sélectionner des options...'
+                });
+            });
+        });
+    </script>
 </div>

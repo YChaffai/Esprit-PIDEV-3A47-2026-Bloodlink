@@ -1,6 +1,50 @@
 {% extends 'base_front.html.twig' %}
 {% block title %}Nouveau Dossier | BloodLink{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            color: var(--text) !important;
+            padding: .6rem .9rem !important;
+            min-height: calc(1.5em + 1.2rem + 2px);
+            transition: all 0.2s ease;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="py-4 py-md-5" style="max-width: 980px; margin: 0 auto;">
 
@@ -37,12 +81,12 @@
     <div class="row g-4 mb-5">
         <div class="col-md-6">
             <label class="form-label-premium">Don lié (Patient)</label>
-            {{ form_widget(form.don, {'attr': {'class': 'form-select-premium'}}) }}
+            {{ form_widget(form.don, {'attr': {'class': 'form-select js-choices'}}) }}
             <div class="bl-error">{{ form_errors(form.don) }}</div>
         </div>
         <div class="col-md-6">
             <label class="form-label-premium">Groupe Sanguin</label>
-            {{ form_widget(form.typeSang, {'attr': {'class': 'form-select-premium'}}) }}
+            {{ form_widget(form.typeSang, {'attr': {'class': 'form-select js-choices'}}) }}
             <div class="bl-error">{{ form_errors(form.typeSang) }}</div>
         </div>
         <div class="col-md-6">
@@ -57,7 +101,7 @@
         </div>
         <div class="col-md-6">
             <label class="form-label-premium">Sexe</label>
-            {{ form_widget(form.sexe, {'attr': {'class': 'form-select-premium'}}) }}
+            {{ form_widget(form.sexe, {'attr': {'class': 'form-select js-choices'}}) }}
             <div class="bl-error">{{ form_errors(form.sexe) }}</div>
         </div>
         <div class="col-md-6">

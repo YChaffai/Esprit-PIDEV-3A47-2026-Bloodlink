@@ -1,4 +1,4 @@
-{% extends 'front/base_front.html.twig' %}
+{% extends 'base_front.html.twig' %}
 
 {% block stylesheets %}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css' rel='stylesheet' />
@@ -120,22 +120,97 @@
         }
 
         /* FullCalendar Custom Styling */
+        .calendar-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
         #calendar {
             padding: 20px;
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 15px;
-            border: 1px solid var(--border);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
         }
-        .fc { --fc-border-color: rgba(255,255,255,0.05); --fc-button-bg-color: var(--primary); --fc-button-border-color: var(--primary); }
-        .fc .fc-toolbar-title { color: white; font-weight: 800; font-size: 1.5rem; }
-        .fc .fc-col-header-cell-cushion { color: #666; text-transform: uppercase; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
-        .fc .fc-daygrid-day-number { color: #999; text-decoration: none; font-weight: 600; }
-        .fc-event { background: rgba(230, 57, 57, 0.15) !important; border: 1px solid var(--primary) !important; border-radius: 6px !important; padding: 2px 5px !important; transition: all 0.3s ease; }
-        .fc-event:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(230, 57, 57, 0.2); }
+        .fc { 
+            --fc-border-color: rgba(255,255,255,0.05); 
+            --fc-button-bg-color: var(--primary); 
+            --fc-button-border-color: var(--primary);
+            --fc-button-hover-bg-color: #d12e2e;
+            --fc-button-hover-border-color: #d12e2e;
+            --fc-today-bg-color: rgba(230, 57, 57, 0.1);
+        }
+        .fc .fc-toolbar.fc-header-toolbar {
+            margin-bottom: 1.5em;
+        }
+        .fc .fc-toolbar-title { color: white; font-weight: 700; font-size: 1.25rem; }
+        .fc .fc-button {
+            border-radius: 8px;
+            text-transform: capitalize;
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+        .fc .fc-col-header-cell-cushion { color: #888; text-transform: uppercase; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; padding: 10px 0; }
+        .fc .fc-daygrid-day-number { color: #aaa; text-decoration: none; font-weight: 600; padding: 8px; }
+        .fc .fc-daygrid-day-number:hover { color: white; }
+        .fc-event { 
+            background: rgba(230, 57, 57, 0.15) !important; 
+            border: 1px solid rgba(230, 57, 57, 0.5) !important; 
+            border-radius: 6px !important; 
+            padding: 3px 6px !important; 
+            margin: 2px 4px !important;
+            transition: all 0.3s ease; 
+        }
+        .fc-event:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(230, 57, 57, 0.3); background: rgba(230, 57, 57, 0.25) !important; }
         .fc-event-title { color: white !important; font-weight: 600 !important; font-size: 0.8rem !important; }
         .fc-theme-standard .fc-scrollgrid { border: none !important; }
-        .fc-day-today { background: rgba(255,255,255,0.03) !important; }
+        .fc-theme-standard td, .fc-theme-standard th { border: 1px solid rgba(255,255,255,0.03) !important; }
+        .fc-day-today { background: rgba(230, 57, 57, 0.05) !important; }
+
+        /* Choices.js Global Customization */
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            color: var(--text) !important;
+            padding: .6rem .9rem !important;
+            min-height: 48px !important;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 12px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+        .search-box { z-index: 2; position: relative; }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 {% endblock %}
 
 
@@ -157,7 +232,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <select name="sort" class="form-select">
+                    <select name="sort" class="form-select js-choices">
                         <option value="titre" {% if currentSort == 'titre' %}selected{% endif %}>Trier par Titre</option>
                         <option value="date_debut" {% if currentSort == 'date_debut' %}selected{% endif %}>Trier par Date Début</option>
                     </select>
@@ -171,16 +246,31 @@
         </div>
     </div>
 
-    <div class="glass-card p-5 mt-5">
-        <h2 class="display-6 fw-bold text-white mb-5"><i class="far fa-calendar-alt me-3 text-primary"></i>Calendrier</h2>
+    <div class="glass-card p-5 mt-5 calendar-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="display-6 fw-bold text-white mb-0" style="font-size: 2rem;"><i class="far fa-calendar-alt me-3 text-primary"></i>Calendrier</h2>
+        </div>
         <div id="calendar"></div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Choices.js
+            const sortSelectEl = document.querySelector('.js-choices');
+            let sortChoices = null;
+            if (sortSelectEl) {
+                sortChoices = new Choices(sortSelectEl, {
+                    searchEnabled: false,
+                    shouldSort: false,
+                    itemSelectText: '',
+                    allowHTML: true
+                });
+            }
+
             const searchInput = document.querySelector('input[name="q"]');
             const sortSelect = document.querySelector('select[name="sort"]');
             const searchForm = document.getElementById('search-form');
@@ -218,7 +308,8 @@
                         if (sortSelect.value === newSort) {
                             directionInput.value = (directionInput.value === 'ASC') ? 'DESC' : 'ASC';
                         } else {
-                            sortSelect.value = newSort;
+                            if (sortChoices) sortChoices.setChoiceByValue(newSort);
+                            else sortSelect.value = newSort;
                             directionInput.value = 'ASC';
                         }
                         updateTable();
@@ -231,7 +322,11 @@
                 timeout = setTimeout(updateTable, 500);
             });
 
-            sortSelect.addEventListener('change', updateTable);
+            if (sortSelectEl) {
+                sortSelectEl.addEventListener('change', updateTable);
+            } else {
+                sortSelect.addEventListener('change', updateTable);
+            }
 
             bindSortLinks();
             bindPaginationLinks();
@@ -270,6 +365,9 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'fr',
+                height: 600,
+                contentHeight: 550,
+                aspectRatio: 1.5,
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',

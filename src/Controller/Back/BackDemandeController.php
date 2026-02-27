@@ -80,7 +80,7 @@ class BackDemandeController extends AbstractController
             $demande->setStatus('EN_ATTENTE');
             $demande->setCreatedAt(new \DateTimeImmutable());
             $demande->setUpdatedAt(new \DateTimeImmutable());
-            
+            $demande->setClient($this->getUser());
             $em->persist($demande);
             $em->flush();
 

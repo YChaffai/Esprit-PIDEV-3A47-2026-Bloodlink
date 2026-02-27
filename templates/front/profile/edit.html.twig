@@ -2,6 +2,52 @@
 
 {% block title %}Mon Profil | BloodLink{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            color: var(--text) !important;
+            padding: .3rem .9rem !important;
+            min-height: 48px !important;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="row justify-content-center py-5">
     <div class="col-12 col-md-10 col-lg-8 col-xl-7">
@@ -48,7 +94,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label small fw-bold text-uppercase" style="color:var(--muted);">Groupe Sanguin</label>
-                        {{ form_widget(form.typeSang, {'attr': {'class': 'form-select form-select-lg bg-transparent text-white border-secondary-subtle', 'style': 'border-radius:14px; padding:.95rem 1.2rem;'}}) }}
+                        {{ form_widget(form.typeSang, {'attr': {'class': 'form-select js-choices'}}) }}
                         {{ form_errors(form.typeSang) }}
                     </div>
 
