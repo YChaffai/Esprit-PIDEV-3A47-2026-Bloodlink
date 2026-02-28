@@ -1,0 +1,81 @@
+<style>
+    .form-custom label {
+        color: #999;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+    .form-custom input, .form-custom textarea, .form-custom select {
+        background: rgba(255,255,255,0.02) !important;
+        border: 1px solid var(--border) !important;
+        color: white !important;
+        padding: 12px 18px !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease;
+    }
+    .form-custom input:focus, .form-custom textarea:focus, .form-custom select:focus {
+        background: rgba(255,255,255,0.05) !important;
+        border-color: rgba(230, 57, 57, 0.4) !important;
+        box-shadow: 0 0 15px rgba(230, 57, 57, 0.1) !important;
+    }
+    .form-help-custom {
+        color: #666;
+        font-size: 0.75rem;
+        margin-top: 4px;
+        font-style: italic;
+    }
+    .btn-submit-custom {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 32px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    .btn-submit-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(230, 57, 57, 0.3);
+    }
+    .form-error {
+        color: var(--primary);
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="form-custom">
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        <div class="mb-4">
+            {{ form_label(form.nom) }}
+            {{ form_widget(form.nom) }}
+            <div class="form-help-custom">{{ form_help(form.nom) }}</div>
+            <div class="form-error">{{ form_errors(form.nom) }}</div>
+        </div>
+
+        
+        <div class="mb-4">
+            {{ form_label(form.adresse) }}
+            {{ form_widget(form.adresse) }}
+            <div class="form-help-custom">{{ form_help(form.adresse) }}</div>
+            <div class="form-error">{{ form_errors(form.adresse) }}</div>
+        </div>
+
+        <div class="mb-4">
+            {{ form_label(form.ville) }}
+            {{ form_widget(form.ville) }}
+            <div class="form-help-custom">{{ form_help(form.ville) }}</div>
+            <div class="form-error">{{ form_errors(form.ville) }}</div>
+        </div>
+
+        <div class="mb-5">
+            {{ form_label(form.telephone) }}
+            {{ form_widget(form.telephone) }}
+            <div class="form-help-custom">{{ form_help(form.telephone) }}</div>
+            <div class="form-error">{{ form_errors(form.telephone) }}</div>
+        </div>
+
+        <button class="btn btn-submit-custom">{{ button_label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+</div>

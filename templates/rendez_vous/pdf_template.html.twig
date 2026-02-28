@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page { margin: 1.5cm; }
+        body { font-family: 'Helvetica', sans-serif; color: #333; line-height: 1.5; font-size: 10pt; }
+        
+        .header { border-bottom: 3px solid #cc0000; padding-bottom: 15px; margin-bottom: 20px; }
+        .logo { font-size: 24pt; font-weight: bold; color: #cc0000; }
+        .report-info { float: right; text-align: right; font-size: 8pt; color: #666; margin-top: -40px; }
+        
+        /* Dashboard KPI */
+        .kpi-container { background: #fdf2f2; border: 1px solid #ecc; padding: 15px; margin-bottom: 25px; border-radius: 4px; text-align: center; }
+        .kpi-box { display: inline-block; width: 30%; border-right: 1px solid #ecc;  margin: 5px;}
+        .kpi-box:last-child { border-right: none; }
+        .kpi-value { font-size: 16pt; font-weight: bold; color: #cc0000; display: block; }
+        .kpi-label { font-size: 8pt; text-transform: uppercase; color: #888; font-weight: bold; }
+
+        /* Style des Titres de Section (GRAS ET ROUGE) */
+        .section-header { 
+            background: #cc0000; 
+            color: #ffffff; 
+            padding: 8px 15px; 
+            font-size: 12pt; 
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+        
+        .section-content { 
+            padding: 5px 10px; 
+            text-align: justify; 
+            margin-bottom: 15px;
+        }
+
+        .footer { position: fixed; bottom: -30px; width: 100%; text-align: center; font-size: 8pt; color: #aaa; border-top: 1px solid #eee; padding-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">BLOODLINK</div>
+        <div class="report-info">
+
+            <strong>NOTE STRATÉGIQUE AI</strong><br>
+            Généré le: {{ "now"|date("d/m/Y H:i") }}
+        </div>
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-box">
+            <span class="kpi-value">2</span> 
+            <span class="kpi-label">Rendez-vous</span>
+        </div>
+        <div class="kpi-box">
+            <span class="kpi-value">21.5</span> 
+            <span class="kpi-label">Âge Moyen</span>
+        </div>
+        <div class="kpi-box">
+            <span class="kpi-value">O+ / A-</span>
+            <span class="kpi-label">Groupes</span>
+        </div>
+    </div>
+
+    {# 
+       LOGIQUE DE REMPLACEMENT :
+       On transforme les titres Markdown en div stylisés avec du GRAS.
+    #}
+    {% set cleanContent = content 
+        |replace({'# RÉSUMÉ EXÉCUTIF': '<div class="section-header"><strong>RÉSUMÉ EXÉCUTIF</strong></div><div class="section-content">'})
+        |replace({'# ANALYSE DES STOCKS': '</div><div class="section-header"><strong>ANALYSE DES STOCKS</strong></div><div class="section-content">'})
+        |replace({'# PLAN D\'ACTION': '</div><div class="section-header"><strong>PLAN D\'ACTION</strong></div><div class="section-content">'})
+        |replace({'- ': '• '})
+        |replace({'\n': '<br>'})
+    %}
+
+    {{ cleanContent|raw }}
+    </div> <div class="footer">
+        BloodLink AI Expert System — Document Confidentiel — Direction des Opérations
+    </div>
+</body>
+</html>

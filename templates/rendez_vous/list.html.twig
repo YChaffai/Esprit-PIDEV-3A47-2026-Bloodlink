@@ -1,0 +1,128 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Liste des rendez vous{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des rendez vous</h1>
+    <hr>
+
+    {# Section Filtre : Conversion du fond en Glass-card sombre #}
+    <div class="glass-card p-3 mb-4 shadow-sm" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px;">
+       {{ form_start(filterForm, {
+        'action': path('rendezvous_list', {'client_id': client_id}),
+        'method': 'GET',
+        'attr': {'id': 'rv-filter-form', 'class': 'js-filter-form'}
+    }) }}
+        {# Utilisation de g-1 pour réduire l'espace entre les champs #}
+        <div class="row g-1 align-items-center">
+            {% set s = 'height: 38px; background: #111; color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;' %}
+
+            <div class="col-md-2">{{ form_widget(filterForm.campagne, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_date, {'attr': {'style': s}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.filter_time, {'attr': {'style': s}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.statusClient, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+            <div class="col-md-2">{{ form_widget(filterForm.tri_date, {'attr': {'style': s, 'class': 'form-select'}}) }}</div>
+
+            <div class="col-md-2">
+                <a href="{{ path('rendezvous_list', {'client_id': client_id}) }}"
+                   class="btn btn-danger w-100 d-flex align-items-center justify-content-center"
+                   style="height: 38px; font-weight: bold; font-size: 0.8rem;">RESET</a>
+            </div>
+        </div>
+    {{ form_end(filterForm, {'render_rest': false}) }}
+    </div>
+
+    {# Liste des items stylisée en cartes sombres #}
+    <div id="list-content">
+        {% include 'rendez_vous/_list_content.html.twig' %}
+    </div>
+
+
+  {# À placer en bas de templates/rendez_vous/list.html.twig #}
+
+{% if app.request.query.get('showGoogleModal') %}
+<div class="modal fade show" id="googleModal" style="display: block; background: rgba(0,0,0,0.5);" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">🩸 Rendez-vous enregistré !</h5>
+            </div>
+            <div class="modal-body">
+                <p>Souhaitez-vous ajouter ce rendez-vous à votre calendrier Google pour recevoir un rappel automatique ?</p>
+            </div>
+            <div class="modal-footer">
+                {# On utilise client_id envoyé par le contrôleur de la liste #}
+                <a href="{{ path('rendezvous_list', {client_id: client_id}) }}" class="btn btn-secondary">Plus tard</a>
+
+                <a href="{{ path('connect_google_start') }}" class="btn btn-primary">
+                    <i class="fab fa-google"></i> Ajouter à mon calendrier
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<style>
+    /* Effet de flou sur le fond noir du modal */
+    .modal-backdrop.show {
+        backdrop-filter: blur(4px);
+        opacity: 0.6 !important;
+    }
+
+    /* Animation d'entrée douce pour le modal */
+    #googleModal .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        animation: modalFadeIn 0.4s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rvForm = document.getElementById('rv-filter-form'); // ID corrigé ici
+        const resultContainer = document.getElementById('list-content'); // ID corrigé ici
+
+        if (rvForm) {
+            rvForm.querySelectorAll('select, input').forEach(el => {
+                el.addEventListener('change', () => {
+                    const data = new URLSearchParams(new FormData(rvForm));
+
+                    fetch(`${window.location.pathname}?${data.toString()}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                    .then(res => res.text())
+                    .then(html => {
+                        resultContainer.innerHTML = html;
+                    });
+                });
+            });
+        }
+    });
+
+    //modal calendar
+    document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('googleModal');
+    if (modal) {
+        // Permet de fermer le modal proprement si on clique sur "Plus tard"
+        const closeBtns = modal.querySelectorAll('[data-bs-dismiss="modal"]');
+        closeBtns.forEach(btn => {
+            btn.onclick = () => modal.style.display = 'none';
+        });
+
+        // Fermeture si on clique sur l'arrière-plan
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        }
+    }
+});
+</script>
+</div>
+
+{% endblock %}
+

@@ -1,0 +1,59 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Modifier Profil Donneur | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+            <div>
+                <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Modifier Profil</h1>
+                <p class="text-white-50 mb-0">Édition des informations de santé pour le compte #{{ user.id }}.</p>
+            </div>
+
+            <a href="{{ path('app_user_show', { id: user.id }) }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+                <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+            </a>
+        </div>
+
+        <div class="glass-card p-4 p-md-5" style="background: rgba(0, 0, 0, 0.4);">
+            <div class="mb-5">
+                <h2 class="fw-black text-uppercase mb-1" style="letter-spacing:-0.5px;">
+                    <i class="fa-solid fa-user-gear me-2" style="color:var(--primary);"></i>Donneur
+                </h2>
+                <p class="text-white-50">Mise à jour des coordonnées médicales.</p>
+            </div>
+
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color:var(--muted); letter-spacing:1px;">Groupe Sanguin</label>
+                        {{ form_widget(form.typeSang, { attr: { class: 'form-select form-control-premium border-0' ~ (form.typeSang.vars.errors|length ? ' is-invalid' : '') } }) }}
+                        {% for error in form.typeSang.vars.errors %}
+                            <div class="mt-2 d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-uppercase" style="color:var(--muted); letter-spacing:1px;">Date du dernier don</label>
+                        {{ form_widget(form.dernierDon, { attr: { class: 'form-control form-control-premium border-0' ~ (form.dernierDon.vars.errors|length ? ' is-invalid' : '') } }) }}
+                        {% for error in form.dernierDon.vars.errors %}
+                            <div class="mt-2 d-flex align-items-center bg-danger bg-opacity-10 text-danger p-2 rounded-3 small border border-danger border-opacity-25">
+                                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error.message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-5">
+                    <button type="submit" class="btn btn-premium px-5">
+                        ENREGISTRER <i class="fa-solid fa-check ms-2"></i>
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

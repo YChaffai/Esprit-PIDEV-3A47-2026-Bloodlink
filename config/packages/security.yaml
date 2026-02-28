@@ -1,0 +1,53 @@
+security:
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            pattern: ^/
+            provider: app_user_provider
+            lazy: true
+
+            custom_authenticator:
+                - App\Security\UserAuthenticator
+
+            logout:
+                path: app_logout
+                target: app_login
+
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_DOCTOR, ROLE_CLIENT, ROLE_BANQUE, ROLE_CNTS]
+
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/face-login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/password-reset, roles: PUBLIC_ACCESS }
+        - { path: ^/user, roles: ROLE_ADMIN }
+        - { path: ^/backoffice, roles: [ROLE_ADMIN, ROLE_CLIENT] }
+        - { path: ^/back, roles: [ROLE_ADMIN, ROLE_CLIENT] }
+        - { path: ^/front/dossier, roles: [ROLE_DOCTOR, ROLE_ADMIN, ROLE_CLIENT] }
+        - { path: ^/front/don, roles: [ROLE_CLIENT, ROLE_ADMIN] }
+        - { path: ^/front/commande, roles: [ROLE_CLIENT, ROLE_ADMIN] }
+        - { path: ^/front/new, roles: [ROLE_CLIENT, ROLE_ADMIN] }
+        - { path: ^/campagne, roles: [ROLE_CLIENT, ROLE_ADMIN] }
+        - { path: ^/questionnaire, roles: [ROLE_CLIENT, ROLE_ADMIN] }
+        - { path: ^/rendez_vous, roles: [ROLE_CLIENT, ROLE_ADMIN] }
+
+when@test:
+    security:
+        password_hashers:
+            App\Entity\User:
+                algorithm: auto
+                cost: 4

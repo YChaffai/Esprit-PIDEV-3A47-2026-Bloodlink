@@ -1,0 +1,170 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Statistiques des transferts{% endblock %}
+
+{% block body %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-black mb-0">
+            <i class="fa fa-chart-column me-2 text-danger"></i>
+            Statistiques des transferts
+        </h1>
+        <div class="text-white-50 small">
+            Vue globale et analyse des transferts sanguins
+        </div>
+    </div>
+
+    <a href="{{ path('back_transfert_index') }}" class="btn btn-outline-light rounded-pill px-4">
+        <i class="fa fa-arrow-left me-2"></i> Retour
+    </a>
+</div>
+
+
+{# ===== CARTES STATISTIQUES ===== #}
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center h-100">
+            <div class="text-white-50 mb-2">
+                <i class="fa fa-database me-1"></i> Total
+            </div>
+            <h2 class="fw-black text-white">{{ total }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center h-100 border border-warning border-opacity-25">
+            <div class="text-warning mb-2">
+                <i class="fa fa-clock me-1"></i> En attente
+            </div>
+            <h2 class="fw-black text-warning">{{ enAttente }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center h-100 border border-success border-opacity-25">
+            <div class="text-success mb-2">
+                <i class="fa fa-check me-1"></i> Confirmé
+            </div>
+            <h2 class="fw-black text-success">{{ confirme }}</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="glass-card p-4 text-center h-100 border border-danger border-opacity-25">
+            <div class="text-danger mb-2">
+                <i class="fa fa-xmark me-1"></i> Annulé
+            </div>
+            <h2 class="fw-black text-danger">{{ annule }}</h2>
+        </div>
+    </div>
+
+</div>
+
+
+{# ===== GRAPHIQUE ===== #}
+<div class="glass-card p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+            <i class="fa fa-chart-bar me-2 text-danger"></i>
+            Transferts par type sanguin
+        </h5>
+    </div>
+
+    <canvas id="chart" height="100"></canvas>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block javascripts %}
+{{ parent() }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const labels = [
+    {% for t in parType %}
+        "{{ t.typeSang }}",
+    {% endfor %}
+];
+
+const values = [
+    {% for t in parType %}
+        {{ t.total }},
+    {% endfor %}
+];
+
+new Chart(document.getElementById('chart'), {
+
+    type: 'bar',
+
+    data: {
+        labels: labels,
+
+        datasets: [{
+            label: 'Nombre de transferts',
+            data: values,
+
+            backgroundColor: [
+                '#e63939',
+                '#ff4d4d',
+                '#ff6b6b',
+                '#ff8787',
+                '#ffa3a3',
+                '#ffc0c0'
+            ],
+
+            borderRadius: 8,
+            borderWidth: 0
+        }]
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+            legend: {
+                labels: {
+                    color: "#ffffff"
+                }
+            }
+        },
+
+        scales: {
+
+            x: {
+                ticks: {
+                    color: "#cccccc"
+                },
+                grid: {
+                    color: "rgba(255,255,255,0.05)"
+                }
+            },
+
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: "#cccccc",
+                    stepSize: 1
+                },
+                grid: {
+                    color: "rgba(255,255,255,0.05)"
+                }
+            }
+
+        }
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

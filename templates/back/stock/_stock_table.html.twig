@@ -1,0 +1,66 @@
+    <div class="table-responsive">
+        <table class="table table-premium align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Type Sang</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Organisation</th>
+                    <th scope="col">Date de création</th>
+                    <th class="text-end" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="stock-rows">
+            {% for s in stocks %}
+                <tr class="stock-row">
+                    
+                    <td><span class="badge badge-premium">#{{ s.id }}</span></td>
+                    
+                    <td>
+                        <span class="fw-bold" style="color: var(--primary); font-size: 1.1rem;">{{ s.typeSang }}</span>
+                    </td>
+
+                    <td class="fw-bold fs-5">{{ s.quantite }} <small class="text-muted fw-normal" style="font-size: 0.7rem;">UNITÉS</small></td>
+
+                    <td>
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-white small text-uppercase">{{ s.typeOrg }}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">ID: {{ s.typeOrgid }}</span>
+                        </div>
+                    </td>
+
+                    <td class="text-white-50 small">
+                        {{ s.createdAt ? s.createdAt|date('d/m/Y H:i') : '-' }}
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ path('back_stock_edit', {id: s.id}) }}" 
+                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
+                               style="font-size: 0.75rem; font-weight: 700;">
+                                <i class="fa-solid fa-pen me-1 small"></i> MODIFIER
+                            </a>
+                            <form method="post" action="{{ path('back_stock_delete', {id: s.id}) }}" onsubmit="return confirm('Supprimer ce stock ?');" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ s.id) }}">
+                                <button class="btn btn-sm rounded-pill px-3 btn-outline-danger border-danger border-opacity-25" style="font-size: 0.75rem; font-weight: 700;">
+                                    <i class="fa-solid fa-trash me-1 small"></i> SUPPRIMER
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-layer-group fa-2x mb-3 d-block opacity-25"></i>
+                        Aucun stock trouvé.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-white-50 mt-4 small px-2">
+        {{ stocks|length }} stock(s) affiché(s)
+    </div>

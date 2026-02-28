@@ -1,0 +1,99 @@
+    <div class="table-responsive">
+        <table class="table table-premium align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">Référence</th>
+                    <th scope="col">Type Sang</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Priorité</th>
+                    <th scope="col">Statut</th>
+                    <th class="text-end" scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="cmd-rows">
+            {% for c in commandes %}
+                {% set ref = c.reference ?? c.id %}
+                {% set rawStatus = (c.status ?? 'pending')|lower %}
+                {% set rawPriority = (c.priorite ?? 'normal')|lower %}
+
+                {# Normalize for display logic #}
+                {% set status = rawStatus %}
+                {% if rawStatus in ['accepted', 'valide', 'approved', 'confirmée'] %}{% set status = 'accepted' %}{% endif %}
+                {% if rawStatus in ['rejected', 'refuse', 'denied', 'annulée'] %}{% set status = 'rejected' %}{% endif %}
+                {% if rawStatus in ['pending', 'en attente'] %}{% set status = 'pending' %}{% endif %}
+
+                {% set priority = rawPriority %}
+
+                <tr class="cmd-row">
+                    
+                    <td><span class="badge badge-premium">#{{ ref }}</span></td>
+                    
+                    <td>
+                        <span class="fw-bold" style="color: var(--primary); font-size: 1.1rem;">{{ c.typeSang ?? '-' }}</span>
+                    </td>
+
+                    <td class="fw-bold fs-5">{{ c.quantite ?? '-' }}</td>
+
+                    <td>
+                        {% if priority in ['urgent', 'high'] %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-triangle-exclamation me-1 small"></i> {{ priority|upper }}
+                            </span>
+                        {% elseif priority == 'low' %}
+                            <span class="badge bg-secondary bg-opacity-10 text-muted border border-white border-opacity-10 rounded-pill px-3">
+                                {{ priority|upper }}
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
+                                {{ priority|upper }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if status == 'accepted' %}
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-check-circle me-1 small"></i> CONFIRMÉE
+                            </span>
+                        {% elseif status == 'rejected' %}
+                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-xmark-circle me-1 small"></i> ANNULÉE
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 rounded-pill px-3">
+                                <i class="fa-solid fa-clock me-1 small"></i> EN ATTENTE
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ path('admin_commande_edit', {id: c.id}) }}" 
+                               class="btn btn-sm rounded-pill px-3 btn-outline-light border-secondary border-opacity-25"
+                               style="font-size: 0.75rem; font-weight: 700;">
+                                <i class="fa-solid fa-pen me-1 small"></i> MODIFIER
+                            </a>
+                            <form method="post" action="{{ path('admin_commande_delete', {id: c.id}) }}" onsubmit="return confirm('Supprimer cette commande ?');" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ c.id) }}">
+                                <button class="btn btn-sm rounded-pill px-3 btn-outline-danger border-danger border-opacity-25" style="font-size: 0.75rem; font-weight: 700;">
+                                    <i class="fa-solid fa-trash me-1 small"></i> SUPPRIMER
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-shopping-cart fa-2x mb-3 d-block opacity-25"></i>
+                        Aucune commande trouvée.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-white-50 mt-4 small px-2">
+        {{ commandes|length }} commande(s) affichée(s)
+    </div>

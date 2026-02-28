@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #c1121f;
+            font-size: 20px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #c1121f;
+            color: #ffffff;
+            padding: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        td {
+            border: 1px solid #dddddd;
+            padding: 6px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: right;
+            font-size: 10px;
+            color: #777;
+        }
+
+        .total-box {
+            margin-top: 15px;
+            text-align: right;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>BloodLink</h1>
+    <p>Liste complète des demandes de sang</p>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Banque</th>
+            <th>Type</th>
+            <th>Quantité</th>
+            <th>Urgence</th>
+            <th>Statut</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set total = 0 %}
+
+        {% for d in demandes %}
+            {% set total = total + d.quantite %}
+
+            <tr>
+                <td>#{{ d.id }}</td>
+                <td>{{ d.idBanque }}</td>
+                <td>{{ d.typeSang }}</td>
+                <td>{{ d.quantite }}</td>
+                <td>{{ d.urgence }}</td>
+                <td>{{ d.status }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="total-box">
+    Total des poches demandées : {{ total }}
+</div>
+
+<div class="footer">
+    Document généré le {{ "now"|date("d/m/Y H:i") }}
+</div>
+
+</body>
+</html>

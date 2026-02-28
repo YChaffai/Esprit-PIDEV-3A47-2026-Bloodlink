@@ -1,0 +1,162 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Analyse IA | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Animation subtile pour l'apparition du texte */
+        .analysis-content {
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styling the Markdown output for the dark theme */
+        .analysis-content h1, 
+        .analysis-content h2, 
+        .analysis-content h3 {
+            color: white;
+            font-weight: 800;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+        .analysis-content h1 { font-size: 1.8rem; }
+        .analysis-content h2 { font-size: 1.5rem; }
+        .analysis-content h3 { font-size: 1.25rem; }
+        
+        .analysis-content p {
+            margin-bottom: 1.5rem;
+            opacity: 0.85;
+        }
+        
+        .analysis-content b, 
+        .analysis-content strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .analysis-content ul, 
+        .analysis-content ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            opacity: 0.9;
+        }
+        .analysis-content li {
+            margin-bottom: 0.5rem;
+        }
+        .analysis-content li::marker {
+            color: var(--primary);
+        }
+        
+        .analysis-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin-left: 0;
+            font-style: italic;
+            background: rgba(255,255,255,0.02);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-4 mb-5">
+        <div>
+            <a href="{{ path('front_demande_index') }}" class="text-decoration-none small mb-4 d-inline-block hover-primary" style="color:var(--muted); font-weight: 600; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-arrow-left me-2"></i>Retour aux demandes
+            </a>
+
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:52px; height:52px; background:rgba(230,57,57,0.1); border:1px solid rgba(230,57,57,0.2);">
+                    <i class="fa-solid fa-microchip fs-4" style="color: var(--primary);"></i>
+                </div>
+                <h1 class="fw-black mb-0 text-white" style="letter-spacing:-1px; font-size: clamp(2rem, 4vw, 3rem);">
+                    Analyse <span style="color: var(--primary);">Prédictive</span>
+                </h1>
+            </div>
+            
+            <div style="color:var(--muted);">
+                Intelligence Artificielle BloodLink v2.0
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            <a href="{{ path('front_demande_prediction_pdf', { analysis: analysis }) }}" target="_blank" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all">
+                <i class="fa-solid fa-file-pdf"></i> Exporter PDF
+            </a>
+            <a href="{{ path('demande_ai_openai') }}" class="btn rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all" style="background: var(--primary); color: white;">
+                <i class="fa-solid fa-rotate"></i> Actualiser l'analyse
+            </a>
+        </div>
+    </div>
+
+    {# --- AI RESULT CARD --- #}
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11">
+            <div class="glass-card p-4 p-md-5 position-relative overflow-hidden">
+                
+                {# Decorative background icon #}
+                <div class="position-absolute top-0 end-0 p-4 opacity-10" style="pointer-events: none;">
+                    <i class="fa-solid fa-brain" style="font-size: 15rem; color: var(--primary); transform: rotate(15deg) translate(20px, -20px);"></i>
+                </div>
+
+                <h4 class="fw-black text-uppercase small mb-4 d-flex align-items-center" style="letter-spacing:1px; color:var(--muted);">
+                    <i class="fa-solid fa-terminal me-2" style="color: var(--primary);"></i> Rapport d'analyse
+                </h4>
+                
+                <hr class="border-secondary opacity-25 mb-4 position-relative z-2">
+
+                {# Target container for Markdown #}
+                <div id="markdown-container" class="analysis-content" style="font-size: 1.05rem; line-height: 1.8; color: var(--text);">
+                    <div class="d-flex align-items-center gap-2 text-muted">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Traitement de la réponse IA...
+                    </div>
+                </div>
+
+                {# Securely pass the raw analysis string to JS #}
+                <script type="application/json" id="raw-analysis-data">
+                    {{ analysis|json_encode|raw }}
+                </script>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rawDataEl = document.getElementById('raw-analysis-data');
+            const container = document.getElementById('markdown-container');
+            
+            if (rawDataEl && container) {
+                try {
+                    // Parse the JSON string to get the exact raw markdown string
+                    const markdownText = JSON.parse(rawDataEl.textContent);
+                    
+                    // Convert markdown to HTML
+                    container.innerHTML = marked.parse(markdownText);
+                } catch (e) {
+                    console.error('Failed to parse analysis data', e);
+                    container.innerHTML = '<div class="text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Erreur lors du chargement du format de l\'analyse.</div>';
+                }
+            }
+        });
+    </script>
+{% endblock %}

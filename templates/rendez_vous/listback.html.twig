@@ -1,0 +1,231 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Gestion des Rendez-vous | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-5">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Rendez-vous</h1>
+        <p class="text-white-50 mb-0">Gérez les rendez-vous des donneurs et leur statut.</p>
+    </div>
+    <div class="d-flex gap-2">
+       <button type="button" onclick="fetchAiReport()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
+    <i class="fa-solid fa-brain me-2"></i> Générer Analyse IA
+</button>
+
+{# On ajoute un petit loader discret pour faire patienter l'admin #}
+<div id="ai-loader" class="d-none mt-2 text-center">
+    <div class="spinner-border spinner-border-sm text-danger" role="status"></div>
+    <span class="text-white-50 ms-2 small">L'IA analyse vos données...</span>
+</div>
+        <button type="button" onclick="exportRendezvous()" class="btn btn-sm btn-outline-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0">
+            <i class="fa-solid fa-download"></i>
+        </button>
+         <span class="badge bg-danger rounded-pill px-4 py-2 d-flex align-items-center mb-2 mb-md-0" style="font-size: 0.9rem;">
+            <i class="fa-solid fa-calendar-check me-2"></i> {{ rendezvous|length }} RÉS.
+         </span>
+    </div>
+</div>
+{# ZONE DU RAPPORT IA (S'affiche uniquement si report existe) #}
+  <div id="ai-report-section" class="glass-card p-4 mb-4 border-start border-4 border-danger d-none" style="background: rgba(255,255,255,0.08);">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-danger fw-bold mb-0">
+            <i class="fa-solid fa-robot me-2"></i>Analyse Stratégique
+        </h5>
+        
+        <div class="d-flex gap-2">
+            {# Bouton PDF avec la nouvelle fonction #}
+            <button onclick="generatePDF()" class="btn btn-outline-light rounded-pill px-4">
+                <i class="fa-solid fa-download me-2"></i> Télécharger PDF
+            </button>
+            
+            {# Bouton Quitter (On cache simplement le bloc au lieu de recharger la page) #}
+            <button onclick="document.getElementById('ai-report-section').classList.add('d-none')" class="btn btn-sm btn-danger rounded-circle" style="width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>    
+
+    {# Conteneur du texte généré par l'IA #}
+    <div id="ai-content" class="ai-content text-white mt-3 p-3 bg-dark rounded shadow-inner" style="min-height: 50px;">
+        </div>
+
+    <div class="mt-4 pt-3 border-top border-secondary">
+        <label class="small text-white-50 mb-2">Demander une modification ou plus de détails :</label>
+        <div class="input-group">
+            <input type="text" id="ai-user-input" class="form-control border-0 bg-dark text-white" 
+                   placeholder="Ex: 'Focalise sur les rendez-vous en attente' ou 'Rends le ton plus simple'...">
+            <button class="btn btn-danger" type="button" onclick="fetchAiReport(true)">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="glass-card p-4" style="background: rgba(0,0,0,0.4);">
+    {# Filtres #}
+    <div class="mb-4">
+        {{ form_start(filterForm, {'attr': {'id': 'rv-filter-form', 'class': 'js-filter-form'}}) }}
+            <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Recherche</label>
+                    <input type="text" name="search" class="form-control form-control-premium border-0" placeholder="Nom ou Prénom..." value="{{ app.request.query.get('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Campagne</label>
+                     {{ form_widget(filterForm.campagne, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Entité</label>
+                     {{ form_widget(filterForm.entite, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Date</label>
+                    {{ form_widget(filterForm.filter_date, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                 <div class="col-md-2">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Heure</label>
+                    {{ form_widget(filterForm.filter_time, {'attr': {'class': 'form-control form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Statut</label>
+                    {{ form_widget(filterForm.status, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-uppercase" style="color: var(--muted); letter-spacing: 1px;">Tri</label>
+                    {{ form_widget(filterForm.tri, {'attr': {'class': 'form-select form-control-premium border-0'}}) }}
+                </div>
+                
+                <div class="col-md-2">
+                    <a href="{{ path('rendezvousback_list') }}" class="btn btn-outline-danger w-100 py-3 fw-bold rounded-pill">
+                        <i class="fa-solid fa-rotate-left me-2"></i> RESET
+                    </a>
+                </div>
+            </div>
+        {{ form_end(filterForm, {'render_rest': false}) }}
+    </div>
+
+    {# Table #}
+    <div id="list-content">
+        {% include 'rendez_vous/_listback_table.html.twig' %}
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    function exportRendezvous() {
+    const filterForm = document.getElementById('rv-filter-form'); //id mtaa el form
+    const formData = new FormData(filterForm);
+    
+    // On récupère la valeur de recherche
+    const searchVal = filterForm.querySelector('input[name="search"]').value;
+
+    // IMPORTANT : On l'ajoute avec le préfixe utilisé par Symfony 
+    // pour que $criteria['rendez_vous_filter'] le contienne
+    if (searchVal) {
+        formData.append('rendez_vous_filter[search]', searchVal);
+    }
+
+    const params = new URLSearchParams(formData).toString();
+    window.location.href = "{{ path('export_rendezvous') }}?" + params;
+}
+
+async function fetchAiReport(isUpdate = false) {
+    const content = document.getElementById('ai-content');
+    const loader = document.getElementById('ai-loader');
+    const reportSection = document.getElementById('ai-report-section');
+
+    // On récupère la date du calendrier (input type date de Symfony)
+    const dateInput = document.querySelector('input[name*="filter_date"]');
+    const dateValue = dateInput ? dateInput.value : '';
+
+    if (loader) loader.classList.remove('d-none');
+
+    // Construction de l'URL avec la date pour le filtre SQL
+    let url = `{{ path('app_ai_report') }}?ajax=1&filter_date=${dateValue}`;
+    
+    if (isUpdate) {
+        const feedback = document.getElementById('ai-user-input').value;
+        url += `&user_feedback=${encodeURIComponent(feedback)}`;
+    }
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // NETTOYAGE DU TEXTE : On enlève les symboles Markdown
+        let cleanText = data.report
+            .replace(/\*\*/g, '') // Supprime les **
+            .replace(/#/g, '')    // Supprime les #
+            .replace(/\*/g, '')   // Supprime les * simples
+            .trim();
+        
+        content.innerHTML = cleanText.replace(/\n/g, '<br>');
+        reportSection.classList.remove('d-none');
+    } catch (e) {
+        alert("Erreur lors de l'analyse des données.");
+    } finally {
+        if (loader) loader.classList.add('d-none');
+    }
+}
+
+function generatePDF() {
+    const reportContent = document.getElementById('ai-content').innerText;
+    
+    // On crée un formulaire temporaire pour envoyer le texte en POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{{ path('app_ai_export_pdf') }}";
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'pdf_content';
+    input.value = reportContent;
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
+{# function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const text = document.getElementById('ai-content').innerText;
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(204, 0, 0); // Rouge BloodLink
+    doc.text("RAPPORT STRATÉGIQUE BLOODLINK", 10, 15);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "normal");
+
+    // Découpage automatique pour gérer les rapports longs sur plusieurs pages
+    const lines = doc.splitTextToSize(text, 180);
+    let y = 25;
+
+    lines.forEach(line => {
+        if (y > 280) { // Si on dépasse le bas de page A4
+            doc.addPage();
+            y = 20;
+        }
+        doc.text(line, 10, y);
+        y += 7;
+    });
+
+    doc.save("Analyse_BloodLink.pdf");
+} #}
+
+    </script>
+
+<style>
+    .ai-content strong { color: white; }
+    #ai-report-section {
+        animation: slideDown 0.5s ease-out;
+    }
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,22 @@
+    {% for quest in questionnaires %}
+        <div class="glass-card">
+            <h3>{{ quest.campagne.titre }}</h3>
+            <p class="text-muted small"style="color: red !important;">Soumis le : {{ quest.date|date('d/m/Y H:i') }}</p>
+            <div class="d-flex gap-2">
+                {# <a href="{{ path('questionnaire_update', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Update</a> #}
+                {% if quest.rendezVous is not null and quest.rendezVous.status != 'annulé' %}
+                    <a href="{{ path('questionnaire_update', { id : quest.id })}}" class="btn btn-sm btn-outline-light">
+                        Update
+                    </a>
+                {% endif %}
+                <a  href="{{ path('questionnaire_delete', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Delete</a>
+                <a href="{{ path('questionnaire_details', { id : quest.id })}}" class="btn btn-sm btn-outline-light">Details</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card text-center p-5">
+            <p class="text-muted">Aucun questionnaire trouvé.</p>
+        </div>
+    {% endfor %}
+    
+

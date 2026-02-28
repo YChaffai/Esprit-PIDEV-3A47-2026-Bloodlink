@@ -1,0 +1,174 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Détails: {{ compagne.titre }} | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Force styling on the included delete form button to match our theme */
+        .delete-form-wrapper form {
+            margin: 0;
+        }
+        .delete-form-wrapper button {
+            background: rgba(230, 57, 57, 0.1) !important;
+            border: 1px solid rgba(230, 57, 57, 0.25) !important;
+            color: #ff4d4d !important;
+            padding: 8px 24px !important;
+            border-radius: 50px !important;
+            font-weight: 700 !important;
+            font-size: 0.9rem !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .delete-form-wrapper button:hover {
+            background: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(230, 57, 57, 0.3);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-4 mb-5">
+        <div>
+            <a href="{{ path('app_compagne_index') }}" class="text-decoration-none small mb-3 d-inline-block hover-primary" style="color:var(--muted); font-weight: 600; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-arrow-left me-2"></i>Retour aux campagnes
+            </a>
+            
+            <h1 class="fw-black mb-2 text-white" style="letter-spacing:-1px; font-size: clamp(2rem, 4vw, 3rem);">
+                {{ compagne.titre }}
+            </h1>
+            
+            <div class="d-flex align-items-center gap-3">
+                {# Dynamic Status Badge #}
+                {% set now = date() %}
+                {% if compagne.dateDebut <= now and compagne.dateFin >= now %}
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-circle-check me-1"></i> En cours
+                    </span>
+                {% elseif compagne.dateDebut > now %}
+                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-clock me-1"></i> À venir
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-box-archive me-1"></i> Terminée
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ path('app_compagne_edit', {'id': compagne.id}) }}" class="btn btn-outline-light rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2">
+                <i class="fa-solid fa-pen"></i> Modifier
+            </a>
+            <div class="delete-form-wrapper">
+                {{ include('front/compagne/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+
+    {# --- MAIN CONTENT GRID --- #}
+    <div class="row g-4">
+        
+        {# Left Column: Details #}
+        <div class="col-lg-8">
+            <div class="glass-card p-4 p-md-5 h-100">
+                
+                <div class="mb-5">
+                    <h4 class="fw-black text-uppercase small mb-3" style="letter-spacing:1px; color:var(--muted);">
+                        <i class="fa-solid fa-align-left me-2"></i>Description de la campagne
+                    </h4>
+                    <p class="text-white opacity-75 mb-0" style="font-size: 1.05rem; line-height: 1.7;">
+                        {{ compagne.description|nl2br }}
+                    </p>
+                </div>
+
+                <div class="mb-5">
+                    <h4 class="fw-black text-uppercase small mb-3" style="letter-spacing:1px; color:var(--muted);">
+                        <i class="fa-solid fa-hospital me-2"></i>Entités Organisatrices
+                    </h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if compagne.entites|length > 0 %}
+                            {% for entite in compagne.entites %}
+                                <div class="bg-dark bg-opacity-50 border border-secondary border-opacity-25 rounded-pill px-4 py-2 text-white fw-medium d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-building text-primary"></i>
+                                    {{ entite.nom }}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-muted fst-italic px-2">Aucune entité associée pour le moment.</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="fw-black text-uppercase small mb-3" style="letter-spacing:1px; color:var(--muted);">
+                        <i class="fa-solid fa-droplet me-2"></i>Types de Sang Recherchés
+                    </h4>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% if compagne.typeSang|length > 0 %}
+                            {% for ts in compagne.typeSang %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-4 py-2 rounded-pill fs-6">
+                                    {{ ts }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-muted fst-italic px-2">Tous types acceptés / Non spécifié</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {# Right Column: Sidebar Info #}
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column gap-5">
+                
+                <div>
+                    <div class="text-uppercase small fw-bold mb-3" style="color:var(--muted); letter-spacing:1px;">
+                        <i class="fa-solid fa-calendar-day me-2"></i>Période de Collecte
+                    </div>
+                    <div class="bg-dark bg-opacity-50 border border-secondary border-opacity-25 rounded-4 p-4 text-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="text-muted small text-uppercase fw-bold">Début</span>
+                            <span class="fw-bold fs-5">{{ compagne.dateDebut|date('d/m/Y') }}</span>
+                        </div>
+                        <hr class="border-secondary opacity-25 my-0">
+                        <div class="d-flex align-items-center justify-content-between mt-3">
+                            <span class="text-muted small text-uppercase fw-bold">Fin</span>
+                            <span class="fw-bold fs-5">{{ compagne.dateFin|date('d/m/Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-uppercase small fw-bold mb-3" style="color:var(--muted); letter-spacing:1px;">
+                        <i class="fa-solid fa-info-circle me-2"></i>Informations Système
+                    </div>
+                    <ul class="list-unstyled mb-0 px-3 py-2 border-start border-primary border-2">
+                        <li class="mb-3">
+                            <span class="text-muted small d-block mb-1">Date de création</span>
+                            <span class="text-white small fw-medium">{{ compagne.createdAt|date('d M Y à H:i') }}</span>
+                        </li>
+                        <li>
+                            <span class="text-muted small d-block mb-1">Dernière mise à jour</span>
+                            <span class="text-white small fw-medium">{{ compagne.updatedAt|date('d M Y à H:i') }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Ajouter un Don | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px; color: white;">Ajouter un Don</h1>
+            <p class="text-white-50 mb-0">Enregistrer un nouveau don manuel.</p>
+        </div>
+        <a href="{{ path('back_don_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold border-secondary border-opacity-25" style="background: rgba(255,255,255,0.03);">
+            <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+        </a>
+    </div>
+
+    {# --- FORM CARD --- #}
+    <div class="glass-card p-4 p-md-5">
+        
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        {# Global Form Errors #}
+        {% if not form.vars.valid %}
+            <div class="alert alert-danger mb-4 rounded-3 border-0 bg-danger bg-opacity-25 text-white p-3">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="fa-solid fa-circle-exclamation fs-5"></i>
+                    <h6 class="fw-bold mb-0">Erreurs de validation</h6>
+                </div>
+                <div class="small opacity-75">
+                    {{ form_errors(form) }}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row g-4">
+            
+            {# 1. CLIENT (Required) #}
+            <div class="col-12">
+                <label class="form-label fw-bold small text-uppercase text-white-50" style="letter-spacing: 1px;">
+                    <i class="fa-solid fa-user me-2"></i>Donneur (Client)
+                </label>
+                {{ form_widget(form.client, {'attr': {'class': 'form-select form-control-premium border-0 p-3'}}) }}
+                <div class="text-danger small mt-1 fw-bold">
+                    {{ form_errors(form.client) }}
+                </div>
+            </div>
+
+            {# 2. DATE #}
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-uppercase text-white-50" style="letter-spacing: 1px;">
+                    <i class="fa-regular fa-calendar me-2"></i>Date du don
+                </label>
+                {{ form_widget(form.date, {'attr': {'class': 'form-control form-control-premium border-0 p-3'}}) }}
+                <div class="text-danger small mt-1 fw-bold">
+                    {{ form_errors(form.date) }}
+                </div>
+            </div>
+
+            {# 3. TYPE DE DON #}
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-uppercase text-white-50" style="letter-spacing: 1px;">
+                    <i class="fa-solid fa-dna me-2"></i>Type de don
+                </label>
+                {{ form_widget(form.typeDon, {'attr': {'class': 'form-select form-control-premium border-0 p-3'}}) }}
+                <div class="text-danger small mt-1 fw-bold">
+                    {{ form_errors(form.typeDon) }}
+                </div>
+            </div>
+
+            {# 4. QUANTITÉ #}
+            <div class="col-md-6">
+                <label class="form-label fw-bold small text-uppercase text-white-50" style="letter-spacing: 1px;">
+                    <i class="fa-solid fa-flask me-2"></i>Quantité (ml)
+                </label>
+                {{ form_widget(form.quantite, {'attr': {'class': 'form-control form-control-premium border-0 p-3', 'placeholder': 'Ex: 450'}}) }}
+                <div class="text-danger small mt-1 fw-bold">
+                    {{ form_errors(form.quantite) }}
+                </div>
+            </div>
+
+        </div>
+
+        {# --- ACTIONS --- #}
+        <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top border-white border-opacity-10">
+            <a href="{{ path('back_don_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">
+                ANNULER
+            </a>
+            <button type="submit" class="btn btn-light text-dark fw-black rounded-pill px-5 shadow-lg">
+                <i class="fa-solid fa-check me-2"></i> ENREGISTRER
+            </button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

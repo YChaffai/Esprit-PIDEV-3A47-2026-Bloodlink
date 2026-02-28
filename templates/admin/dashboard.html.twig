@@ -1,0 +1,121 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Dashboard | BloodLink Admin{% endblock %}
+
+{% block body %}
+<div class="row g-4">
+    {# HERO SECTION #}
+    <div class="col-12">
+        <div class="glass-card p-4 p-md-5 border-0 shadow-lg position-relative overflow-hidden" 
+             style="background: linear-gradient(135deg, rgba(230,57,57,0.1) 0%, rgba(255,255,255,0.02) 100%);">
+            
+            <div class="position-relative z-1">
+                <div class="small mb-1 text-uppercase fw-bold" style="color:var(--primary); letter-spacing:0.15em;">BloodLink Administration</div>
+                <h1 class="fw-black mb-1 text-white" style="letter-spacing:-1.5px; font-size: 2.5rem;">Bienvenue, Administrateur 👋</h1>
+                <p class="text-white-50 mb-4" style="max-width: 600px;">
+                    Vous êtes sur le centre de contrôle de BloodLink. Gérez les stocks, suivez les commandes et supervisez la communauté des donneurs en toute simplicité.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ path('app_user_new') }}" class="btn btn-premium d-flex align-items-center gap-2">
+                        <i class="fa fa-user-plus"></i> NOUVEL UTILISATEUR
+                    </a>
+                </div>
+            </div>
+
+            {# Decorative element #}
+            <i class="fas fa-droplet position-absolute" 
+               style="font-size: 15rem; color: var(--primary); opacity: 0.03; top: 0; right: -2rem; transform: rotate(15deg);"></i>
+        </div>
+    </div>
+
+    {# QUICK STATS / SHORTCUTS #}
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="glass-card p-4 h-100 transition-transform">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="admin-icon" style="color: var(--primary); background: rgba(230,57,57,0.1);">
+                    <i class="fa fa-users"></i>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-black text-white">Utilisateurs</div>
+                </div>
+            </div>
+            <p class="small text-white-50">Gérez les comptes, les rôles et accédez aux profils détaillés des donneurs et banques.</p>
+            <a href="{{ path('app_user_index') }}" class="btn btn-sm btn-outline-light w-100 rounded-pill mt-3 py-2 fw-bold">Ouvrir la liste</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="glass-card p-4 h-100 transition-transform">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="admin-icon" style="color: var(--primary); background: rgba(230,57,57,0.1);">
+                    <i class="fa fa-shopping-cart"></i>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-black text-white">Commandes</div>
+                </div>
+            </div>
+            <p class="small text-white-50">Surveillez l'état des demandes de sang et gérez les validations en temps réel.</p>
+            <a href="{{ path('back_commandes_index') }}" class="btn btn-sm btn-outline-light w-100 rounded-pill mt-3 py-2 fw-bold">Voir commandes</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="glass-card p-4 h-100 transition-transform">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="admin-icon" style="color: var(--primary); background: rgba(230,57,57,0.1);">
+                    <i class="fa fa-layer-group"></i>
+                </div>
+                <div class="text-end">
+                    <div class="h4 mb-0 fw-black text-white">Stocks</div>
+                </div>
+            </div>
+            <p class="small text-white-50">Vérifiez les niveaux de sang disponibles par type et par organisation.</p>
+            <a href="{{ path('back_stock_index') }}" class="btn btn-sm btn-outline-light w-100 rounded-pill mt-3 py-2 fw-bold">Gérer les stocks</a>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="fw-black text-uppercase mb-4" style="font-size: 0.9rem; letter-spacing: 1px;">
+                <i class="fa-solid fa-list-check me-2" style="color: var(--primary);"></i> Actions Rapides
+            </h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-calendar-alt d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Rendez-vous</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-clipboard-list d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Questionnaires</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-hospital d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Banques</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 rounded-4 text-center border border-secondary border-opacity-10 bg-black bg-opacity-30 cursor-pointer hover-bg-opacity-10 transition-all">
+                        <i class="fa-solid fa-gear d-block mb-2" style="font-size: 1.5rem !important; color: var(--primary);"></i>
+                        <span class="small fw-bold">Paramètres</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-transform:hover {
+        transform: translateY(-5px);
+    }
+    .cursor-pointer { cursor: pointer; }
+    .transition-all { transition: all 0.2s ease; }
+    .hover-bg-opacity-10:hover { background-opacity: 0.1 !important; }
+</style>
+{% endblock %}

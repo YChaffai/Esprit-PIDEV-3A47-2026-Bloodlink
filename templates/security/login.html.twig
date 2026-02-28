@@ -1,0 +1,349 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .login-wrapper{
+      min-height: calc(100vh - 120px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .login-card{
+      width:100%;
+      max-width:460px;
+      padding: 34px;
+      position: relative;
+    }
+    .form-control{
+      background: rgba(255,255,255,.06) !important;
+      border: 1px solid rgba(255,255,255,.10) !important;
+      color: white !important;
+      border-radius: 12px;
+      padding: 12px 15px;
+    }
+    .form-control:focus{
+      background: rgba(255,255,255,.08) !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 0.25rem rgba(230,57,57,.25);
+    }
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+      padding-left: 4px;
+    }
+    .form-check-label{ color: var(--muted); cursor: pointer; }
+    .btn-submit{
+      background: var(--primary);
+      border: none;
+      font-weight: 800;
+      padding: 16px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all .25s ease;
+    }
+    .btn-submit:hover{
+      background: #ff4d4d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(230,57,57,.28);
+    }
+    .login-title{
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      text-transform: uppercase;
+    }
+    .muted-link{ color: var(--muted); text-decoration:none; font-weight: 600; }
+    .muted-link:hover{ color: #fff; text-decoration: underline; }
+    input::placeholder { color: rgba(255,255,255,.25) !important; }
+
+    /* Face ID icon */
+    .face-id-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 42px;
+      height: 42px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      border-radius: 10px;
+      transition: all .3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .face-id-btn:hover {
+      background: rgba(255,255,255,.06);
+      transform: scale(1.1);
+    }
+    .face-id-btn svg {
+      width: 28px;
+      height: 28px;
+      transition: all .3s ease;
+    }
+    .face-id-btn svg path,
+    .face-id-btn svg line,
+    .face-id-btn svg circle {
+      stroke: rgba(255,255,255,.3);
+      transition: stroke .3s ease, filter .3s ease;
+    }
+    .face-id-btn.scanning svg path,
+    .face-id-btn.scanning svg line,
+    .face-id-btn.scanning svg circle {
+      stroke: var(--primary);
+      filter: drop-shadow(0 0 6px rgba(230,57,57,.5));
+    }
+    .face-id-btn.scanning {
+      animation: faceIdPulse 1.5s ease-in-out infinite;
+    }
+    .face-id-btn.success svg path,
+    .face-id-btn.success svg line,
+    .face-id-btn.success svg circle {
+      stroke: #4ade80;
+      filter: drop-shadow(0 0 8px rgba(74,222,128,.5));
+    }
+
+    @keyframes faceIdPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* Toast notification */
+    .face-toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: .9rem;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all .4s cubic-bezier(.4, 0, .2, 1);
+      pointer-events: none;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .face-toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .face-toast.error {
+      background: rgba(230, 57, 57, .2);
+      color: #ff6b6b;
+    }
+    .face-toast.success {
+      background: rgba(74, 222, 128, .15);
+      color: #4ade80;
+    }
+    .face-toast.info {
+      background: rgba(255, 255, 255, .08);
+      color: rgba(255,255,255,.7);
+    }
+
+    /* Tooltip */
+    .face-id-btn .face-tooltip {
+      position: absolute;
+      bottom: -32px;
+      right: 0;
+      font-size: .7rem;
+      white-space: nowrap;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+    .face-id-btn:hover .face-tooltip {
+      opacity: 1;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="login-wrapper">
+    <div class="glass-card login-card">
+
+      {# Face ID icon — top right corner #}
+      <button type="button" id="faceIdBtn" class="face-id-btn" title="Se connecter avec Face ID">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          {# Corner brackets #}
+          <path d="M7 3H5a2 2 0 0 0-2 2v2"/>
+          <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+          <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <path d="M17 21h2a2 2 0 0 0 2-2v-2"/>
+          {# Face features #}
+          <line x1="9" y1="9" x2="9" y2="10.5"/>
+          <line x1="15" y1="9" x2="15" y2="10.5"/>
+          <path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+        </svg>
+        <span class="face-tooltip">Face ID</span>
+      </button>
+
+      {# Hidden video for webcam capture #}
+      <video id="faceVideo" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;" autoplay muted></video>
+
+      <div class="text-center mb-5">
+        <i class="fas fa-user-circle fa-3x mb-3" style="color: var(--primary);"></i>
+        <h2 class="login-title m-0">Connexion</h2>
+        <p class="mt-2 mb-0 opacity-50">Accédez à votre compte BloodLink</p>
+      </div>
+
+      {% if error %}
+        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card p-3">
+          <i class="fas fa-triangle-exclamation me-2"></i>
+          {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="needs-validation" novalidate>
+        <div class="mb-4">
+          <label class="form-label" for="inputEmail">Adresse email</label>
+          <input type="email"
+                 class="form-control"
+                 id="inputEmail"
+                 name="email"
+                 value="{{ last_username }}"
+                 placeholder="nom@exemple.com"
+                 autocomplete="email"
+                 required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="inputPassword">Mot de passe</label>
+          <input type="password"
+                 class="form-control"
+                 id="inputPassword"
+                 name="password"
+                 placeholder="••••••••"
+                 autocomplete="current-password"
+                 required>
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <div class="d-flex justify-content-between align-items-center mb-5">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe" name="_remember_me">
+            <label class="form-check-label" for="rememberMe">Se souvenir de moi</label>
+          </div>
+          <small>
+            <a class="muted-link" href="{{ path('app_password_reset_request') }}">Mot de passe oublié ?</a>
+          </small>
+        </div>
+
+        <button class="btn btn-submit w-100" type="submit">Se connecter</button>
+      </form>
+
+      <p class="mt-3 text-center" style="color: var(--muted);">
+        Pas encore de compte ? <a href="{{ path('app_register') }}" class="muted-link">S'inscrire</a>
+      </p>
+
+    </div>
+  </div>
+
+  {# Toast container #}
+  <div id="faceToast" class="face-toast"></div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    (() => {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+  <script>
+  (() => {
+    const btn = document.getElementById('faceIdBtn');
+    const video = document.getElementById('faceVideo');
+    const toast = document.getElementById('faceToast');
+    let scanning = false;
+
+    function showToast(message, type = 'info', duration = 3000) {
+      toast.textContent = message;
+      toast.className = 'face-toast ' + type;
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => toast.classList.remove('show'), duration);
+    }
+
+    btn.addEventListener('click', async () => {
+      if (scanning) return;
+      scanning = true;
+
+      btn.classList.add('scanning');
+      showToast('Scan du visage en cours…', 'info', 4000);
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+
+        setTimeout(async () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          stream.getTracks().forEach(t => t.stop());
+
+          canvas.toBlob(async (blob) => {
+            const formData = new FormData();
+            formData.append('image', blob, 'face.jpg');
+
+            try {
+              const response = await fetch("{{ path('app_face_login') }}", {
+                method: 'POST',
+                body: formData
+              });
+              const result = await response.json();
+
+              if (result.success) {
+                btn.classList.remove('scanning');
+                btn.classList.add('success');
+                showToast(`Identifié — Confiance: ${Math.round(result.confidence * 100)}%`, 'success', 2000);
+                setTimeout(() => { window.location.href = result.redirect; }, 1200);
+              } else {
+                btn.classList.remove('scanning');
+                showToast(result.error || 'Visage non reconnu', 'error');
+                scanning = false;
+              }
+            } catch (e) {
+              btn.classList.remove('scanning');
+              showToast('Erreur de communication avec le serveur', 'error');
+              scanning = false;
+            }
+          }, 'image/jpeg');
+        }, 2000);
+      } catch (e) {
+        btn.classList.remove('scanning');
+        showToast("Impossible d'accéder à la caméra", 'error');
+        scanning = false;
+      }
+    });
+  })();
+  </script>
+{% endblock %}
+

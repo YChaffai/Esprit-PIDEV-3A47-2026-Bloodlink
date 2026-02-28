@@ -1,0 +1,87 @@
+<style>
+    /* Proactively override Bootstrap's default blue focus rings for form inputs */
+    .glass-form-control:focus, .glass-form-select:focus {
+        background: rgba(255,255,255,0.05) !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 0.25rem rgba(230, 57, 57, 0.25) !important;
+        color: white !important;
+    }
+    
+    .glass-form-control, .glass-form-select {
+        background: rgba(255,255,255,0.02) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: white !important;
+        padding: 14px 20px !important;
+        border-radius: 12px !important;
+        transition: all 0.3s ease;
+    }
+    
+    .glass-form-control::placeholder {
+        color: rgba(255,255,255,0.3) !important;
+    }
+
+    /* Style the Symfony form errors gracefully */
+    .form-error ul {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 0 0;
+        color: var(--primary);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .form-error ul li::before {
+        content: '\f071'; /* FontAwesome warning icon */
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        margin-right: 6px;
+    }
+</style>
+
+<div class="mt-4">
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        <div class="mb-4">
+            {{ form_label(form.nom, null, {'label_attr': {'class': 'form-label text-uppercase small fw-bold text-muted', 'style': 'letter-spacing:1px;'}}) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control glass-form-control'}}) }}
+            {% if form_help(form.nom) %}
+                <div class="form-text text-muted small mt-2 fst-italic">{{ form_help(form.nom) }}</div>
+            {% endif %}
+            <div class="form-error">{{ form_errors(form.nom) }}</div>
+        </div>
+        
+        <div class="mb-4">
+            {{ form_label(form.adresse, null, {'label_attr': {'class': 'form-label text-uppercase small fw-bold text-muted', 'style': 'letter-spacing:1px;'}}) }}
+            {{ form_widget(form.adresse, {'attr': {'class': 'form-control glass-form-control'}}) }}
+            {% if form_help(form.adresse) %}
+                <div class="form-text text-muted small mt-2 fst-italic">{{ form_help(form.adresse) }}</div>
+            {% endif %}
+            <div class="form-error">{{ form_errors(form.adresse) }}</div>
+        </div>
+
+        <div class="mb-4">
+            {{ form_label(form.ville, null, {'label_attr': {'class': 'form-label text-uppercase small fw-bold text-muted', 'style': 'letter-spacing:1px;'}}) }}
+            {{ form_widget(form.ville, {'attr': {'class': 'form-control glass-form-control'}}) }}
+            {% if form_help(form.ville) %}
+                <div class="form-text text-muted small mt-2 fst-italic">{{ form_help(form.ville) }}</div>
+            {% endif %}
+            <div class="form-error">{{ form_errors(form.ville) }}</div>
+        </div>
+
+        <div class="mb-5">
+            {{ form_label(form.telephone, null, {'label_attr': {'class': 'form-label text-uppercase small fw-bold text-muted', 'style': 'letter-spacing:1px;'}}) }}
+            {{ form_widget(form.telephone, {'attr': {'class': 'form-control glass-form-control'}}) }}
+            {% if form_help(form.telephone) %}
+                <div class="form-text text-muted small mt-2 fst-italic">{{ form_help(form.telephone) }}</div>
+            {% endif %}
+            <div class="form-error">{{ form_errors(form.telephone) }}</div>
+        </div>
+
+        <button type="submit" class="btn rounded-pill fw-bold w-100 py-3 shadow-sm transition-all" 
+                style="background: var(--primary); color: white; font-size: 1.05rem; letter-spacing: 0.5px;"
+                onmouseover="this.style.boxShadow='0 8px 25px rgba(230, 57, 57, 0.4)'; this.style.transform='translateY(-2px)';"
+                onmouseout="this.style.boxShadow=''; this.style.transform='translateY(0)';">
+            <i class="fa-solid fa-check me-2"></i> {{ button_label|default('Enregistrer les informations') }}
+        </button>
+
+    {{ form_end(form) }}
+</div>

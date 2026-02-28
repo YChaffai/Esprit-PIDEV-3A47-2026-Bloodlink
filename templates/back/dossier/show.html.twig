@@ -1,0 +1,203 @@
+{% extends 'back/baseBack.html.twig' %}
+
+{% block title %}Suivi Médical #{{ dossier.id }} | BloodLink Admin{% endblock %}
+
+{% block body %}
+{# --- HEADER : NAVIGATION --- #}
+<div class="d-flex align-items-end justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="fw-black text-uppercase mb-1" style="letter-spacing:-1px;">Suivi Patient #{{ dossier.id }}</h1>
+        <p class="text-white-50 mb-0">Analyse des constantes évolutives du donneur.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('back_dossier_edit', {id: dossier.id}) }}" class="btn btn-premium rounded-pill px-4 fw-bold">
+            <i class="fa-solid fa-arrows-rotate me-2"></i> METTRE À JOUR LES CONSTANTES
+        </a>
+        <a href="{{ path('back_dossier_index') }}" class="btn btn-outline-light rounded-pill px-4 fw-bold">
+            <i class="fa-solid fa-arrow-left me-2"></i> RETOUR
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    {# --- CARTE D'IDENTITÉ (FIXE) --- #}
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100 border-top border-4 border-danger">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="bg-danger bg-opacity-10 p-3 rounded-circle text-danger">
+                    <i class="fa-solid fa-id-card-clip fs-3"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-0 text-white">{{ dossier.prenom|capitalize }} {{ dossier.nom|upper }}</h4>
+                    <span class="text-white-50 small text-uppercase">Identifiant Patient</span>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="d-flex justify-content-between border-bottom border-white border-opacity-10 pb-2 mb-2">
+                    <span class="text-white-50 small">GROUPE SANGUIN</span>
+                    <span class="badge badge-premium px-3">{{ dossier.typeSang }}</span>
+                </div>
+                <div class="d-flex justify-content-between border-bottom border-white border-opacity-10 pb-2 mb-2">
+                    <span class="text-white-50 small">SEXE</span>
+                    <span class="text-white fw-bold">
+                        {% if dossier.sexe|lower == 'homme' %}<i class="fa-solid fa-mars text-danger me-1"></i>{% else %}<i class="fa-solid fa-venus text-warning me-1"></i>{% endif %}
+                        {{ dossier.sexe|capitalize }}
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-white-50 small">CONTACT URGENCE</span>
+                    <span class="text-white fw-bold">{{ dossier.contactUrgence }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- CONSTANTES DE LA DERNIÈRE VISITE (DYNAMIQUE) --- #}
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <h5 class="fw-bold text-white text-uppercase"><i class="fa-solid fa-heart-pulse me-2 text-danger"></i>État lors du dernier don</h5>
+                <span class="badge bg-white bg-opacity-10 text-white-50">Dernière mise à jour : {{ "now"|date('d/m/Y') }}</span>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-sm-3 col-6">
+                    <div class="bg-black bg-opacity-25 p-3 rounded-4 border border-white border-opacity-5">
+                        <label class="text-white-50 small d-block mb-1">ÂGE</label>
+                        <span class="fs-4 fw-black text-white">{{ dossier.age }} <small class="fs-6 fw-normal">ans</small></span>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-6">
+                    <div class="bg-black bg-opacity-25 p-3 rounded-4 border border-white border-opacity-5">
+                        <label class="text-white-50 small d-block mb-1">POIDS</label>
+                        <span class="fs-4 fw-black text-white">{{ dossier.poid }} <small class="fs-6 fw-normal">kg</small></span>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-6">
+                    <div class="bg-black bg-opacity-25 p-3 rounded-4 border border-white border-opacity-5">
+                        <label class="text-white-50 small d-block mb-1">TAILLE</label>
+                        <span class="fs-4 fw-black text-white">{{ dossier.taille }} <small class="fs-6 fw-normal">cm</small></span>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-6">
+                    <div class="bg-black bg-opacity-25 p-3 rounded-4 border border-white border-opacity-5">
+                        <label class="text-white-50 small d-block mb-1">TEMP.</label>
+                        <span class="fs-4 fw-black text-white text-danger">{{ dossier.temperature }} <small class="fs-6 fw-normal">°C</small></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex align-items-center gap-2 text-black small bg-white bg-opacity-5 p-2 rounded-pill px-3">
+                <i class="fa-solid fa-circle-info text-black"></i>
+                L'âge et les biométries sont recalculés à chaque nouvel enregistrement.
+            </div>
+        </div>
+    </div>
+
+    {# --- 🔥 NOUVEAU : BLOC IA RUBIX ML --- #}
+    <div class="col-12 mt-2">
+        <div class="glass-card p-4 border-start border-4 {% if aiAnalysis.prediction == 'Fidèle' %}border-success{% else %}border-warning{% endif %}" style="background: linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.9) 100%);">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-white mb-0">
+                    <i class="fa-solid fa-brain me-2" style="color: #a855f7;"></i> Analyse Prédictive IA
+                </h5>
+                <span class="badge bg-black bg-opacity-50 border border-white border-opacity-10 text-white-50">
+                    Modèle: K-Nearest Neighbors
+                </span>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <p class="text-white-50 mb-2 small">
+                        Basé sur les données biométriques ({{ dossier.age }} ans, {{ dossier.poid }} kg) et la fréquence des dons ({{ historiqueDons|length }} dons enregistrés), l'algorithme a calculé la trajectoire de ce patient.
+                    </p>
+                    <div class="mt-3">
+                        <span class="text-white-50 small text-uppercase">Pronostic de Rétention :</span><br>
+                        {% if aiAnalysis.prediction == 'Fidèle' %}
+                            <span class="fs-4 fw-black text-success">DONNEUR FIDÈLE</span>
+                            <p class="small text-success mt-1 mb-0"><i class="fa-solid fa-check-circle me-1"></i> Ce patient présente le profil type d'un donneur régulier. Gardez le contact.</p>
+                        {% else %}
+                            <span class="fs-4 fw-black text-warning">RISQUE D'ABANDON ÉLEVÉ</span>
+                            <p class="small text-warning mt-1 mb-0"><i class="fa-solid fa-triangle-exclamation me-1"></i> Profil à risque volatil. Une action de relance est recommandée.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="col-md-3 text-center border-start border-white border-opacity-10 mt-3 mt-md-0">
+                    <div class="text-white-50 small mb-1">CONFIANCE IA</div>
+                    <div class="fw-black fs-1 {% if aiAnalysis.prediction == 'Fidèle' %}text-success{% else %}text-warning{% endif %}">
+                        {{ aiAnalysis.confidence }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- ÉVOLUTION : HISTORIQUE CHRONOLOGIQUE --- #}
+    <div class="col-12 mt-2">
+        <div class="glass-card p-4">
+            <h5 class="fw-bold text-white mb-4" style="border-left: 4px solid #dc3545; padding-left: 12px;">Évolution des constantes par don</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-premium align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Référence</th>
+                            <th>Date & Heure</th>
+                            <th>Snapshot Patient (Age/Poids)</th>
+                            <th>Type de Don</th>
+                            <th>Quantité</th>
+                            <th class="text-end">Détails</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donPatient in historiqueDons %}
+                            {% set isCurrent = (dossier.don and dossier.don.id == donPatient.id) %}
+                            <tr {% if isCurrent %}class="bg-success bg-opacity-10"{% endif %}>
+                                <td class="fw-bold text-white">#{{ donPatient.id }}</td>
+                                <td class="text-white-50">{{ donPatient.date|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="small">
+                                            <i class="fa-solid fa-cake-candles me-1 text-danger"></i> {{ dossier.age }} ans
+                                        </div>
+                                        <div class="small">
+                                            <i class="fa-solid fa-weight-scale me-1 text-danger"></i> {{ dossier.poid }} kg
+                                        </div>
+                                    </div>
+                                    {% if isCurrent %}
+                                        <span class="badge bg-success bg-opacity-50 mt-1" style="font-size: 0.6rem;">DON ACTUEL</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge badge-premium border-0">{{ donPatient.typeDon }}</span>
+                                </td>
+                                <td class="fw-bold text-white">{{ donPatient.quantite }} ml</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="{{ path('back_don_show', {id: donPatient.id}) }}">
+                                            <i class="fa-solid fa-eye me-1"></i> Fiche
+                                        </a>
+                                        
+                                        <form method="post" action="{{ path('back_don_delete', {'id': donPatient.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce don de l\'historique ?');" style="display:inline-block">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ donPatient.id) }}">
+                                            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Supprimer ce don">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-white-50 py-4">Aucun don enregistré pour ce patient.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

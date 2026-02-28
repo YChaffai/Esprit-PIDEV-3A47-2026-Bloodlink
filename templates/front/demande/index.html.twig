@@ -1,0 +1,499 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mes Demandes | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        /* Proactively override Bootstrap's default blue focus rings for form inputs */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(230, 57, 57, 0.25) !important;
+        }
+
+        /* -------------------------------------
+           CHOICES.JS CUSTOMIZATION (Standardized)
+        -------------------------------------- */
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            color: var(--text) !important;
+            padding: .3rem .9rem !important;
+            min-height: 48px !important;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+
+        /* -------------------------------------
+           TABLE CUSTOMIZATION
+        -------------------------------------- */
+        .table-custom {
+            --bs-table-bg: transparent !important;
+            --bs-table-color: var(--text) !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .table-custom thead th {
+            background: transparent !important;
+            color: var(--muted) !important;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            padding: 15px 20px;
+            border: none !important;
+            border-bottom: 1px solid var(--border) !important;
+            transition: color 0.2s ease;
+        }
+        .table-custom thead th:hover {
+            color: white !important;
+        }
+        .table-custom tbody tr {
+            border-top: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .table-custom tbody tr:hover {
+            background: rgba(255,255,255,0.03) !important;
+        }
+        .table-custom tbody td {
+            padding: 15px 20px !important;
+            border: none !important;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        
+        /* Force styling on the delete button within lists */
+        .delete-btn-inline {
+            background: rgba(230, 57, 57, 0.1) !important;
+            border: 1px solid rgba(230, 57, 57, 0.25) !important;
+            color: #dc3545 !important;
+            transition: all 0.3s ease !important;
+        }
+        .delete-btn-inline:hover {
+            background: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-4 mb-5">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-file-medical me-2" style="color:var(--primary);"></i>
+                Mes Demandes
+            </h1>
+            <div style="color:var(--muted);">
+                Consultez et gérez vos demandes de sang.
+            </div>
+        </div>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            <a href="{{ path('demande_ai_openai') }}" class="btn btn-outline-info rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all">
+                <i class="fa-solid fa-robot"></i> Prédiction IA
+            </a>
+            <a href="{{ path('front_demande_pdf') }}" class="btn btn-outline-danger rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all">
+                <i class="fa-solid fa-file-pdf"></i> Exporter PDF
+            </a>
+            <a href="{{ path('front_demande_new') }}" class="btn rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2 transition-all" style="background: var(--primary); color: white;">
+                <i class="fa-solid fa-plus-circle"></i> Nouvelle demande
+            </a>
+        </div>
+    </div>
+
+    {# --- SEARCH & FILTER BAR --- #}
+    <div class="glass-card p-3 mb-4 position-relative z-2">
+        <div class="row g-3 align-items-center">
+            <div class="col-12 col-lg-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-danger text-muted" style="border-right:0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input id="dem-search" type="text"
+                           class="form-control bg-transparent text-white border-danger border-start-0"
+                           placeholder="Type sanguin, statut..."
+                           style="box-shadow:none; color: white !important;">
+                </div>
+            </div>
+
+            <div class="col-6 col-md-3 col-lg-3">
+                <select id="dem-urgence" class="form-select bg-transparent text-white border-danger js-choices" style="box-shadow:none;">
+                    <option value="" class="text-dark">Toutes urgences</option>
+                    <option value="normale" class="text-dark">Normale</option>
+                    <option value="urgente" class="text-dark">Urgente</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-md-4 col-lg-4">
+                <select id="dem-status" class="form-select bg-transparent text-white border-danger js-choices" style="box-shadow:none;">
+                    <option value="" class="text-dark">Tous les statuts</option>
+                    <option value="EN_ATTENTE" class="text-dark">En Attente</option>
+                    <option value="validee" class="text-dark">Validée</option>
+                    <option value="refusee" class="text-dark">Refusée</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {# --- DEMANDES LIST --- #}
+    {% if demandes is not empty %}
+        <div class="glass-card overflow-hidden mb-5">
+            <div class="p-4 d-flex justify-content-between align-items-center"
+                 style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+                <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">Liste des Demandes</div>
+                <div id="dem-count-top" class="small fw-bold text-white">{{ demandes|length }} demande(s)</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" onclick="sortTable(0, 'dem-rows')" style="cursor:pointer;" title="Trier par ID">
+                                ID <i class="fa-solid fa-sort ms-1 opacity-50" style="font-size:0.8em;"></i>
+                            </th>
+                            <th>Banque</th>
+                            <th>Type Sang</th>
+                            <th onclick="sortTable(3, 'dem-rows')" style="cursor:pointer;" title="Trier par Quantité">
+                                Quantité <i class="fa-solid fa-sort ms-1 opacity-50" style="font-size:0.8em;"></i>
+                            </th>
+                            <th>Urgence</th>
+                            <th>Statut</th>
+                            <th class="pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dem-rows">
+                        {% for d in demandes %}
+                            <tr class="dem-row"
+                                data-search="{{ (d.id ~ ' ' ~ d.typeSang ~ ' ' ~ d.urgence ~ ' ' ~ d.status)|lower }}"
+                                data-urgence="{{ d.urgence|lower }}"
+                                data-status="{{ d.status|lower }}">
+
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 px-2 py-1"
+                                         style="min-width:44px; width: fit-content;">
+                                        <span class="small fw-black text-white" style="font-size: 0.75rem; letter-spacing: 0.5px;">#{{ d.id }}</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="small text-white"><i class="fa-solid fa-building-columns me-1 text-muted"></i>{{ d.banque.nom }}</span>
+                                </td>
+
+                                <td>
+                                    <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 fs-6">
+                                        {{ d.typeSang }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-white">{{ d.quantite }} <span class="text-muted fw-normal small">u.</span></div>
+                                </td>
+
+                                <td>
+                                    {% if d.urgence|lower == 'urgente' %}
+                                        <span class="badge rounded-pill bg-danger d-inline-flex align-items-center gap-1 px-2 py-1"><i class="fa-solid fa-circle-exclamation"></i> Urgente</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-secondary bg-opacity-25 text-white border border-secondary border-opacity-25 px-2 py-1">Normale</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% set s = d.status|lower %}
+                                    {% if s in ['validee', 'satisfaite'] %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-check me-1"></i> {{ d.status|upper }}
+                                        </span>
+                                    {% elseif s in ['refusee', 'annulee'] %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-xmark me-1"></i> {{ d.status|upper }}
+                                        </span>
+                                    {% elseif s == 'en_cours' %}
+                                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-spinner fa-spin me-1"></i> EN COURS
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-clock me-1"></i> EN ATTENTE
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="pe-4 text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ path('front_demande_show', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-secondary text-white border-opacity-25 px-3">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        
+                                        {% if d.status == 'EN_ATTENTE' %}
+                                            <a href="{{ path('front_demande_edit', {id: d.id}) }}" class="btn btn-sm rounded-pill btn-outline-warning text-warning border-opacity-25 px-3">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <form method="post" action="{{ path('front_demande_delete', {id: d.id}) }}" onsubmit="return confirm('Supprimer cette demande ?');" style="display:inline-block; margin: 0;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ d.id) }}">
+                                                <button class="btn btn-sm rounded-pill px-3 delete-btn-inline">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="text-end text-white-50 mt-3 mb-5 small fw-medium" id="dem-count-bottom"></div>
+    {% else %}
+        <div class="glass-card p-5 text-center mb-5">
+            <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:76px;height:76px;background: rgba(230,57,57,.1); border: 1px solid rgba(230,57,57,.2);">
+                <i class="fa-solid fa-file-medical fs-2" style="color:var(--primary);"></i>
+            </div>
+            <h4 class="fw-black mb-2 text-white">Aucune demande</h4>
+            <p class="mb-0" style="color:var(--muted);">Vous n'avez pas encore de demande ou aucune ne correspond à vos filtres.</p>
+            <a href="{{ path('front_demande_new') }}" class="btn rounded-pill mt-4 px-4 py-2 fw-bold" style="background: var(--primary); color: white;">
+                Créer ma première demande
+            </a>
+        </div>
+    {% endif %}
+
+
+    {# ================= COMMANDES ================= #}
+    {% if commandes is not empty %}
+        <div class="glass-card overflow-hidden mt-5">
+            <div class="p-4 d-flex justify-content-between align-items-center"
+                 style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+                <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">
+                    Liste des Commandes
+                </div>
+                <div class="small fw-bold text-white">
+                    {{ commandes|length }} commande(s)
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Référence</th>
+                            <th>Banque</th>
+                            <th>Type Sang</th>
+                            <th>Quantité</th>
+                            <th>Priorité</th>
+                            <th>Statut</th>
+                            <th class="pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in commandes %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 px-2 py-1"
+                                         style="min-width:44px; width: fit-content;">
+                                        <span class="small fw-black text-white" style="font-size: 0.75rem; letter-spacing: 0.5px;">#{{ c.id }}</span>
+                                    </div>
+                                </td>
+                                
+                                <td>
+                                    <span class="badge bg-secondary bg-opacity-10 text-white border border-secondary border-opacity-25 px-2 py-1 fw-normal">
+                                        REF-{{ c.reference }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="small text-white">
+                                        <i class="fa-solid fa-building-columns me-1 text-muted"></i> {{ c.banque.nom }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 fs-6">
+                                        {{ c.typeSang }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-white">{{ c.quantite }} <span class="text-muted fw-normal small">u.</span></div>
+                                </td>
+
+                                <td>
+                                    {% if c.priorite == 'Urgente' %}
+                                        <span class="badge rounded-pill bg-danger d-inline-flex align-items-center gap-1 px-2 py-1"><i class="fa-solid fa-circle-exclamation"></i> Urgente</span>
+                                    {% elseif c.priorite == 'Élevée' %}
+                                        <span class="badge rounded-pill bg-warning text-dark px-2 py-1"><i class="fa-solid fa-triangle-exclamation"></i> Élevée</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill bg-secondary bg-opacity-25 text-white border border-secondary border-opacity-25 px-2 py-1">Normale</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if c.status == 'Confirmée' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-check me-1"></i> CONFIRMÉE
+                                        </span>
+                                    {% elseif c.status == 'Annulée' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-xmark me-1"></i> ANNULÉE
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-clock me-1"></i> EN ATTENTE
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="pe-4 text-end">
+                                    {% if c.status == 'En Attente' %}
+                                        <a href="{{ path('front_commande_valider', {id: c.id}) }}"
+                                           class="btn btn-sm rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 transition-all"
+                                           title="Valider la commande"
+                                           onmouseover="this.style.background='#198754'; this.style.color='white';"
+                                           onmouseout="this.style.background='rgba(25, 135, 84, 0.1)'; this.style.color='#198754';">
+                                            <i class="fa-solid fa-check me-1"></i> Valider
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+
+<style>
+    /* Ensure the search placeholder stays visible against the dark background */
+    #dem-search::placeholder {
+        color: rgba(255,255,255,0.4) !important;
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        (function () {
+            // Initialize Choices.js
+            document.querySelectorAll('.js-choices').forEach((el) => {
+                new Choices(el, {
+                    searchEnabled: false,
+                    shouldSort: false,
+                    itemSelectText: '',
+                    allowHTML: true
+                });
+            });
+
+            const searchInput = document.getElementById('dem-search');
+            const urgenceSelect = document.getElementById('dem-urgence');
+            const statusSelect = document.getElementById('dem-status');
+            const rows = Array.from(document.querySelectorAll('.dem-row'));
+            const countTop = document.getElementById('dem-count-top');
+            const countBottom = document.getElementById('dem-count-bottom');
+
+            function applyFilters() {
+                if(!searchInput) return; // Prevent errors if no demands exist
+
+                const q = (searchInput.value || '').trim().toLowerCase();
+                const urgence = (urgenceSelect.value || '').trim().toLowerCase();
+                const status = (statusSelect.value || '').trim().toLowerCase();
+
+                let visible = 0;
+
+                rows.forEach(row => {
+                    const hay = row.dataset.search || '';
+                    const u = row.dataset.urgence || '';
+                    const s = row.dataset.status || '';
+
+                    const matchQ = !q || hay.includes(q);
+                    const matchU = !urgence || u === urgence;
+                    const matchS = !status || s === status;
+
+                    const show = matchQ && matchU && matchS;
+                    row.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+
+                if (countTop) countTop.textContent = `${visible} demande(s)`;
+                if (countBottom) countBottom.textContent = `${visible} demande(s) affichée(s)`;
+            }
+
+            [searchInput, urgenceSelect, statusSelect].forEach(el => {
+                if (!el) return;
+                el.addEventListener('input', applyFilters);
+                el.addEventListener('change', applyFilters);
+            });
+
+            applyFilters();
+        })();
+
+        // Updated sort logic to target specific tables 
+        function sortTable(columnIndex, tableBodyId) {
+            const tbody = document.getElementById(tableBodyId);
+            if (!tbody) return;
+            
+            const table = tbody.closest('table');
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            const asc = table.classList.toggle("asc");
+            table.classList.toggle("desc", !asc);
+
+            rows.sort((a, b) => {
+                let A = a.children[columnIndex].innerText.trim().toLowerCase();
+                let B = b.children[columnIndex].innerText.trim().toLowerCase();
+
+                // Remove # from IDs or strings for proper sorting
+                A = A.replace('#', '');
+                B = B.replace('#', '');
+
+                if (!isNaN(A) && !isNaN(B)) {
+                    return asc ? A - B : B - A;
+                }
+
+                return asc ? A.localeCompare(B) : B.localeCompare(A);
+            });
+
+            rows.forEach(tr => tbody.appendChild(tr));
+        }
+    </script>
+{% endblock %}

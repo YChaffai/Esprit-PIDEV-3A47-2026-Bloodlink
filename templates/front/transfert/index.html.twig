@@ -1,0 +1,351 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Transferts | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        /* Proactively override Bootstrap's default blue focus rings for form inputs */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(230, 57, 57, 0.25) !important;
+        }
+
+        /* -------------------------------------
+           CHOICES.JS CUSTOMIZATION (Standardized)
+        -------------------------------------- */
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            color: var(--text) !important;
+            padding: .3rem .9rem !important;
+            min-height: 48px !important;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+
+        /* -------------------------------------
+           TABLE CUSTOMIZATION
+        -------------------------------------- */
+        .table-custom {
+            --bs-table-bg: transparent !important;
+            --bs-table-color: var(--text) !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .table-custom thead th {
+            background: transparent !important;
+            color: var(--muted) !important;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            padding: 15px 20px;
+            border: none !important;
+            border-bottom: 1px solid var(--border) !important;
+            transition: color 0.2s ease;
+        }
+        .table-custom thead th:hover {
+            color: white !important;
+        }
+        .table-custom tbody tr {
+            border-top: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .table-custom tbody tr:hover {
+            background: rgba(255,255,255,0.03) !important;
+        }
+        .table-custom tbody td {
+            padding: 15px 20px !important;
+            border: none !important;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-truck-medical me-2" style="color:var(--primary);"></i>
+                Transferts
+            </h1>
+            <div style="color:var(--muted);">
+                Suivez les transferts de sang entre les organisations.
+            </div>
+        </div>
+    </div>
+
+    {# --- SEARCH & FILTER BAR --- #}
+    <div class="glass-card p-3 mb-4 position-relative z-2">
+        <div class="row g-3 align-items-center">
+            <div class="col-12 col-lg-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-danger text-muted" style="border-right:0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input id="trf-search" type="text"
+                           class="form-control bg-transparent text-white border-danger border-start-0"
+                           placeholder="Rechercher par destination, statut..."
+                           style="box-shadow:none; color: white !important;">
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5">
+                <select id="trf-status" class="form-select bg-transparent text-white border-danger js-choices" style="box-shadow:none;">
+                    <option value="" class="text-dark">Tous les statuts</option>
+                    <option value="en_cours" class="text-dark">En Cours</option>
+                    <option value="recu" class="text-dark">Reçu</option>
+                    <option value="annule" class="text-dark">Annulé</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if transferts is not empty %}
+        <div class="glass-card overflow-hidden">
+            <div class="p-4 d-flex justify-content-between align-items-center"
+                 style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+                <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">Liste des Transferts</div>
+                <div id="trf-count-top" class="small fw-bold text-white">{{ transferts|length }} transfert(s)</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" onclick="sortTable(0)" style="cursor:pointer;" title="Trier par ID">
+                                ID <i class="fa-solid fa-sort ms-1 opacity-50" style="font-size:0.8em;"></i>
+                            </th>
+                            <th>Demande</th>
+                            <th>Origine</th>
+                            <th>Destination</th>
+                            <th onclick="sortTable(4)" style="cursor:pointer;" title="Trier par Quantité">
+                                Quantité <i class="fa-solid fa-sort ms-1 opacity-50" style="font-size:0.8em;"></i>
+                            </th>
+                            <th>Envoi</th>
+                            <th>Statut</th>
+                            <th class="pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trf-rows">
+                        {% for t in transferts %}
+                            <tr class="trf-row"
+                                data-search="{{ (t.id ~ ' ' ~ t.toOrg ~ ' ' ~ t.fromOrg ~ ' ' ~ t.status)|lower }}"
+                                data-status="{{ t.status|lower }}">
+
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 px-2 py-1"
+                                         style="min-width:44px; width: fit-content;">
+                                        <span class="small fw-black text-white" style="font-size: 0.75rem; letter-spacing: 0.5px;">#{{ t.id }}</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary bg-opacity-10 text-white border border-secondary border-opacity-25 px-2 py-1 fw-normal">
+                                        DEM-{{ t.demande ? t.demande.id : '-' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-white small text-uppercase"><i class="fa-solid fa-arrow-up-right-from-square me-1 opacity-50"></i> {{ t.fromOrg }}</div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-white small text-uppercase"><i class="fa-solid fa-location-dot me-1" style="color:var(--primary);"></i> {{ t.toOrg }}</div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-bold text-white">{{ t.quantite }} <span class="text-muted small fw-normal">ml</span></div>
+                                </td>
+
+                                <td class="text-muted small">
+                                    <i class="fa-regular fa-calendar me-1"></i> {{ t.dateEnvoie ? t.dateEnvoie|date('d/m/Y') : '-' }}
+                                </td>
+
+                                <td>
+                                    {% set s = t.status|lower %}
+                                    {% if s == 'recu' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-check me-1"></i> REÇU
+                                        </span>
+                                    {% elseif s == 'annule' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-circle-xmark me-1"></i> ANNULÉ
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-2 rounded-pill">
+                                            <i class="fa-solid fa-truck-fast me-1"></i> EN COURS
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="pe-4 text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        {% set s = t.status|lower %}
+                                        
+                                        {# Bouton Valider Réception si EN_ATTENTE #}
+                                        {% if s == 'en_cours' %}
+                                            <a href="{{ path('front_transfert_valider', {id: t.id}) }}"
+                                               class="btn btn-sm rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 transition-all"
+                                               title="Valider la réception"
+                                               onmouseover="this.style.background='#198754'; this.style.color='white';"
+                                               onmouseout="this.style.background='rgba(25, 135, 84, 0.1)'; this.style.color='#198754';">
+                                                <i class="fa-solid fa-check"></i>
+                                            </a>
+                                        {% endif %}
+
+                                        <a href="{{ path('front_transfert_show', {id: t.id}) }}"
+                                           class="btn btn-sm rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-3 transition-all"
+                                           title="Voir les détails"
+                                           onmouseover="this.style.background='var(--primary)'; this.style.color='white';"
+                                           onmouseout="this.style.background='rgba(230,57,57,0.1)'; this.style.color='#dc3545';">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card p-5 text-center">
+            <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+                 style="width:76px;height:76px;background: rgba(230,57,57,.1); border: 1px solid rgba(230,57,57,.2);">
+                <i class="fa-solid fa-truck-medical fs-2" style="color:var(--primary);"></i>
+            </div>
+            <h4 class="fw-black mb-2 text-white">Aucun transfert</h4>
+            <p class="mb-0" style="color:var(--muted);">Aucun transfert n'a été trouvé pour le moment.</p>
+        </div>
+    {% endif %}
+
+    <div class="text-end text-white-50 mt-3 small fw-medium" id="trf-count-bottom"></div>
+</div>
+
+<style>
+    /* Ensure the search placeholder stays visible against the dark background */
+    #trf-search::placeholder {
+        color: rgba(255,255,255,0.4) !important;
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        (function () {
+            // Initialize Choices.js
+            document.querySelectorAll('.js-choices').forEach((el) => {
+                new Choices(el, {
+                    searchEnabled: false,
+                    shouldSort: false,
+                    itemSelectText: '',
+                    allowHTML: true
+                });
+            });
+
+            const searchInput = document.getElementById('trf-search');
+            const statusSelect = document.getElementById('trf-status');
+            const rows = Array.from(document.querySelectorAll('.trf-row'));
+            const countTop = document.getElementById('trf-count-top');
+            const countBottom = document.getElementById('trf-count-bottom');
+
+            function applyFilters() {
+                const q = (searchInput.value || '').trim().toLowerCase();
+                const status = (statusSelect.value || '').trim().toLowerCase();
+
+                let visible = 0;
+
+                rows.forEach(row => {
+                    const hay = row.dataset.search || '';
+                    const s = row.dataset.status || '';
+
+                    const matchQ = !q || hay.includes(q);
+                    const matchS = !status || s === status;
+
+                    const show = matchQ && matchS;
+                    row.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+
+                if (countTop) countTop.textContent = `${visible} transfert(s)`;
+                if (countBottom) countBottom.textContent = `${visible} transfert(s) affiché(s)`;
+            }
+
+            [searchInput, statusSelect].forEach(el => {
+                if (!el) return;
+                el.addEventListener('input', applyFilters);
+                el.addEventListener('change', applyFilters);
+            });
+
+            applyFilters();
+        })();
+
+        // Client-side sorting logic remains exactly as requested
+        function sortTable(columnIndex) {
+            const table = document.querySelector("#trf-rows");
+            const rows = Array.from(table.querySelectorAll("tr"));
+
+            const asc = table.classList.toggle("asc");
+            table.classList.toggle("desc", !asc);
+
+            rows.sort((a, b) => {
+                let A = a.children[columnIndex].innerText.trim().toLowerCase();
+                let B = b.children[columnIndex].innerText.trim().toLowerCase();
+
+                // Remove # from IDs or text strings for proper sorting if needed
+                A = A.replace('#', '');
+                B = B.replace('#', '');
+
+                if (!isNaN(A) && !isNaN(B)) {
+                    return asc ? A - B : B - A;
+                }
+
+                return asc ? A.localeCompare(B) : B.localeCompare(A);
+            });
+
+            rows.forEach(tr => table.appendChild(tr));
+        }
+    </script>
+{% endblock %}

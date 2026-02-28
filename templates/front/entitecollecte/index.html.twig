@@ -1,0 +1,249 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Liste des Entités de Collecte | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        /* Proactively override Bootstrap's default blue focus rings for form inputs */
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(230, 57, 57, 0.25) !important;
+        }
+
+        /* -------------------------------------
+           CHOICES.JS CUSTOMIZATION (Standardized)
+        -------------------------------------- */
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            color: var(--text) !important;
+            padding: .3rem .9rem !important;
+            min-height: 48px !important;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+
+        /* -------------------------------------
+           TABLE CUSTOMIZATION FOR INCLUDED TWIG
+        -------------------------------------- */
+        .table-custom {
+            --bs-table-bg: transparent !important;
+            --bs-table-color: var(--text) !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 0;
+        }
+        .table-custom thead th {
+            background: transparent !important;
+            color: var(--muted) !important;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            padding: 15px 20px;
+            border: none !important;
+            border-bottom: 1px solid var(--border) !important;
+        }
+        .table-custom tbody tr {
+            border-top: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .table-custom tbody tr:hover {
+            background: rgba(255,255,255,0.03) !important;
+        }
+        .table-custom tbody td {
+            padding: 15px 20px !important;
+            border: none !important;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div>
+            <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+            <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+                <i class="fa-solid fa-building me-2" style="color:var(--primary);"></i>
+                Entités de Collecte
+            </h1>
+            <div style="color:var(--muted);">
+                Consultez et gérez les centres de collecte partenaires.
+            </div>
+        </div>
+        
+        <div>
+            <a href="{{ path('app_entitecollecte_new') }}" class="btn btn-premium d-flex align-items-center gap-2 px-4 shadow-sm" style="background:var(--primary); color:white; border-radius:30px; font-weight:700;">
+                <i class="fa-solid fa-plus-circle"></i> AJOUTER UNE ENTITÉ
+            </a>
+        </div>
+    </div>
+
+    {# --- SEARCH & FILTER BAR --- #}
+    <div class="glass-card p-3 mb-4 position-relative z-2">
+        <form method="get" class="row g-3 align-items-center" id="search-form">
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-danger text-muted" style="border-right:0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" name="q" value="{{ currentSearch }}" autocomplete="off" 
+                           class="form-control bg-transparent text-white border-danger border-start-0" 
+                           placeholder="Rechercher une entité (nom, adresse, ville...)" 
+                           style="box-shadow:none;">
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <select name="sort" class="form-select bg-transparent text-white border-danger js-choices" style="box-shadow:none;">
+                    <option value="nom" class="text-dark" {% if currentSort == 'nom' %}selected{% endif %}>🔤 Trier par Nom</option>
+                    <option value="adresse" class="text-dark" {% if currentSort == 'adresse' %}selected{% endif %}>📍 Trier par Adresse</option>
+                    <option value="ville" class="text-dark" {% if currentSort == 'ville' %}selected{% endif %}>🏙️ Trier par Ville</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-md-2 d-grid">
+                <input type="hidden" name="direction" value="{{ currentDirection }}">
+                <button type="submit" class="btn btn-outline-danger text-white fw-bold d-flex align-items-center justify-content-center gap-2">
+                    <i class="fa-solid fa-filter"></i> Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {# --- LIST CONTAINER --- #}
+    <div class="glass-card overflow-hidden mb-5">
+        <div class="p-4 d-flex justify-content-between align-items-center"
+             style="background:rgba(0,0,0,.35); border-bottom:1px solid var(--border);">
+            <div class="fw-black text-uppercase small" style="letter-spacing:1px; color:var(--muted);">Liste des Centres</div>
+        </div>
+
+        <div class="table-responsive" id="table-container">
+            {{ include('front/entitecollecte/_table.html.twig') }}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Choices.js
+            const sortSelectEl = document.querySelector('.js-choices');
+            let sortChoices = null;
+            if (sortSelectEl) {
+                sortChoices = new Choices(sortSelectEl, {
+                    searchEnabled: false,
+                    shouldSort: false,
+                    itemSelectText: '',
+                    allowHTML: true
+                });
+            }
+
+            const searchInput = document.querySelector('input[name="q"]');
+            const sortSelect = document.querySelector('select[name="sort"]');
+            const searchForm = document.getElementById('search-form');
+            const tableContainer = document.getElementById('table-container');
+            const directionInput = document.querySelector('input[name="direction"]');
+            
+            let timeout = null;
+
+            function updateTable() {
+                const formData = new FormData(searchForm);
+                const params = new URLSearchParams(formData);
+                const url = `${window.location.pathname}?${params.toString()}`;
+
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    tableContainer.innerHTML = html;
+                    bindSortLinks();
+                    window.history.pushState({}, '', url);
+                });
+            }
+
+            function bindSortLinks() {
+                document.querySelectorAll('.sortable').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const newSort = this.dataset.sort;
+                        if (sortSelect.value === newSort) {
+                            directionInput.value = (directionInput.value === 'ASC') ? 'DESC' : 'ASC';
+                        } else {
+                            if (sortChoices) sortChoices.setChoiceByValue(newSort);
+                            else sortSelect.value = newSort;
+                            directionInput.value = 'ASC';
+                        }
+                        updateTable();
+                    });
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(updateTable, 500);
+                });
+            }
+
+            if (sortSelectEl) {
+                sortSelectEl.addEventListener('change', updateTable);
+            } else if (sortSelect) {
+                sortSelect.addEventListener('change', updateTable);
+            }
+
+            // Ensure manual form submit also uses AJAX update logic if needed
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    updateTable();
+                });
+            }
+
+            bindSortLinks();
+        });
+    </script>
+{% endblock %}

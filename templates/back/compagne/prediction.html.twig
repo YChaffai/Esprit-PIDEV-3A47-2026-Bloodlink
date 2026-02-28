@@ -1,0 +1,88 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Prédiction Donneurs - BloodLink{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                {# Titre de la page #}
+                <h1 class="mb-4 fw-black" style="letter-spacing: -1px; color: #fff;">
+                    <i class="fa-solid fa-chart-line me-2" style="color: var(--primary);"></i>
+                    Analyse Prédictive
+                </h1>
+
+                {# Carte principale #}
+                <div class="card" style="background: var(--glass-2); border: 1px solid var(--border); border-radius: var(--radius); backdrop-filter: blur(10px);">
+                    <div class="card-body p-4 p-md-5">
+                        
+                        <div class="text-center mb-5">
+                            {# Label plus visible : Gras, Blanc, et un peu plus grand #}
+                            <h3 class="text-white text-uppercase fw-black mb-3" style="letter-spacing: 1.5px; font-size: 1.1rem; opacity: 1;">
+                                Nombre de donneurs prédit
+                            </h3>
+                            <div class="display-1 fw-black text-white" style="text-shadow: 0 0 35px rgba(230,57,57,0.6);">
+                                {{ prediction }}
+                            </div>
+                        </div>
+
+                        <hr style="border-color: rgba(255,255,255,0.15); margin: 2.5rem 0;">
+
+                        <div class="explanation-section">
+                            {# Titre IA plus visible #}
+                            <h4 class="mb-3 d-flex align-items-center fw-black text-white">
+                                <i class="fa-solid fa-robot me-3" style="color: var(--primary); font-size: 1.5rem;"></i>
+                                Analyse de l'Intelligence Artificielle
+                            </h4>
+                            
+                            {# Zone d'explication #}
+                            <div class="p-4" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 12px; line-height: 1.7; color: #fff; white-space: pre-line; font-size: 1.05rem;">
+                                {{ explanation|raw }}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                {# chart #}
+                <div class="mt-5 text-center">
+                    <h4 class="text-white mb-3 fw-black">
+                        <i class="fa-solid fa-chart-simple me-2"></i>
+                        Évolution des campagnes
+                    </h4>
+                    
+                    <img src="{{ chartUrl }}" 
+                        alt="Graphique donneurs" 
+                        class="img-fluid rounded"
+                        style="border: 1px solid var(--border);">
+                </div>
+                {# chart #}
+                {# Bouton Retour #}
+                <div class="mt-5 text-center">
+                    <a href="{{ path('app_compagne_index') }}" class="btn nav-soft px-5 py-3">
+                        <i class="fa-solid fa-arrow-left me-2"></i> 
+                        Retour aux campagnes
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .fw-black { font-weight: 950; }
+    
+    /* Animation du nombre */
+    .display-1 {
+        animation: pulseGlow 3s infinite alternate;
+        color: #fff !important;
+    }
+    
+    @keyframes pulseGlow {
+        from { transform: scale(1); text-shadow: 0 0 20px rgba(230,57,57,0.4); }
+        to { transform: scale(1.03); text-shadow: 0 0 40px rgba(230,57,57,0.8); }
+    }
+</style>
+{% endblock %}

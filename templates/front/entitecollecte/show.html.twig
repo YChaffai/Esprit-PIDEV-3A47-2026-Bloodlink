@@ -1,0 +1,173 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Détails: {{ entitecollecte.nom }} | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Force styling on the included delete form button to match our theme */
+        .delete-form-wrapper form {
+            margin: 0;
+        }
+        .delete-form-wrapper button {
+            background: rgba(230, 57, 57, 0.1) !important;
+            border: 1px solid rgba(230, 57, 57, 0.25) !important;
+            color: #ff4d4d !important;
+            padding: 8px 24px !important;
+            border-radius: 50px !important;
+            font-weight: 700 !important;
+            font-size: 0.9rem !important;
+            transition: all 0.3s ease !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .delete-form-wrapper button:hover {
+            background: var(--primary) !important;
+            color: white !important;
+            border-color: var(--primary) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(230, 57, 57, 0.3);
+        }
+
+        /* Subtle lift effect for the campaign cards */
+        .hover-lift { 
+            transition: all 0.3s ease; 
+            text-decoration: none;
+            display: block;
+        }
+        .hover-lift:hover { 
+            transform: translateY(-4px); 
+            background: rgba(255,255,255,0.06) !important; 
+            border-color: rgba(255,255,255,0.2) !important;
+        }
+        
+        .icon-box {
+            width: 48px; 
+            height: 48px;
+            background: rgba(230, 57, 57, 0.1);
+            color: var(--primary);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            border: 1px solid rgba(230, 57, 57, 0.2);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5">
+
+    {# --- HEADER --- #}
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-4 mb-5">
+        <div>
+            <a href="{{ path('app_entitecollecte_index') }}" class="text-decoration-none small mb-3 d-inline-block hover-primary" style="color:var(--muted); font-weight: 600; letter-spacing: 0.5px;">
+                <i class="fa-solid fa-arrow-left me-2"></i>Retour aux entités
+            </a>
+            
+            <h1 class="fw-black mb-2 text-white" style="letter-spacing:-1px; font-size: clamp(2rem, 4vw, 3rem);">
+                {{ entitecollecte.nom }}
+            </h1>
+            
+            <div class="d-flex align-items-center gap-2 text-muted fw-medium mt-2">
+                <i class="fa-solid fa-map-location-dot" style="color: var(--primary);"></i>
+                {{ entitecollecte.adresse }}, {{ entitecollecte.ville }}
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ path('app_entitecollecte_edit', {'id': entitecollecte.id}) }}" class="btn btn-outline-light rounded-pill px-4 fw-bold shadow-sm d-flex align-items-center gap-2">
+                <i class="fa-solid fa-pen"></i> Modifier
+            </a>
+            <div class="delete-form-wrapper">
+                {{ include('front/entitecollecte/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+
+    {# --- MAIN CONTENT GRID --- #}
+    <div class="row g-4">
+        
+        {# Left Column: Associated Campaigns #}
+        <div class="col-lg-8">
+            <div class="glass-card p-4 p-md-5 h-100">
+                <h4 class="fw-black text-uppercase small mb-4" style="letter-spacing:1px; color:var(--muted);">
+                    <i class="fa-solid fa-bullhorn me-2"></i>Campagnes Associées
+                </h4>
+                
+                <div class="d-flex flex-column gap-3">
+                    {% if entitecollecte.campagnes|length > 0 %}
+                        {% for campagne in entitecollecte.campagnes %}
+                            <a href="{{ path('app_compagne_show', {'id': campagne.id}) }}" class="hover-lift bg-dark bg-opacity-50 border border-secondary border-opacity-25 rounded-4 p-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="fw-bold text-white fs-5 mb-1">{{ campagne.titre }}</div>
+                                        <div class="small" style="color:var(--muted);">
+                                            <i class="fa-regular fa-calendar me-1"></i>
+                                            {{ campagne.dateDebut|date('d/m/Y') }} — {{ campagne.dateFin|date('d/m/Y') }}
+                                        </div>
+                                    </div>
+                                    <div class="bg-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="fa-solid fa-chevron-right text-white opacity-75 small"></i>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-5 text-center rounded-4 border border-secondary border-opacity-25" style="background: rgba(255,255,255,0.02);">
+                            <div class="mx-auto mb-3 rounded-circle d-flex align-items-center justify-content-center"
+                                 style="width:64px;height:64px;background: rgba(230,57,57,.1); border: 1px solid rgba(230,57,57,.2);">
+                                <i class="fa-regular fa-calendar-xmark fs-3" style="color:var(--primary);"></i>
+                            </div>
+                            <h5 class="fw-bold text-white mb-1">Aucune campagne</h5>
+                            <p class="text-muted small mb-0">Cette entité n'a pas encore de campagne associée.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Right Column: Sidebar Info #}
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column gap-5">
+                
+                <div>
+                    <h4 class="fw-black text-uppercase small mb-4" style="letter-spacing:1px; color:var(--muted);">
+                        <i class="fa-solid fa-address-book me-2"></i>Contact & Accès
+                    </h4>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-box me-3"><i class="fa-solid fa-phone"></i></div>
+                        <div>
+                            <div class="small text-uppercase fw-bold" style="color:var(--muted); letter-spacing:0.5px;">Téléphone</div>
+                            <div class="text-white fs-5 fw-medium">{{ entitecollecte.telephone }}</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box me-3"><i class="fa-solid fa-fingerprint"></i></div>
+                        <div>
+                            <div class="small text-uppercase fw-bold" style="color:var(--muted); letter-spacing:0.5px;">ID Système</div>
+                            <div class="text-white fs-5 fw-medium">#{{ entitecollecte.id }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {# Optional: Map placeholder or additional info could go here #}
+                <div class="mt-auto pt-4" style="border-top: 1px solid var(--border);">
+                    <div class="bg-dark bg-opacity-50 border border-secondary border-opacity-25 rounded-4 p-3 d-flex align-items-start gap-3">
+                        <i class="fa-solid fa-circle-info mt-1" style="color: var(--primary);"></i>
+                        <div class="small text-muted">
+                            Cette entité est certifiée par le réseau BloodLink pour l'organisation de collectes de sang.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

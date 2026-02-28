@@ -1,0 +1,160 @@
+{% extends 'base_front.html.twig' %}
+{% block title %}Nouveau Dossier | BloodLink{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+    <style>
+        .choices__inner {
+            background: rgba(255,255,255,.03) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            color: var(--text) !important;
+            padding: .6rem .9rem !important;
+            min-height: calc(1.5em + 1.2rem + 2px);
+            transition: all 0.2s ease;
+        }
+        .choices.is-focused .choices__inner {
+            border-color: var(--primary) !important;
+            background: rgba(255,255,255,.05) !important;
+        }
+        .choices__list--dropdown, .choices__list[aria-expanded] {
+            background: #111 !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            color: var(--text) !important;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .choices__list--dropdown .choices__item {
+            color: var(--text) !important;
+            padding: 12px 14px !important;
+        }
+        .choices__list--dropdown .choices__item--selectable.is-highlighted {
+            background: rgba(230,57,57,.2) !important;
+        }
+        .choices[data-type*="select-one"]::after {
+            border-color: rgba(255,255,255,.65) transparent transparent transparent !important;
+            right: 15px;
+        }
+        .choices__placeholder {
+            opacity: 0.8 !important;
+            color: var(--text) !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="py-4 py-md-5" style="max-width: 980px; margin: 0 auto;">
+
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+    <div>
+      <div class="small mb-1" style="color:var(--muted); letter-spacing:.18em;">BLOODLINK</div>
+      <h1 class="fw-black mb-1" style="letter-spacing:-.6px;">
+        <i class="fa-solid fa-file-medical-pulse me-2" style="color:var(--primary);"></i>
+        Nouveau Dossier Médical
+      </h1>
+      <div style="color:var(--muted);">Renseignez les informations médicales du patient.</div>
+    </div>
+    
+    <a href="{{ path('front_dossier_show') }}" class="btn btn-lg rounded-pill fw-bold" style="background:transparent; color:white; border:1px solid var(--border); padding:.85rem 1.1rem;">
+      <i class="fa-solid fa-arrow-left me-2"></i> Retour
+    </a>
+  </div>
+
+  <div class="glass-card p-4 p-md-5">
+    {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+
+    {% if not form.vars.valid %}
+        <div class="alert alert-danger border-0 bg-danger bg-opacity-25 text-white mb-4 glass-card d-flex align-items-center">
+           <i class="fa-solid fa-triangle-exclamation me-3 fs-4"></i>
+           <div>
+               <strong>Erreur de validation</strong><br>
+               {{ form_errors(form) }}
+           </div>
+        </div>
+    {% endif %}
+
+    <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px;">Données d'Identité</h5>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <label class="form-label-premium">Don lié (Patient)</label>
+            {{ form_widget(form.don, {'attr': {'class': 'form-select js-choices'}}) }}
+            <div class="bl-error">{{ form_errors(form.don) }}</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label-premium">Groupe Sanguin</label>
+            {{ form_widget(form.typeSang, {'attr': {'class': 'form-select js-choices'}}) }}
+            <div class="bl-error">{{ form_errors(form.typeSang) }}</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label-premium">Prénom</label>
+            {{ form_widget(form.prenom, {'attr': {'class': 'form-control-premium', 'placeholder': 'Prénom du patient'}}) }}
+            <div class="bl-error">{{ form_errors(form.prenom) }}</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label-premium">Nom</label>
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control-premium', 'placeholder': 'Nom du patient'}}) }}
+            <div class="bl-error">{{ form_errors(form.nom) }}</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label-premium">Sexe</label>
+            {{ form_widget(form.sexe, {'attr': {'class': 'form-select js-choices'}}) }}
+            <div class="bl-error">{{ form_errors(form.sexe) }}</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label-premium">Âge</label>
+            <div class="input-group">
+                {{ form_widget(form.age, {'attr': {'class': 'form-control-premium border-end-0', 'placeholder': '18'}}) }}
+                <span class="input-group-text-premium">ans</span>
+            </div>
+            <div class="bl-error">{{ form_errors(form.age) }}</div>
+        </div>
+    </div>
+
+    <h5 class="fw-bold mb-4" style="color:white; border-left:4px solid var(--primary); padding-left:12px;">Données Médicales</h5>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <label class="form-label-premium">Contact Urgence</label>
+            {{ form_widget(form.contactUrgence, {'attr': {'class': 'form-control-premium', 'placeholder': 'Ex: 99123456'}}) }}
+            <div class="bl-error">{{ form_errors(form.contactUrgence) }}</div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-premium">Poids (kg)</label>
+            {{ form_widget(form.poid, {'attr': {'class': 'form-control-premium', 'placeholder': '0.0'}}) }}
+            <div class="bl-error">{{ form_errors(form.poid) }}</div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-premium">Taille (cm)</label>
+            {{ form_widget(form.taille, {'attr': {'class': 'form-control-premium', 'placeholder': '0'}}) }}
+            <div class="bl-error">{{ form_errors(form.taille) }}</div>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label-premium">Température (°C)</label>
+            {{ form_widget(form.temperature, {'attr': {'class': 'form-control-premium', 'placeholder': '37.0'}}) }}
+            <div class="bl-error">{{ form_errors(form.temperature) }}</div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-column flex-sm-row gap-3 mt-5">
+        <button type="submit" class="btn btn-lg rounded-pill fw-bold flex-fill" style="background:var(--primary); color:white; border:0; padding:.95rem 1.2rem; transition: transform 0.2s;">
+            <i class="fa-solid fa-floppy-disk me-2"></i> Créer le dossier
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+  </div>
+</div>
+
+<style>
+  .form-label-premium { text-transform: uppercase; font-size: .75rem; letter-spacing: .1em; font-weight: 800; color: var(--muted); margin-bottom: 8px; display: block; }
+  .form-control-premium, .form-select-premium { background: rgba(255,255,255,.03) !important; border: 1px solid var(--border) !important; color: var(--text) !important; border-radius: 14px !important; padding: 0.8rem 1.2rem !important; transition: all 0.2s ease; width: 100%; }
+  .form-control-premium:focus, .form-select-premium:focus { background: rgba(255,255,255,.05) !important; border-color: var(--primary) !important; box-shadow: 0 0 0 4px rgba(230,57,57,0.1) !important; outline: none; }
+  .form-select-premium option { background: #111; color: #fff; }
+  .input-group-text-premium { background: rgba(255,255,255,.03); border: 1px solid var(--border); border-left: none; color: var(--muted); padding: 0.8rem 1.2rem; border-radius: 0 14px 14px 0; font-weight: 600; }
+  .bl-error { color: #ff4d4d; font-size: .85rem; font-weight: 600; margin-top: 6px; display: block; }
+</style>
+{% endblock %}
