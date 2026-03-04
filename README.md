@@ -155,6 +155,4 @@ The platform connects **donors**, **blood banks**, and **collection entities** t
 | **face_recognition** | Facial encoding and comparison |
 | **flask-cors** | Cross-origin requests |
 
----
 
-## 🏗 Architecture
